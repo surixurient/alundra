@@ -1,0 +1,13 @@
+*.zip
+*.rar
+datas.bin
+main_coff.iso
+*.exe
+*.pdb
+*.manifest
+*.cache
+*.suo
+*.user
+Debug/
+Release/
+obj/

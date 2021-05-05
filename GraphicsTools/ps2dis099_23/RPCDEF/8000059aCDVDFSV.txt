@@ -1,0 +1,5 @@
+#
+# Let me know any info. about SifCall.
+#
+0:sceCdDiskReady
+

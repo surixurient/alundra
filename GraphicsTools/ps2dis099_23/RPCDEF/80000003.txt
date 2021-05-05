@@ -1,0 +1,8 @@
+#
+# Let me know any info. about SifCall.
+#
+1:sceSifAllocIopHeap
+2:sceSifFreeIopHeap|FreeSysMemory
+3:sceSifLoadIopHeap
+4:sceSifAllocSysMemory
+

@@ -1,0 +1,4 @@
+# source_program
+SRCS = main.c
+
+OBJS = $(SRCS:.c=.o)
