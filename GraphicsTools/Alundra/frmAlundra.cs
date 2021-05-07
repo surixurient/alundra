@@ -127,8 +127,8 @@ namespace GraphicsTools.Alundra
 
             //spriteinfo
             var sinfo = selectedGame.spriteinfo.header;
-            lblSpriteInfo.Text = string.Format(@"{0}    {1} {2} {3} {4} palettes:{5}    {6} {7} {8} {9} {10}    {11}", Fix(sinfo.sector2pointer), Fix(sinfo.sector3pointer), Fix(sinfo.sector4pointer), Fix(sinfo.sector5tablepointer), Fix(sinfo.unknown1pointer), Fix(sinfo.spritepalettespointer), Fix(sinfo.sector1apointer), Fix(sinfo.sector1bpointer), Fix(sinfo.sector1cpointer), Fix(sinfo.sector1dpointer), Fix(sinfo.sector1epointer), Fix(sinfo.sector1fpointer));
-            lblSpriteInfoSizes.Text = string.Format("{0}    {1} {2} {3} {4} palettes:{5}    {6} {7} {8} {9} {10}    {11}", Fix(sinfo.sector2size), Fix(sinfo.sector3size), Fix(sinfo.sector4size), Fix(sinfo.sector5tablesize), Fix(sinfo.unknown1size), Fix(sinfo.spritepalettessize), Fix(sinfo.sector1asize), Fix(sinfo.sector1bsize), Fix(sinfo.sector1csize), Fix(sinfo.sector1dsize), Fix(sinfo.sector1esize), Fix(sinfo.sector1fandremainingsize));
+            lblSpriteInfo.Text = string.Format(@"{0}    {1} {2} {3} {4} palettes:{5}    {6} {7} {8} {9} {10}    {11}", Fix(sinfo.entitiespointer), Fix(sinfo.sector3pointer), Fix(sinfo.mapeventspointer), Fix(sinfo.spritetablepointer), Fix(sinfo.unknown1pointer), Fix(sinfo.spritepalettespointer), Fix(sinfo.eventcodesapointer), Fix(sinfo.eventcodesbpointer), Fix(sinfo.eventcodescpointer), Fix(sinfo.eventcodesdpointer), Fix(sinfo.eventcodesepointer), Fix(sinfo.eventcodesfpointer));
+            lblSpriteInfoSizes.Text = string.Format("{0}    {1} {2} {3} {4} palettes:{5}    {6} {7} {8} {9} {10}    {11}", Fix(sinfo.entitiessize), Fix(sinfo.sector3size), Fix(sinfo.mapeventssize), Fix(sinfo.spritetablesize), Fix(sinfo.unknown1size), Fix(sinfo.spritepalettessize), Fix(sinfo.eventcodesasize), Fix(sinfo.eventcodesbsize), Fix(sinfo.eventcodescsize), Fix(sinfo.eventcodesdsize), Fix(sinfo.eventcodesesize), Fix(sinfo.eventcodesfandremainingsize));
             //scroll info
             if (selectedGame.scrollscreen != null)
             {
@@ -184,39 +184,41 @@ namespace GraphicsTools.Alundra
 
             //spriteinfo
             lsvEntities.Items.Clear();
-            for (int dex = 0; dex < selectedGame.spriteinfo.sector2.entities.Length; dex++)
+            for (int dex = 0; dex < selectedGame.spriteinfo.entities.entities.Length; dex++)
             {
-                var entity = selectedGame.spriteinfo.sector2.entities[dex];
+                var entity = selectedGame.spriteinfo.entities.entities[dex];
                 if (entity != null)
                 {
-                    lsvEntities.Items.Add(new ListViewItem(new string[] {
-                            "entity " + dex, 
-                            entity.spritedir.ToString("x2"), 
-                            entity.sector5tableindex.ToString("x2"), 
-                            (entity.xpos/2).ToString(), 
-                            (entity.ypos/2).ToString(), 
-                            entity.height.ToString("x2"), 
-                            entity.sector1a_bahavior_index.ToString("x2"), 
-                            entity.sector1b_unknown_index.ToString("x2"),
-                            entity.sector1c_unknown_index.ToString("x2"),
-                            entity.sector1d_unknown_index.ToString("x2"),
-                            entity.sector1e_unknown_index.ToString("x2"),
-                            entity.sector1f_dialog_index.ToString("x2")
-                        }));
+                    var lvi = new ListViewItem(new string[] {
+                            "entity " + dex,
+                            entity.spritedir.ToString("x2"),
+                            entity.spritetableindex.ToString("x2"),
+                            (entity.xpos/2).ToString(),
+                            (entity.ypos/2).ToString(),
+                            entity.height.ToString("x2"),
+                            entity.eventcodesa_load_index.ToString("x2"),
+                            entity.eventcodesb_unknown_index.ToString("x2"),
+                            entity.eventcodesc_tick_index.ToString("x2"),
+                            entity.eventcodesd_touch_index.ToString("x2"),
+                            entity.eventcodese_unknown_index.ToString("x2"),
+                            entity.eventcodesf_interact_index.ToString("x2")
+                        });
+                    lvi.ToolTipText = DispByte(entity.u7) + DispByte(entity.u8) + DispByte(entity.u9) + DispByte(entity.u10) + DispByte(entity.u11) + DispByte(entity.u12);
+                    lsvEntities.Items.Add(lvi);
                 }
             }
 
             lsvSector4.Items.Clear();
-            for (int dex = 0; dex < selectedGame.spriteinfo.sector4.records.Length; dex++)
+            for (int dex = 0; dex < selectedGame.spriteinfo.mapevents.records.Length; dex++)
             {
-                var record = selectedGame.spriteinfo.sector4.records[dex];
+                var record = selectedGame.spriteinfo.mapevents.records[dex];
                 if (record != null)
                 {
                     lsvSector4.Items.Add(new ListViewItem(new string[]{
                             "record "+dex,
                             record.u1.ToString("x2"),
                             record.u2.ToString("x2"),
-                            record.sector1bindex.ToString("x2"),
+                            record.eventcodesbindex.ToString("x2"),
                             record.u4.ToString("x2"),
                             record.u5.ToString("x2"),
                             record.u6.ToString("x2"),
@@ -227,9 +229,9 @@ namespace GraphicsTools.Alundra
             }
 
             lstSector5.Items.Clear();
-            for (int dex = 0; dex < selectedGame.spriteinfo.sector5records.Length; dex++)
+            for (int dex = 0; dex < selectedGame.spriteinfo.sprites.Length; dex++)
             {
-                var sector5record = selectedGame.spriteinfo.sector5records[dex];
+                var sector5record = selectedGame.spriteinfo.sprites[dex];
                 if (sector5record != null)
                     lstSector5.Items.Add("record " + dex.ToString("x2"));
             }
@@ -640,7 +642,7 @@ namespace GraphicsTools.Alundra
 
                 var fnt = new Font(FontFamily.GenericSansSerif, 9);
 
-                var entities = selectedGame.spriteinfo.sector2.entities;
+                var entities = selectedGame.spriteinfo.entities.entities;
                 var br = datasBin.OpenBin();
                 for (int dex = 0; dex < entities.Length; dex++)
                 {
@@ -733,7 +735,7 @@ namespace GraphicsTools.Alundra
             }
         }
 
-        SISector2EntityRecord selectedEntity;
+        SIEntityRecord selectedEntity;
 
         string RenderByteCodes(byte[] bytecodes)
         {
@@ -747,17 +749,26 @@ namespace GraphicsTools.Alundra
             return output.Substring(0, output.Length - 1);
         }
 
-        List<SICommand> GetSector1Commands(System.IO.BinaryReader br, int index, short[] sector1table)
+        List<SICommand> GetEventCodeCommands(System.IO.BinaryReader br, int index, short[] eventcodestable)
         {
             if (index > 0 && index < 0xff)
-                return selectedGame.spriteinfo.sector1.GetCommands(br, sector1table[index & 0x7f]);
+            {
+                var dex = index & 0x7f;
+                if (dex < eventcodestable.Length - 1)
+                {
+                    var size = eventcodestable[dex + 1] - eventcodestable[dex];
+                    return selectedGame.spriteinfo.eventcodes.GetCommands(br, eventcodestable[dex], false, size);
+                }
+                else
+                    return selectedGame.spriteinfo.eventcodes.GetCommands(br, eventcodestable[dex]);
+            }
             return new List<SICommand>();
         }
 
         string GetSector1ByteCodes(System.IO.BinaryReader br, int index, short[] sector1table)
         {
             if (index > 0 && index < 0xff)
-                return sector1table[index & 0x7f].ToString("x4") + ":" + (selectedGame.spriteinfo.header.eventcodeaddr + sector1table[index & 0x7f]).ToString("x6") + ":" + RenderByteCodes(selectedGame.spriteinfo.sector1.GetByteCode(br, sector1table[index & 0x7f]));
+                return sector1table[index & 0x7f].ToString("x4") + ":" + (selectedGame.spriteinfo.header.eventcodeaddr + sector1table[index & 0x7f]).ToString("x6") + ":" + RenderByteCodes(selectedGame.spriteinfo.eventcodes.GetByteCode(br, sector1table[index & 0x7f]));
             return "0";
         }
         string DispByte(byte b)
@@ -771,17 +782,16 @@ namespace GraphicsTools.Alundra
             {
                 using (var br = datasBin.OpenBin())
                 {
-                    selectedSector4 = null;
-                    selectedEntity = selectedGame.spriteinfo.sector2.entities[lsvEntities.SelectedIndices[0]];
-                    lblEntityInfo.Text = "si addr:" + GameMap.EventObjectAddr(lsvEntities.SelectedIndices[0]).ToString("x6") + " entity addr:" + selectedEntity.memaddr.ToString("x6") + " u123: " + DispByte(selectedEntity.u1) + DispByte(selectedEntity.u2) + DispByte(selectedEntity.u3);
-
-                    var sector1 = selectedGame.spriteinfo.sector1;
-                    lblSector1a.Text = GetSector1ByteCodes(br, selectedEntity.sector1a_bahavior_index, sector1.sector1atable);
-                    lblSector1b.Text = GetSector1ByteCodes(br, selectedEntity.sector1b_unknown_index, sector1.sector1btable);
-                    lblSector1c.Text = GetSector1ByteCodes(br, selectedEntity.sector1c_unknown_index, sector1.sector1ctable);
-                    lblSector1d.Text = GetSector1ByteCodes(br, selectedEntity.sector1d_unknown_index, sector1.sector1dtable);
-                    lblSector1e.Text = GetSector1ByteCodes(br, selectedEntity.sector1e_unknown_index, sector1.sector1etable);
-                    lblSector1f.Text = GetSector1ByteCodes(br, selectedEntity.sector1f_dialog_index, sector1.sector1ftable);
+                    selectedMapEvent = null;
+                    selectedEntity = selectedGame.spriteinfo.entities.entities[lsvEntities.SelectedIndices[0]];
+                    lblEntityInfo.Text = "si addr:" + GameMap.EventObjectAddr(lsvEntities.SelectedIndices[0]).ToString("x6") + " entity addr:" + selectedEntity.memaddr.ToString("x6") + " u123: " + DispByte(selectedEntity.u1) + DispByte(selectedEntity.u2) + DispByte(selectedEntity.u3) + " u789ab:" + lsvEntities.Items[lsvEntities.SelectedIndices[0]].ToolTipText;
+                    var sector1 = selectedGame.spriteinfo.eventcodes;
+                    lblSector1a.Text = GetSector1ByteCodes(br, selectedEntity.eventcodesa_load_index, sector1.eventcodesatable);
+                    lblSector1b.Text = GetSector1ByteCodes(br, selectedEntity.eventcodesb_unknown_index, sector1.eventcodesbtable);
+                    lblSector1c.Text = GetSector1ByteCodes(br, selectedEntity.eventcodesc_tick_index, sector1.eventcodesctable);
+                    lblSector1d.Text = GetSector1ByteCodes(br, selectedEntity.eventcodesd_touch_index, sector1.eventcodesdtable);
+                    lblSector1e.Text = GetSector1ByteCodes(br, selectedEntity.eventcodese_unknown_index, sector1.eventcodesetable);
+                    lblSector1f.Text = GetSector1ByteCodes(br, selectedEntity.eventcodesf_interact_index, sector1.eventcodesftable);
                     
                     br.Close();
                 }
@@ -799,13 +809,13 @@ namespace GraphicsTools.Alundra
             pctMap.Refresh();
         }
 
-        Sector5Record selectedSector5;
+        SpriteRecord selectedSector5;
         private void lstSector5_SelectedIndexChanged(object sender, EventArgs e)
         {
             lblsector5mem.Text = 0.ToString("x8");
             selectedSector5 = null;
             if (selectedGame != null && lstSector5.SelectedIndex >= 0 && lstSector5.SelectedItem.ToString() != "-1")
-                selectedSector5 = selectedGame.spriteinfo.sector5records[int.Parse(lstSector5.SelectedItem.ToString().Replace("record ",""),System.Globalization.NumberStyles.AllowHexSpecifier)];
+                selectedSector5 = selectedGame.spriteinfo.sprites[int.Parse(lstSector5.SelectedItem.ToString().Replace("record ",""),System.Globalization.NumberStyles.AllowHexSpecifier)];
             lstSector5Animations.Items.Clear();
             lstSector5Animations.SelectedIndex = -1;
             if (selectedSector5 != null)
@@ -1085,7 +1095,7 @@ namespace GraphicsTools.Alundra
 
             }
         }
-        SISector4Record selectedSector4;
+        SISector4Record selectedMapEvent;
         private void lsvSector4_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (selectedGame != null && lsvSector4.SelectedIndices.Count == 1)
@@ -1093,10 +1103,10 @@ namespace GraphicsTools.Alundra
                 using (var br = datasBin.OpenBin())
                 {
                     selectedEntity = null;
-                    selectedSector4 = selectedGame.spriteinfo.sector4.records[lsvSector4.SelectedIndices[0]];
-                    var sector1 = selectedGame.spriteinfo.sector1;
+                    selectedMapEvent = selectedGame.spriteinfo.mapevents.records[lsvSector4.SelectedIndices[0]];
+                    var sector1 = selectedGame.spriteinfo.eventcodes;
                     lblSector1a.Text = "";
-                    lblSector1b.Text = GetSector1ByteCodes(br, selectedSector4.sector1bindex, sector1.sector1btable);
+                    lblSector1b.Text = GetSector1ByteCodes(br, selectedMapEvent.eventcodesbindex, sector1.eventcodesbtable);
                     lblSector1c.Text = "";
                     lblSector1d.Text = "";
                     lblSector1e.Text = "";
@@ -1107,7 +1117,7 @@ namespace GraphicsTools.Alundra
             }
             else
             {
-                selectedSector4 = null;
+                selectedMapEvent = null;
                 lblSector1a.Text = "0";
                 lblSector1b.Text = "0";
                 lblSector1c.Text = "0";
@@ -1128,7 +1138,7 @@ namespace GraphicsTools.Alundra
             {
                 var frm = new FrmEventProgram();
                 var br = datasBin.OpenBin();
-                frm.Init(GetSector1Commands(br, selectedEntity.sector1a_bahavior_index, selectedGame.spriteinfo.sector1.sector1atable));
+                frm.Init(GetEventCodeCommands(br, selectedEntity.eventcodesa_load_index, selectedGame.spriteinfo.eventcodes.eventcodesatable));
                 frm.Show();
                 br.Close();
             }
@@ -1140,12 +1150,12 @@ namespace GraphicsTools.Alundra
             var br = datasBin.OpenBin();
             if (selectedEntity != null)
             {
-                frm.Init(GetSector1Commands(br, selectedEntity.sector1b_unknown_index, selectedGame.spriteinfo.sector1.sector1btable));
+                frm.Init(GetEventCodeCommands(br, selectedEntity.eventcodesb_unknown_index, selectedGame.spriteinfo.eventcodes.eventcodesbtable));
                 frm.Show();
             }
-            else if (selectedSector4 != null)
+            else if (selectedMapEvent != null)
             {
-                frm.Init(GetSector1Commands(br, selectedSector4.sector1bindex, selectedGame.spriteinfo.sector1.sector1btable));
+                frm.Init(GetEventCodeCommands(br, selectedMapEvent.eventcodesbindex, selectedGame.spriteinfo.eventcodes.eventcodesbtable));
                 frm.Show();
             }
             br.Close();
@@ -1157,7 +1167,7 @@ namespace GraphicsTools.Alundra
             {
                 var frm = new FrmEventProgram();
                 var br = datasBin.OpenBin();
-                frm.Init(GetSector1Commands(br, selectedEntity.sector1c_unknown_index, selectedGame.spriteinfo.sector1.sector1ctable));
+                frm.Init(GetEventCodeCommands(br, selectedEntity.eventcodesc_tick_index, selectedGame.spriteinfo.eventcodes.eventcodesctable));
                 frm.Show();
                 br.Close();
             }
@@ -1169,7 +1179,7 @@ namespace GraphicsTools.Alundra
             {
                 var frm = new FrmEventProgram();
                 var br = datasBin.OpenBin();
-                frm.Init(GetSector1Commands(br, selectedEntity.sector1f_dialog_index, selectedGame.spriteinfo.sector1.sector1ftable));
+                frm.Init(GetEventCodeCommands(br, selectedEntity.eventcodesf_interact_index, selectedGame.spriteinfo.eventcodes.eventcodesftable));
                 frm.Show();
                 br.Close();
             }
@@ -1178,7 +1188,7 @@ namespace GraphicsTools.Alundra
         private void btnSector4Analyze_Click(object sender, EventArgs e)
         {
             if (selectedGame != null)
-                AnalyzeAt(selectedGame.header.spriteinfo, selectedGame.spriteinfo.header.memaddr, selectedGame.spriteinfo.header.sector4pointer);
+                AnalyzeAt(selectedGame.header.spriteinfo, selectedGame.spriteinfo.header.memaddr, selectedGame.spriteinfo.header.mapeventspointer);
         }
 
         string dumpfile = "";

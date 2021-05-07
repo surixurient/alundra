@@ -412,12 +412,12 @@ namespace GraphicsTools.Alundra
             
             header = new SpriteInfoHeader(br, memaddr);
             
-            //read sector5 table
-            br.BaseStream.Position = binoffset + header.sector5tablepointer;
-            sector5table = new int[0xff];
-            for (int dex = 0; dex < sector5table.Length; dex++)
+            //read sprite table
+            br.BaseStream.Position = binoffset + header.spritetablepointer;
+            spritetable = new int[0xff];
+            for (int dex = 0; dex < spritetable.Length; dex++)
             {
-                sector5table[dex] = br.ReadInt32();
+                spritetable[dex] = br.ReadInt32();
             }
 
             //read palettes
@@ -439,36 +439,36 @@ namespace GraphicsTools.Alundra
             }
             palettesbitmap = Utils.BitmapFromPsxBuff(buff, 16, maxpalettes, 16, null);
 
-            //read sector1
-            sector1 = new SpriteInfoSector1(br, binoffset, header);
+            //read eventcodes
+            eventcodes = new SpriteInfoEventCodes(br, binoffset, header);
 
-            //read sector2
-            br.BaseStream.Position = binoffset + header.sector2pointer;
-            sector2 = new SpriteInfoSector2(br, memaddr + header.sector2pointer);
+            //read entities
+            br.BaseStream.Position = binoffset + header.entitiespointer;
+            entities = new SpriteInfoEntities(br, memaddr + header.entitiespointer);
 
-            //read sector 4
-            br.BaseStream.Position = binoffset + header.sector4pointer;
-            sector4 = new SpriteInfoSector4(br, binoffset, sectorend);
+            //read mapevents
+            br.BaseStream.Position = binoffset + header.mapeventspointer;
+            mapevents = new SpriteInfoMapEvents(br, binoffset, sectorend);
 
-            //read sector5 records;
-            sector5records = new Sector5Record[sector5table.Length];
-            for (int dex = 0; dex < sector5records.Length; dex++)
+            //read sprite table records;
+            sprites = new SpriteRecord[spritetable.Length];
+            for (int dex = 0; dex < sprites.Length; dex++)
             {
-                if (sector5table[dex] != -1)
+                if (spritetable[dex] != -1)
                 {
-                    br.BaseStream.Position = binoffset + sector5table[dex];
-                    sector5records[dex] = new Sector5Record(br, binoffset, dex, memaddr + sector5table[dex], memaddr);
+                    br.BaseStream.Position = binoffset + spritetable[dex];
+                    sprites[dex] = new SpriteRecord(br, binoffset, dex, memaddr + spritetable[dex], memaddr);
                 }
             }
         }
 
         public SpriteInfoHeader header;
-        public SpriteInfoSector1 sector1;
-        public SpriteInfoSector2 sector2;
-        public SpriteInfoSector4 sector4;
+        public SpriteInfoEventCodes eventcodes;
+        public SpriteInfoEntities entities;
+        public SpriteInfoMapEvents mapevents;
 
-        public int[] sector5table;
-        public Sector5Record[] sector5records;
+        public int[] spritetable;
+        public SpriteRecord[] sprites;
 
         long binoffset;
 
@@ -476,12 +476,12 @@ namespace GraphicsTools.Alundra
         public Bitmap palettesbitmap;
     }
 
-    public class Sector5Record
+    public class SpriteRecord
     {
-        public Sector5Record(BinaryReader br, long binoffset, int id, int memaddr, int spriteinfomemaddr)
+        public SpriteRecord(BinaryReader br, long binoffset, int id, int memaddr, int spriteinfomemaddr)
         {
             
-            header = new Sector5Header(br, binoffset, id, memaddr, spriteinfomemaddr);
+            header = new SpriteTableHeader(br, binoffset, id, memaddr, spriteinfomemaddr);
             animsets = new SIAnimSet[(header.animationspointer - header.animationoffsetspointer) / 14];
             for (int dex = 0; dex < animsets.Length; dex++)
             {
@@ -499,7 +499,7 @@ namespace GraphicsTools.Alundra
         }
 
         
-        public Sector5Header header;
+        public SpriteTableHeader header;
         public SIAnimSet[] animsets;
 
     }
@@ -539,9 +539,9 @@ namespace GraphicsTools.Alundra
         right = 3
     }
 
-    public class Sector5Header
+    public class SpriteTableHeader
     {
-        public Sector5Header(BinaryReader br, long binoffset, int id, int memaddr, int spriteinfomemaddr)
+        public SpriteTableHeader(BinaryReader br, long binoffset, int id, int memaddr, int spriteinfomemaddr)
         {
             this.spriteinfomemaddr = spriteinfomemaddr;
             this.memaddr = memaddr;
@@ -604,7 +604,7 @@ namespace GraphicsTools.Alundra
 
     public class SIAnimation
     {
-        public SIAnimation(BinaryReader br, Sector5Header header, int memaddr)
+        public SIAnimation(BinaryReader br, SpriteTableHeader header, int memaddr)
         {
             this.memaddr = memaddr;
             frames = new SIFrame[32];//32 max frames?
@@ -636,7 +636,7 @@ namespace GraphicsTools.Alundra
 
     public class SIFrame
     {
-        public SIFrame(BinaryReader br, Sector5Header header, int memaddr)
+        public SIFrame(BinaryReader br, SpriteTableHeader header, int memaddr)
         {
             this.memaddr = memaddr;
             delay = br.ReadByte();
@@ -755,155 +755,155 @@ namespace GraphicsTools.Alundra
         public SpriteInfoHeader(BinaryReader br, int memaddr)
         {
             
-            sector2pointer = br.ReadInt32();
+            entitiespointer = br.ReadInt32();
             sector3pointer = br.ReadInt32();
-            sector4pointer = br.ReadInt32();
-            sector5tablepointer = br.ReadInt32();
+            mapeventspointer = br.ReadInt32();
+            spritetablepointer = br.ReadInt32();
             unknown1pointer = br.ReadInt32();
             spritepalettespointer = br.ReadInt32();
-            sector1apointer = br.ReadInt32();
-            sector1bpointer = br.ReadInt32();
-            sector1cpointer = br.ReadInt32();
-            sector1dpointer = br.ReadInt32();
-            sector1epointer = br.ReadInt32();
-            sector1fpointer = br.ReadInt32();
+            eventcodesapointer = br.ReadInt32();
+            eventcodesbpointer = br.ReadInt32();
+            eventcodescpointer = br.ReadInt32();
+            eventcodesdpointer = br.ReadInt32();
+            eventcodesepointer = br.ReadInt32();
+            eventcodesfpointer = br.ReadInt32();
 
             this.memaddr = memaddr;
-            this.eventcodeaddr = memaddr + sector1apointer;
+            this.eventcodeaddr = memaddr + eventcodesapointer;
 
-            sector2size = sector3pointer - sector2pointer;
-            sector3size = sector4pointer - sector3pointer;
-            sector4size = -1;// unknown4 - unknown3;
-            sector5tablesize = unknown1pointer - sector5tablepointer;
+            entitiessize = sector3pointer - entitiespointer;
+            sector3size = mapeventspointer - sector3pointer;
+            mapeventssize = -1;// unknown4 - unknown3;
+            spritetablesize = unknown1pointer - spritetablepointer;
             unknown1size = spritepalettespointer - unknown1pointer;
-            spritepalettessize = sector1apointer - spritepalettespointer;
-            sector1asize = sector1bpointer - sector1apointer;
-            sector1bsize = sector1cpointer - sector1bpointer;
-            sector1csize = sector1dpointer - sector1cpointer;
-            sector1dsize = sector1epointer - sector1dpointer;
-            sector1esize = sector1fpointer - sector1epointer;
-            sector1fandremainingsize = sector2pointer - sector1fpointer;
+            spritepalettessize = eventcodesapointer - spritepalettespointer;
+            eventcodesasize = eventcodesbpointer - eventcodesapointer;
+            eventcodesbsize = eventcodescpointer - eventcodesbpointer;
+            eventcodescsize = eventcodesdpointer - eventcodescpointer;
+            eventcodesdsize = eventcodesepointer - eventcodesdpointer;
+            eventcodesesize = eventcodesfpointer - eventcodesepointer;
+            eventcodesfandremainingsize = entitiespointer - eventcodesfpointer;
         }
         public int memaddr;
         public int eventcodeaddr;
 
-        public int sector2pointer;
-        public int sector2size;
+        public int entitiespointer;
+        public int entitiessize;
         public int sector3pointer;
         public int sector3size;
-        public int sector4pointer;
-        public int sector4size;
-        public int sector5tablepointer;
-        public int sector5tablesize;
-        public int unknown1pointer;
+        public int mapeventspointer;
+        public int mapeventssize;
+        public int spritetablepointer;
+        public int spritetablesize;
+        public int unknown1pointer;//0000333b000e240e0400000000000000
         public int unknown1size;
         public int spritepalettespointer;
         public int spritepalettessize;
-        public int sector1apointer;
-        public int sector1asize;
-        public int sector1bpointer;
-        public int sector1bsize;
-        public int sector1cpointer;
-        public int sector1csize;
-        public int sector1dpointer;
-        public int sector1dsize;
-        public int sector1epointer;
-        public int sector1esize;
-        public int sector1fpointer;
-        public int sector1fsize;//calced when reading sector1
-        public int sector1fandremainingsize;
+        public int eventcodesapointer;
+        public int eventcodesasize;
+        public int eventcodesbpointer;
+        public int eventcodesbsize;
+        public int eventcodescpointer;
+        public int eventcodescsize;
+        public int eventcodesdpointer;
+        public int eventcodesdsize;
+        public int eventcodesepointer;
+        public int eventcodesesize;
+        public int eventcodesfpointer;
+        public int eventcodesfsize;//calced when reading sector1
+        public int eventcodesfandremainingsize;
     }
 
-    public class SpriteInfoSector1
+    public class SpriteInfoEventCodes
     {
-        public SpriteInfoSector1(BinaryReader br, long binoffset, SpriteInfoHeader header)
+        public SpriteInfoEventCodes(BinaryReader br, long binoffset, SpriteInfoHeader header)
         {
             
             int table_size = 0;
             short firstoffset = 0;
 
             //read sector1a
-            br.BaseStream.Position = binoffset + header.sector1apointer;
-            table_size = header.sector1asize / 2;
-            sector1atable = new short[table_size];
+            br.BaseStream.Position = binoffset + header.eventcodesapointer;
+            table_size = header.eventcodesasize / 2;
+            eventcodesatable = new short[table_size];
             for (int dex = 0; dex < table_size; dex++)
             {
-                sector1atable[dex] = br.ReadInt16();
-                if (firstoffset == 0 && sector1atable[dex] != 0)
-                    firstoffset = sector1atable[dex];
+                eventcodesatable[dex] = br.ReadInt16();
+                if (firstoffset == 0 && eventcodesatable[dex] != 0)
+                    firstoffset = eventcodesatable[dex];
             }
 
             //read sector1b
-            br.BaseStream.Position = binoffset + header.sector1bpointer;
-            table_size = header.sector1bsize / 2;
-            sector1btable = new short[table_size];
+            br.BaseStream.Position = binoffset + header.eventcodesbpointer;
+            table_size = header.eventcodesbsize / 2;
+            eventcodesbtable = new short[table_size];
             for (int dex = 0; dex < table_size; dex++)
             {
-                sector1btable[dex] = br.ReadInt16();
-                if (firstoffset == 0 && sector1btable[dex] != 0)
-                    firstoffset = sector1btable[dex];
+                eventcodesbtable[dex] = br.ReadInt16();
+                if (firstoffset == 0 && eventcodesbtable[dex] != 0)
+                    firstoffset = eventcodesbtable[dex];
             }
 
             //read sector1c
-            br.BaseStream.Position = binoffset + header.sector1cpointer;
-            table_size = header.sector1csize / 2;
-            sector1ctable = new short[table_size];
+            br.BaseStream.Position = binoffset + header.eventcodescpointer;
+            table_size = header.eventcodescsize / 2;
+            eventcodesctable = new short[table_size];
             for (int dex = 0; dex < table_size; dex++)
             {
-                sector1ctable[dex] = br.ReadInt16();
-                if (firstoffset == 0 && sector1ctable[dex] != 0)
-                    firstoffset = sector1ctable[dex];
+                eventcodesctable[dex] = br.ReadInt16();
+                if (firstoffset == 0 && eventcodesctable[dex] != 0)
+                    firstoffset = eventcodesctable[dex];
             }
 
             //read sector1d
-            br.BaseStream.Position = binoffset + header.sector1dpointer;
-            table_size = header.sector1dsize / 2;
-            sector1dtable = new short[table_size];
+            br.BaseStream.Position = binoffset + header.eventcodesdpointer;
+            table_size = header.eventcodesdsize / 2;
+            eventcodesdtable = new short[table_size];
             for (int dex = 0; dex < table_size; dex++)
             {
-                sector1dtable[dex] = br.ReadInt16();
-                if (firstoffset == 0 && sector1dtable[dex] != 0)
-                    firstoffset = sector1dtable[dex];
+                eventcodesdtable[dex] = br.ReadInt16();
+                if (firstoffset == 0 && eventcodesdtable[dex] != 0)
+                    firstoffset = eventcodesdtable[dex];
             }
 
             //read sector1e
-            br.BaseStream.Position = binoffset + header.sector1epointer;
-            table_size = header.sector1esize / 2;
-            sector1etable = new short[table_size];
+            br.BaseStream.Position = binoffset + header.eventcodesepointer;
+            table_size = header.eventcodesesize / 2;
+            eventcodesetable = new short[table_size];
             for (int dex = 0; dex < table_size; dex++)
             {
-                sector1etable[dex] = br.ReadInt16();
-                if (firstoffset == 0 && sector1etable[dex] != 0)
-                    firstoffset = sector1etable[dex];
+                eventcodesetable[dex] = br.ReadInt16();
+                if (firstoffset == 0 && eventcodesetable[dex] != 0)
+                    firstoffset = eventcodesetable[dex];
             }
 
             //read sector1f
-            header.sector1fsize = (header.sector1apointer + firstoffset) - header.sector1fpointer;
-            br.BaseStream.Position = binoffset + header.sector1fpointer;
-            table_size = header.sector1fsize / 2;
+            header.eventcodesfsize = (header.eventcodesapointer + firstoffset) - header.eventcodesfpointer;
+            br.BaseStream.Position = binoffset + header.eventcodesfpointer;
+            table_size = header.eventcodesfsize / 2;
             if (table_size < 0)
                 table_size = 16;
-            sector1ftable = new short[table_size];
+            eventcodesftable = new short[table_size];
             for (int dex = 0; dex < table_size; dex++)
             {
-                sector1ftable[dex] = br.ReadInt16();
+                eventcodesftable[dex] = br.ReadInt16();
             }
 
-            //set binoffset for sector1
-            this.binoffset = binoffset + header.sector1apointer;
-            this.memaddr = header.memaddr + header.sector1apointer;
-            this.datasize = header.sector2pointer - header.sector1apointer;
+            //set binoffset for eventcodes
+            this.binoffset = binoffset + header.eventcodesapointer;
+            this.memaddr = header.memaddr + header.eventcodesapointer;
+            this.datasize = header.entitiespointer - header.eventcodesapointer;
         }
 
-        public List<SICommand> GetCommands(BinaryReader br, int sector1offset, bool stopatff = false)
+        public List<SICommand> GetCommands(BinaryReader br, int eventcodesoffset, bool stopatff = false, int comandssize = 0)
         {
             var commands = new List<SICommand>();
             //var bytes = GetByteCode(br, sector1offset);
-            br.BaseStream.Position = binoffset + sector1offset;
-            var bytes = new byte[datasize - sector1offset];
+            br.BaseStream.Position = binoffset + eventcodesoffset;
+            var bytes = new byte[datasize - eventcodesoffset];
             br.Read(bytes, 0, bytes.Length);
             int dex = 0;
-            while (dex < bytes.Length)
+            while (dex < bytes.Length && (comandssize == 0 || dex< comandssize))
             {
                 byte b = bytes[dex++];
                 int size = 1;
@@ -1133,6 +1133,10 @@ namespace GraphicsTools.Alundra
                     case 0x50://dialog?
                         size = 2;
                         break;
+                    case 0x58:
+                        name = "directionalbranch";
+                        size = 9;
+                        break;
                     case 0x59://dialog?
                         size = 3;
                         break;
@@ -1148,7 +1152,7 @@ namespace GraphicsTools.Alundra
                 while (pdex < size - 1)
                     parms[pdex++] = bytes[dex++];
                 SICommand cmd;
-                int addr = memaddr + sector1offset + dex - size;
+                int addr = memaddr + eventcodesoffset + dex - size;
                 switch (name)
                 {
                     case "walk":
@@ -1172,6 +1176,9 @@ namespace GraphicsTools.Alundra
                         break;
                     case "goto":
                         cmd = new JumpCommand(b, parms, name, addr);
+                        break;
+                    case "directionalbranch":
+                        cmd = new DirectionBranchCommand(b,parms, name, addr);
                         break;
                     default:
                         cmd = new SICommand(b, size, parms, name, addr);
@@ -1219,12 +1226,12 @@ namespace GraphicsTools.Alundra
         long binoffset;
         int datasize;
         int memaddr;
-        public short[] sector1atable;
-        public short[] sector1btable;
-        public short[] sector1ctable;
-        public short[] sector1dtable;
-        public short[] sector1etable;
-        public short[] sector1ftable;
+        public short[] eventcodesatable;
+        public short[] eventcodesbtable;
+        public short[] eventcodesctable;
+        public short[] eventcodesdtable;
+        public short[] eventcodesetable;
+        public short[] eventcodesftable;
     }
 
     public class SetFlagCommand : SICommand
@@ -1302,6 +1309,39 @@ namespace GraphicsTools.Alundra
         }
     }
 
+    public class DirectionBranchCommand : SICommand
+    {
+        public DirectionBranchCommand(byte command, byte[] parameters, string name, int memaddr)
+            : base(command, 9, parameters, name, memaddr)
+        {
+
+            offsets[0] = (Int16)(parameters[size - 9] | parameters[size - 8] << 8);
+            offsets[1] = (Int16)(parameters[size - 7] | parameters[size - 6] << 8);
+            offsets[2] = (Int16)(parameters[size - 5] | parameters[size - 4] << 8);
+            offsets[3] = (Int16)(parameters[size - 3] | parameters[size - 2] << 8);
+        }
+
+        int[] offsets = new int[4];
+
+        public override string PrintParameters(List<SICommand> commands)
+        {
+            var parms = new List<string>();
+            foreach(var offset in offsets)
+            {
+                int jumpaddr = this.memaddr + offset;
+                int dex;
+                for (dex = 0; dex < commands.Count; dex++)
+                {
+                    if (commands[dex].memaddr == jumpaddr)
+                        break;
+                }
+                parms.Add(dex < commands.Count ? dex.ToString() : "?");
+            }
+
+            return string.Join(", ", parms);
+        }
+    }
+
     public class JumpCommand : SICommand
     {
         public JumpCommand(byte command, byte[] parameters, string name, int memaddr)
@@ -1369,13 +1409,13 @@ namespace GraphicsTools.Alundra
         }
     }
 
-    public class SpriteInfoSector2
+    public class SpriteInfoEntities
     {
-        public SpriteInfoSector2(BinaryReader br, int memaddr)
+        public SpriteInfoEntities(BinaryReader br, int memaddr)
         {
             br.BaseStream.Position += 2;
 
-            entities = new SISector2EntityRecord[128];
+            entities = new SIEntityRecord[128];
             for (int dex = 0; dex < entities.Length; dex++)
             {
                 //read two test bytes to check for the end of the list
@@ -1385,31 +1425,31 @@ namespace GraphicsTools.Alundra
                 br.BaseStream.Position -= 2;
 
                 //read the record
-                entities[dex] = new SISector2EntityRecord(br, memaddr + dex * 20);
+                entities[dex] = new SIEntityRecord(br, memaddr + dex * 20);
             }
         }
-        public SISector2EntityRecord[] entities;
+        public SIEntityRecord[] entities;
     }
 
-    public class SISector2EntityRecord
+    public class SIEntityRecord
     {
-        public SISector2EntityRecord(BinaryReader br, int memaddr)
+        public SIEntityRecord(BinaryReader br, int memaddr)
         {
             this.memaddr = memaddr;
             u1 = br.ReadByte();
             u2 = br.ReadByte();
             u3 = br.ReadByte();
             spritedir = br.ReadByte();
-            sector5tableindex = br.ReadByte();
+            spritetableindex = br.ReadByte();
             xpos = br.ReadByte();
             ypos = br.ReadByte();
             height = br.ReadByte();
-            sector1a_bahavior_index = br.ReadByte();
-            sector1b_unknown_index = br.ReadByte();
-            sector1c_unknown_index = br.ReadByte();
-            sector1d_unknown_index = br.ReadByte();
-            sector1e_unknown_index = br.ReadByte();
-            sector1f_dialog_index = br.ReadByte();
+            eventcodesa_load_index = br.ReadByte();
+            eventcodesb_unknown_index = br.ReadByte();
+            eventcodesc_tick_index = br.ReadByte();
+            eventcodesd_touch_index = br.ReadByte();
+            eventcodese_unknown_index = br.ReadByte();
+            eventcodesf_interact_index = br.ReadByte();
             u7 = br.ReadByte();
             u8 = br.ReadByte();
             u9 = br.ReadByte();
@@ -1420,14 +1460,14 @@ namespace GraphicsTools.Alundra
 
         public SIAnimation GetSprite(BinaryReader br, SpriteInfo si)
         {
-            var sector5 = si.sector5records[sector5tableindex];
+            var sector5 = si.sprites[spritetableindex];
             if (sector5 != null && this.spritedir >> 4 != 0x4 && this.spritedir >> 4 != 0x0)
             {
                 List<SICommand> commands = new List<SICommand>();
-                if (sector1a_bahavior_index != 0xff && sector1a_bahavior_index != 0)
-                    commands = si.sector1.GetCommands(br, si.sector1.sector1atable[sector1a_bahavior_index & 0x7f], true);
-                if (commands.Count == 0 && sector1c_unknown_index != 0xff && sector1c_unknown_index != 0)
-                    commands = si.sector1.GetCommands(br, si.sector1.sector1ctable[sector1c_unknown_index & 0x7f], true);
+                if (eventcodesa_load_index != 0xff && eventcodesa_load_index != 0)
+                    commands.AddRange(si.eventcodes.GetCommands(br, si.eventcodes.eventcodesatable[eventcodesa_load_index & 0x7f], true));
+                if (commands.Count == 0 && eventcodesc_tick_index != 0xff && eventcodesc_tick_index != 0)
+                    commands.AddRange(si.eventcodes.GetCommands(br, si.eventcodes.eventcodesctable[eventcodesc_tick_index & 0x7f], true));
                 foreach (var cmd in commands)
                 {
                     if (cmd.command == 0x1a)//set sprite
@@ -1447,16 +1487,16 @@ namespace GraphicsTools.Alundra
         public byte u2;//3b
         public byte u3;//1
         public byte spritedir;//0,c0,c1,c2,c3,80
-        public byte sector5tableindex;
+        public byte spritetableindex;
         public byte xpos;//divide by 2
         public byte ypos;//divide by 2
         public byte height;//divide by 2
-        public byte sector1a_bahavior_index;
-        public byte sector1b_unknown_index;
-        public byte sector1c_unknown_index;
-        public byte sector1d_unknown_index;
-        public byte sector1e_unknown_index;
-        public byte sector1f_dialog_index;
+        public byte eventcodesa_load_index;
+        public byte eventcodesb_unknown_index;
+        public byte eventcodesc_tick_index;
+        public byte eventcodesd_touch_index;
+        public byte eventcodese_unknown_index;
+        public byte eventcodesf_interact_index;
         public byte u7;
         public byte u8;
         public byte u9;
@@ -1470,9 +1510,9 @@ namespace GraphicsTools.Alundra
 
     }
 
-    public class SpriteInfoSector4
+    public class SpriteInfoMapEvents
     {
-        public SpriteInfoSector4(BinaryReader br, long sioffset, int sectorend)
+        public SpriteInfoMapEvents(BinaryReader br, long sioffset, int sectorend)
         {
             br.BaseStream.Position += 2;
 
@@ -1502,7 +1542,7 @@ namespace GraphicsTools.Alundra
         {
             u1 = br.ReadByte();
             u2 = br.ReadByte();
-            sector1bindex = br.ReadByte();
+            eventcodesbindex = br.ReadByte();
             u4 = br.ReadByte();
             u5 = br.ReadByte();
             u6 = br.ReadByte();
@@ -1512,7 +1552,7 @@ namespace GraphicsTools.Alundra
 
         public byte u1;
         public byte u2;
-        public byte sector1bindex;
+        public byte eventcodesbindex;
         public byte u4;
         public byte u5;
         public byte u6;
