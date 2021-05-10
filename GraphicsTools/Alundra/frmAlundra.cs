@@ -20,12 +20,16 @@ namespace GraphicsTools.Alundra
         DatasBin datasBin;
         public void Init(DatasBin datasBin)
         {
+            DebugSymbols.Init();
             this.datasBin = datasBin;
             for (int dex = 0;dex<datasBin.gamemaps.Length;dex++)
             {
                 if (datasBin.gamemaps[dex] != null)
                 {
-                    lstGameMaps.Items.Add("map " + datasBin.gamemaps[dex].info.mapid);
+                    string name = "";
+                    if (!string.IsNullOrEmpty(DebugSymbols.MapNames[dex]))
+                        name = $" ({DebugSymbols.MapNames[dex]})";
+                    lstGameMaps.Items.Add("" + datasBin.gamemaps[dex].info.mapid + name);
                 }
             }
 

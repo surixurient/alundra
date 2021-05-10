@@ -10,6 +10,7 @@ namespace GraphicsTools.Alundra
 
         public static string[] EntityVarOffsets = new string[GameMap.eventobject_size];
         public static Dictionary<uint, string> FunctionNames = new Dictionary<uint, string>();
+        public static string[] MapNames = new string[502];
 
         public static uint Adjustment = 0 + 0xdc;
 
@@ -134,7 +135,82 @@ namespace GraphicsTools.Alundra
             EntityVarOffsets[0x234] = "tickprogsp";
             EntityVarOffsets[0x238] = "tickprogexp";
 
-        }
+
+            MapNames[162] = "inoa";
+            MapNames[163] = "jess house";
+            MapNames[164] = "beaumont/septimus/fortuneteller house";
+            MapNames[165] = "wendell/giles house";
+            MapNames[166] = "lutas/bonaire house";
+            MapNames[167] = "nadia/gustav house";
+            MapNames[168] = "klein/sybill house";
+            MapNames[169] = "inoa 2";
+            MapNames[176] = "inoa 3";
+            MapNames[183] = "inoa 4";
+            MapNames[186] = "inoa 5";
+            MapNames[193] = "inoa 6";
+            MapNames[198] = "inoa 7";
+            MapNames[205] = "inoa 8";
+            MapNames[212] = "inoa 9";
+            MapNames[219] = "inoa 10";
+            MapNames[226] = "inoa 11";
+            MapNames[230] = "inoa 12";
+            MapNames[237] = "inoa 13";
+            MapNames[241] = "inoa 14";
+            MapNames[248] = "inoa 15";
+            MapNames[252] = "inoa 16";
+            MapNames[259] = "inoa 17";
+            MapNames[266] = "inoa 18";
+            MapNames[271] = "inoa 19";
+            MapNames[275] = "inoa 20";
+            MapNames[282] = "inoa 21";
+            MapNames[289] = "inoa 22";
+            MapNames[293] = "inoa burning";
+            MapNames[297] = "inoa burned";
+            MapNames[301] = "inoa burned 2";
+
+            MapNames[303] = "miner/graveyard keeper";
+
+            MapNames[310] = "inoa w portal and meia";
+            MapNames[311] = "a house and a well";
+            MapNames[312] = "ship interior no entities";
+            MapNames[313] = "ship interior no entities";
+            MapNames[314] = "unfinished coast? no entities";
+            MapNames[315] = "unfinished coast no entities one gaincontrol event";
+            MapNames[320] = "unfinished ship map";
+
+            MapNames[321] = "zorgia boss map";
+            MapNames[322] = "boss map";
+            MapNames[323] = "boss map dragon";
+            MapNames[324] = "boss map bridge";
+            MapNames[325] = "boss map fire dragon";
+            MapNames[326] = "boss map priest";
+            MapNames[327] = "boss map";
+
+            MapNames[330] = "inoa";
+
+            MapNames[337] = "lake shrine int";
+            MapNames[338] = "lake shrine int";
+            MapNames[339] = "lake shrine int";
+            MapNames[353] = "lake shrine int";
+            MapNames[354] = "lake shrine roof";
+            MapNames[355] = "lake shrine roof";
+            MapNames[356] = "lake shrine roof";
+
+
+            MapNames[357] = "inoa";
+            MapNames[364] = "inoa";
+            MapNames[367] = "inoa";
+
+            MapNames[368] = "great tree";
+            MapNames[369] = "great tree int";
+
+            MapNames[371] = "inoa";
+
+            MapNames[389] = "ship";
+            MapNames[390] = "ship captains";
+            MapNames[391] = "ship night";
+            MapNames[392] = "ship int";
+    }
 
         static void NudgeAddresses()
         {

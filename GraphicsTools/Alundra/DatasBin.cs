@@ -894,7 +894,259 @@ namespace GraphicsTools.Alundra
             this.memaddr = header.memaddr + header.eventcodesapointer;
             this.datasize = header.entitiespointer - header.eventcodesapointer;
         }
+        
+        public class SICode
+        {
+            public byte code { get; set; }
+            public string name { get; set; }
+            public int size { get; set; }
+        }
+        public static SICode GetCode(byte b)
+        {
+            int size = 1;
+            string name = "";
+            switch (b)
+            {
+                case 0x02:
+                    name = "goto";//skips forward or back
+                    size = 3;
+                    break;
+                case 0x03:
+                    name = "iffalse";
+                    size = 3;
+                    break;
+                case 0x04:
+                    name = "whilefalse";//loops back until condition met
+                    size = 3;
+                    break;
+                case 0x05:
+                    name = "flagon";//turn on a logic switch
+                    size = 3;
+                    break;
+                case 0x06:
+                    name = "flagoff";//turn off a logic switch
+                    size = 3;
+                    break;
+                case 0x07:
+                    name = "checkentityinarea";
+                    size = 8;
+                    break;
 
+                case 0x09:
+                    name = "setdir";//set direction
+                    size = 2;
+                    break;
+                case 0x0a:
+                    name = "reverse";//switch directions, used for paceing npcs
+                    size = 1;
+                    break;
+
+                case 0x0d:
+                    name = "dialog";//show dialog
+                    size = 3;
+                    break;
+
+                case 0x10:
+                    name = "losecontrol";
+                    size = 1;
+                    break;
+                case 0x11:
+                    name = "gaincontrol";
+                    size = 1;
+                    break;
+
+                case 0x16:
+                    name = "highgravity";//fall as normal
+                    size = 1;
+                    break;
+                case 0x17:
+                    name = "lowgravity";//used for climbing ladders and flying
+                    size = 1;
+                    break;
+
+                case 0x19:
+                    name = "deactivate?";
+                    size = 1;
+                    break;
+                case 0x1a:
+                    name = "setanim";//set animation
+                    size = 2;
+                    break;
+
+                //CURRENT IMPLEMENTATION PROGRESS
+                case 0x1b:
+                    name = "fly"; //stop flying 0x0000   flying down 0xff7f     flying foward and up  0x0380
+                    size = 3;
+                    break;
+
+                case 0x1e:
+                    name = "walk2";//collision blocks/pauses the walk
+                    size = 3;
+                    break;
+                case 0x1f:
+                    name = "walk";//collision ends the walk
+                    size = 3;
+                    break;
+
+                case 0x27:
+                    name = "faceplayer";
+                    size = 1;
+                    break;
+
+                case 0x2d:
+                    name = "activateentity";//look into this event to study entity type
+                    size = 2;
+                    break;
+                case 0x2e:
+                    name = "hide";
+                    size = 2;
+                    break;
+                case 0x2f:
+                    name = "checkmovingindir";
+                    size = 4;
+                    break;
+                case 0x30:
+                    name = "ifnot";//if a logic switch is on
+                    size = 5;
+                    break;
+                case 0x31:
+                    name = "if";//if a logic switch is not on
+                    size = 5;
+                    break;
+
+                case 0x33:
+                    name = "checkvars";
+                    size = 9;
+                    break;
+
+                case 0x36:
+                    name = "until";//block until a logic switch is on
+                    size = 3;
+                    break;
+                case 0x37:
+                    name = "wait";//waits for the specified time to pass
+                    size = 2;
+                    break;
+                case 0x38:
+                    name = "registersomething?";
+                    size = 5;
+                    break;
+
+                case 0x3b:
+                    name = "checkplayerinarea";
+                    size = 7;
+                    break;
+
+                case 0x44:
+                    name = "waitdialogchoice";
+                    size = 1;
+                    break;
+
+                case 0x49:
+                    name = "restart";//seeks back to the beginning of event program
+                    size = 1;
+                    break;
+
+                case 0x4b:
+                    name = "iffalserestart";
+                    size = 1;
+                    break;
+
+                case 0x51:
+                    name = "getdialogchoice";
+                    size = 1;
+                    break;
+
+                case 0x54:
+                    name = "setwalkable";
+                    size = 5;
+                    break;
+                case 0x55:
+                    name = "setunwalkable";
+                    size = 5;
+                    break;
+
+                case 0x5a:
+                    name = "turnentity";
+                    size = 3;
+                    break;
+                case 0x5b:
+                    name = "turn";//also has other flags related to on ground or climbing, etc
+                    size = 4;
+                    break;
+
+                case 0x62:
+                    name = "setentitysomething?";
+                    size = 4;
+                    break;
+                case 0x63:
+                    name = "setentitygravity";
+                    size = 4;
+                    break;
+                case 0x64:
+                    name = "setentityposition";
+                    size = 8;
+                    break;
+
+                case 0x67:
+                    name = "followentity";
+                    size = 2;
+                    break;
+
+                case 0x70:
+                    name = "checksomething?";
+                    size = 1;
+                    break;
+
+                case 0x85:
+                    name = "setmaptiles";
+                    size = 7;
+                    break;
+
+                case 0x8b:
+                    name = "spawnentity";//pulls entity to ones self and activates it at pixel offset
+                    size = 9;
+                    break;
+
+                case 0xbd:
+                    name = "playsound";
+                    size = 3;
+                    break;
+
+
+                //non-operations
+                case 0x00:
+                    name = "break";
+                    size = 1;
+                    break;
+                case 0xff:
+                    name = "end";
+                    size = 1;
+                    break;
+
+                case 0x39://dialog?
+                    size = 1;
+                    break;
+                case 0x50://dialog?
+                    size = 2;
+                    break;
+                case 0x58:
+                    name = "directionalbranch";
+                    size = 9;
+                    break;
+                case 0x59://dialog?
+                    size = 3;
+                    break;
+                case 0xac://used on birds
+                    size = 4;
+                    break;
+                default:
+                    Debug.Print("Unknown code " + b.ToString("x2"));
+                    break;
+            }
+
+            return new SICode { code = b, size = size, name = name };
+        }
         public List<SICommand> GetCommands(BinaryReader br, int eventcodesoffset, bool stopatff = false, int comandssize = 0)
         {
             var commands = new List<SICommand>();
@@ -906,247 +1158,10 @@ namespace GraphicsTools.Alundra
             while (dex < bytes.Length && (comandssize == 0 || dex< comandssize))
             {
                 byte b = bytes[dex++];
-                int size = 1;
-                string name = "";
-                switch (b)
-                {
-                    case 0x02:
-                        name = "goto";//skips forward or back
-                        size = 3;
-                        break;
-                    case 0x03:
-                        name = "iffalse";
-                        size = 3;
-                        break;
-                    case 0x04:
-                        name = "whilefalse";//loops back until condition met
-                        size = 3;
-                        break;
-                    case 0x05:
-                        name = "flagon";//turn on a logic switch
-                        size = 3;
-                        break;
-                    case 0x06:
-                        name = "flagoff";//turn off a logic switch
-                        size = 3;
-                        break;
-                    case 0x07:
-                        name = "checkentityinarea";
-                        size = 8;
-                        break;
-
-                    case 0x09:
-                        name = "setdir";//set direction
-                        size = 2;
-                        break;
-                    case 0x0a:
-                        name = "reverse";//switch directions, used for paceing npcs
-                        size = 1;
-                        break;
-
-                    case 0x0d:
-                        name = "dialog";//show dialog
-                        size = 3;
-                        break;
-
-                    case 0x10:
-                        name = "losecontrol";
-                        size = 1;
-                        break;
-                    case 0x11:
-                        name = "gaincontrol";
-                        size = 1;
-                        break;
-
-                    case 0x16:
-                        name = "highgravity";//fall as normal
-                        size = 1;
-                        break;
-                    case 0x17:
-                        name = "lowgravity";//used for climbing ladders and flying
-                        size = 1;
-                        break;
-
-                    case 0x19:
-                        name = "deactivate?";
-                        size = 1;
-                        break;
-                    case 0x1a:
-                        name = "setanim";//set animation
-                        size = 2;
-                        break;
-
-                    //CURRENT IMPLEMENTATION PROGRESS
-                    case 0x1b:
-                        name = "fly"; //stop flying 0x0000   flying down 0xff7f     flying foward and up  0x0380
-                        size = 3;
-                        break;
-
-                    case 0x1e:
-                        name = "walk2";//collision blocks/pauses the walk
-                        size = 3;
-                        break;
-                    case 0x1f:
-                        name = "walk";//collision ends the walk
-                        size = 3;
-                        break;
-
-                    case 0x27:
-                        name = "faceplayer";
-                        size = 1;
-                        break;
-
-                    case 0x2d:
-                        name = "activateentity";//look into this event to study entity type
-                        size = 2;
-                        break;
-                    case 0x2e:
-                        name = "hide";
-                        size = 2;
-                        break;
-                    case 0x2f:
-                        name = "checkmovingindir";
-                        size = 4;
-                        break;
-                    case 0x30:
-                        name = "ifnot";//if a logic switch is on
-                        size = 5;
-                        break;
-                    case 0x31:
-                        name = "if";//if a logic switch is not on
-                        size = 5;
-                        break;
-
-                    case 0x33:
-                        name = "checkvars";
-                        size = 9;
-                        break;
-
-                    case 0x36:
-                        name = "until";//block until a logic switch is on
-                        size = 3;
-                        break;
-                    case 0x37:
-                        name = "wait";//waits for the specified time to pass
-                        size = 2;
-                        break;
-                    case 0x38:
-                        name = "registersomething?";
-                        size = 5;
-                        break;
-
-                    case 0x3b:
-                        name = "checkplayerinarea";
-                        size = 7;
-                        break;
-
-                    case 0x44:
-                        name = "waitdialogchoice";
-                        size = 1;
-                        break;
-
-                    case 0x49:
-                        name = "restart";//seeks back to the beginning of event program
-                        size = 1;
-                        break;
-
-                    case 0x4b:
-                        name = "iffalserestart";
-                        size = 1;
-                        break;
-
-                    case 0x51:
-                        name = "getdialogchoice";
-                        size = 1;
-                        break;
-
-                    case 0x54:
-                        name = "setwalkable";
-                        size = 5;
-                        break;
-                    case 0x55:
-                        name = "setunwalkable";
-                        size = 5;
-                        break;
-
-                    case 0x5a:
-                        name = "turnentity";
-                        size = 3;
-                        break;
-                    case 0x5b:
-                        name = "turn";//also has other flags related to on ground or climbing, etc
-                        size = 4;
-                        break;
-
-                    case 0x62:
-                        name = "setentitysomething?";
-                        size = 4;
-                        break;
-                    case 0x63:
-                        name = "setentitygravity";
-                        size = 4;
-                        break;
-                    case 0x64:
-                        name = "setentityposition";
-                        size = 8;
-                        break;
-
-                    case 0x67:
-                        name = "followentity";
-                        size = 2;
-                        break;
-
-                    case 0x70:
-                        name = "checksomething?";
-                        size=1;
-                        break;
-
-                    case 0x85:
-                        name = "setmaptiles";
-                        size = 7;
-                        break;
-
-                    case 0x8b:
-                        name = "spawnentity";//pulls entity to ones self and activates it at pixel offset
-                        size = 9;
-                        break;
-
-                    case 0xbd:
-                        name = "playsound";
-                        size = 3;
-                        break;
-                    
-
-                    //non-operations
-                    case 0x00:
-                        name = "break";
-                        size = 1;
-                        break;
-                    case 0xff:
-                        name = "end";
-                        size = 1;
-                        break;
-
-                    case 0x39://dialog?
-                        size = 1;
-                        break;
-                    case 0x50://dialog?
-                        size = 2;
-                        break;
-                    case 0x58:
-                        name = "directionalbranch";
-                        size = 9;
-                        break;
-                    case 0x59://dialog?
-                        size = 3;
-                        break;
-                    case 0xac://used on birds
-                        size = 4;
-                        break;
-                    default:
-                        Debug.Print("Unknown code " + b.ToString("x2"));
-                        break;
-                }
+                
+                var sicode = GetCode(b);
+                int size = sicode.size;
+                string name = sicode.name;
                 var parms = new byte[size - 1];
                 int pdex = 0;
                 while (pdex < size - 1)

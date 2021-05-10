@@ -52,7 +52,7 @@ namespace GraphicsTools
         int instOffset = 0;
         List<MIPS.Instruction> instructions = new List<MIPS.Instruction>();
         List<uint> functions = new List<uint>();
-        void loadchunk(int offset)
+        void loadchunk(int offset, bool alundraeventlist = false)
         {
             txtAddressOffset.Text = (memaddress - offset).ToString();
             this.offset = offset;
@@ -69,21 +69,43 @@ namespace GraphicsTools
             lstInstructions.Items.Clear();
             lstFunctions.Items.Clear();
             var mips = new MIPS();
-            for (int dex = 0; dex < 0x6000; dex += 4)
+            if (alundraeventlist)
             {
-                var inst = new MIPS.Instruction((uint)(instOffset + offset + dex), (uint)(data[dex] | data[dex + 1] << 8 | data[dex + 2] << 16 | (uint)data[dex + 3] << 24));
-                if (inst.cmd == "jal")
-                    functions.Add(inst.referencedAddress);
+                functions.Clear();
+                for (int dex = 0; dex <= 0x3FC; dex += 4)
+                {
+                    uint addr = (uint)(data[dex] | data[dex + 1] << 8 | data[dex + 2] << 16 | (uint)data[dex + 3] << 24);
+                    functions.Add(0xFFFFFFF & addr);
+                }
 
-                instructions.Add(inst);
-                lstInstructions.Items.Add(string.Format("{0}:  {1}", inst.address.ToString("x8"), inst.display));
+                for (int fdex=0;fdex<functions.Count;fdex++)
+                {
+                    var functaddr = functions[fdex];
+                    var sicode = Alundra.SpriteInfoEventCodes.GetCode((byte)fdex);
+
+                    string fname = $"({sicode.code.ToString("x2")}_{sicode.name}_handler)";
+
+                    lstFunctions.Items.Add("0x"+functaddr.ToString("x") + fname);
+                }
             }
-            foreach (var functaddr in functions.Distinct().OrderBy(x => x))
+            else
             {
-                string fname = "";
-                if (Alundra.DebugSymbols.FunctionNames.ContainsKey(functaddr))
-                    fname = " (" + Alundra.DebugSymbols.FunctionNames[functaddr] + ")";
-                lstFunctions.Items.Add("0x" + functaddr.ToString("x8") + fname);
+                for (int dex = 0; dex < 0x6000; dex += 4)
+                {
+                    var inst = new MIPS.Instruction((uint)(instOffset + offset + dex), (uint)(data[dex] | data[dex + 1] << 8 | data[dex + 2] << 16 | (uint)data[dex + 3] << 24));
+                    if (inst.cmd == "jal")
+                        functions.Add(inst.referencedAddress);
+
+                    instructions.Add(inst);
+                    lstInstructions.Items.Add(string.Format("{0}:  {1}", inst.address.ToString("x8"), inst.display));
+                }
+                foreach (var functaddr in functions.Distinct().OrderBy(x => x))
+                {
+                    string fname = "";
+                    if (Alundra.DebugSymbols.FunctionNames.ContainsKey(functaddr))
+                        fname = " (" + Alundra.DebugSymbols.FunctionNames[functaddr] + ")";
+                    lstFunctions.Items.Add("0x" + functaddr.ToString("x8") + fname);
+                }
             }
         }
 
@@ -186,6 +208,8 @@ namespace GraphicsTools
             offset = ParseNum(txtOffset.Text);
             loadchunk(offset);
         }
+
+        
 
         private void btnViewPal_Click(object sender, EventArgs e)
         {
@@ -501,5 +525,21 @@ namespace GraphicsTools
             return blocks;
         }
 
+        private void btnJumpFunctionList_Click(object sender, EventArgs e)
+        {
+            offset = ParseNum(txtOffset.Text);
+            loadchunk(offset, true);
+        }
+
+        private void btnAlundraEventFuncs_Click(object sender, EventArgs e)
+        {
+            lstInstructions.Width -= 100;
+            lstFunctions.Left -= 100;
+            lstFunctions.Width += 20;
+            txtFunction.Left -= 80;
+            txtFunction.Width += 10;
+            offset = 0x9b5b4;
+            loadchunk(offset, true);
+        }
     }
 }
