@@ -10,6 +10,7 @@ namespace GraphicsTools.Alundra
 
         public static string[] EntityVarOffsets = new string[GameMap.eventobject_size];
         public static Dictionary<uint, string> FunctionNames = new Dictionary<uint, string>();
+        public static Dictionary<uint, string> GlobalVariableNames = new Dictionary<uint, string>();
         public static string[] MapNames = new string[502];
 
         public static uint Adjustment = 0 + 0xdc;
@@ -40,14 +41,15 @@ namespace GraphicsTools.Alundra
 
             EntityVarOffsets[0x0] = "entityid";
 
-            EntityVarOffsets[0x28] = "refentity";
-            EntityVarOffsets[0x30] = "refxoff";
-            EntityVarOffsets[0x34] = "refyoff";
-            EntityVarOffsets[0x38] = "refzoff";
+            EntityVarOffsets[0x28] = "refentity";//platform entity
+            EntityVarOffsets[0x30] = "refxoff";//platformxoff
+            EntityVarOffsets[0x34] = "refyoff";//platformyoff
+            EntityVarOffsets[0x38] = "refzoff";//platformzoff
 
             EntityVarOffsets[0x44] = "datasbinrecord";
-            EntityVarOffsets[0x64] = "sprite";
-            EntityVarOffsets[0x6c] = "";
+            EntityVarOffsets[0x64] = "portraitsprite";
+            EntityVarOffsets[0x68] = "name";
+            EntityVarOffsets[0x6c] = "gravityflags";
 
             EntityVarOffsets[0x8c] = "targetdir";
 
@@ -57,7 +59,7 @@ namespace GraphicsTools.Alundra
             EntityVarOffsets[0xa0] = "curframe";
             EntityVarOffsets[0xa4] = "nextframe";
 
-            EntityVarOffsets[0xb8] = "zforce";
+            EntityVarOffsets[0xb8] = "zforce";//risefall speed
             EntityVarOffsets[0xbc] = "targetxforce";
             EntityVarOffsets[0xc0] = "targetyforce";
             EntityVarOffsets[0xc4] = "xforce";
@@ -114,6 +116,9 @@ namespace GraphicsTools.Alundra
             EntityVarOffsets[0x19c] = "ypos2?";
             EntityVarOffsets[0x1a0] = "zpos2?";
 
+            EntityVarOffsets[0x1b0] = "addedtossheet?";
+            EntityVarOffsets[0x1b4] = "addedtopallete?";
+
             EntityVarOffsets[0x1d4] = "";
             EntityVarOffsets[0x1d8] = "adjustedxpos";
             EntityVarOffsets[0x1dc] = "adjustedypos";
@@ -134,6 +139,8 @@ namespace GraphicsTools.Alundra
             EntityVarOffsets[0x230] = "entity(self)";
             EntityVarOffsets[0x234] = "tickprogsp";
             EntityVarOffsets[0x238] = "tickprogexp";
+
+            EntityVarOffsets[0x260] = "logicresult";
 
 
             MapNames[162] = "inoa";
@@ -210,7 +217,14 @@ namespace GraphicsTools.Alundra
             MapNames[390] = "ship captains";
             MapNames[391] = "ship night";
             MapNames[392] = "ship int";
-    }
+
+            GlobalVariableNames.Clear();
+            GlobalVariableNames.Add(0x9b5b4, "eventhandlers");
+            GlobalVariableNames.Add(0x1e6118, "mapgameflags");
+            GlobalVariableNames.Add(0x1ed0d4, "globalgameflags");
+            GlobalVariableNames.Add(0x1bc498, "playerentity");
+
+        }
 
         static void NudgeAddresses()
         {

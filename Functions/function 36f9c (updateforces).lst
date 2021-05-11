@@ -212,7 +212,7 @@
 000372a8: 8e02006c lw r2,0x006c(r16)						
 000372ac: 00000000 nop
 000372b0: 30420100 andi r2,r2,0x0100
-000372b4: 14400003 bne r2,r0,0x000372c4						&& entity[6c] & 0x0100 == 0)
+000372b4: 14400003 bne r2,r0,0x000372c4						&& entity.gravityflags & 0x0100 == 0)
 000372b8: 00000000 nop									{
 000372bc: 0800dcce j 0x00037338								entity.zforce = entity.appliedzforce
 000372c0: ae0000b8 sw r0,0x00b8(r16)					}
@@ -226,7 +226,7 @@
 0x000372d8: 8e02006c lw r2,0x006c(r16)				
 000372dc: 00000000 nop
 000372e0: 30420100 andi r2,r2,0x0100
-000372e4: 10400014 beq r2,r0,0x00037338				if (entity[6c] & 0x0100 != 0)
+000372e4: 10400014 beq r2,r0,0x00037338				if (entity.gravityflags & 0x0100 != 0)
 000372e8: 00000000 nop								{
 000372ec: 3c04801f lui r4,0x801f
 000372f0: 8c84fe10 lw r4,-0x01f0(r4)					
@@ -294,7 +294,7 @@
 entity vars
 
 28
-6c
+6c	gravityflags
 
 b8	zforce
 bc	targetxforce

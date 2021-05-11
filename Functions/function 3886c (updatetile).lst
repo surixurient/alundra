@@ -43,7 +43,7 @@ fallthrough
 00038900: 8e03006c lw r3,0x006c(r16)	
 00038904: 38420001 xori r2,r2,0x0001	
 00038908: 30630100 andi r3,r3,0x0100	
-0003890c: 1060005a beq r3,r0,0x00038a78			if (entity[6c] && 0x0100 != 0) {
+0003890c: 1060005a beq r3,r0,0x00038a78			if (entity.gravityflags && 0x0100 != 0) {
 00038910: ae020144 sw r2,0x0144(r16)				entity[144] = entity.ytile < entity.zpos ? 0 : 1
 00038914: 24090e00 addiu r9,r0,0x0e00				tohit = 0x0e00
 00038918: 00004021 addu r8,r0,r0					

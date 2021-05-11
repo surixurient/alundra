@@ -931,13 +931,16 @@ namespace GraphicsTools.Alundra
                     name = "checkentityinarea";
                     size = 8;
                     break;
-
+                case 0x08:
+                    name = "turn";//turn direction
+                    size = 2;
+                    break;
                 case 0x09:
                     name = "setdir";//set direction
                     size = 2;
                     break;
                 case 0x0a:
-                    name = "reverse";//switch directions, used for paceing npcs
+                    name = "reverse";//switch direction, used for paceing npcs
                     size = 1;
                     break;
 
@@ -1015,7 +1018,11 @@ namespace GraphicsTools.Alundra
                     break;
 
                 case 0x33:
-                    name = "checkvars";
+                    name = "checkflagson";
+                    size = 9;
+                    break;
+                case 0x34:
+                    name = "checkflagsoff";
                     size = 9;
                     break;
 

@@ -126,6 +126,10 @@ namespace alundramultitool
                             cmd = "slt";
                             display = string.Format(threevalformat, "slt", srd, srs, srt);
                             break;
+                        case 0x2b://set on less than unsigned
+                            cmd = "sltu";
+                            display = string.Format(threevalformat, "slt", srd, srs, srt);
+                            break;
                         case 0x0://shift left logical immediate
                             cmd = "sll";
                             display = string.Format(threevalformat, "sll", srd, srt, shamt);
@@ -383,7 +387,7 @@ namespace alundramultitool
                 switch (Instruction.cmd)
                 {
                     case "beq":
-                        if (Comp2 == "0" && previnst != null && previnst.rd == Instruction.rs && previnst.cmd == "slt")
+                        if (Comp2 == "0" && previnst != null && previnst.rd == Instruction.rs && (previnst.cmd == "slt" || previnst.cmd == "sltu"))
                         {
                             Comp1 = GetRegister(previnst.rs);
                             Comp2 = GetRegister(previnst.rt);

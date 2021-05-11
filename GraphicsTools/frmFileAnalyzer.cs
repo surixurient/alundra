@@ -319,6 +319,8 @@ namespace GraphicsTools
 
             var fnames = Alundra.DebugSymbols.FunctionNames;
             var evars = Alundra.DebugSymbols.EntityVarOffsets;
+            var globalvars = Alundra.DebugSymbols.GlobalVariableNames;
+
             int indentlevel = 0;
             int codestart = 40;
             foreach (var block in blocks)
@@ -354,23 +356,57 @@ namespace GraphicsTools
                             case "lw":
                                 if (inst.rs != 29)//if not local variable declaration
                                 {
+                                    bool nudgewierdness = false;
+                                    if (inst.rt == 16 || inst.rs == 16)
+                                        nudgewierdness = true;
+                                    if (nudgewierdness)
+                                        inst.immediate += 0x134;
                                     //assume entity struct
                                     if (inst.immediate > 0 && inst.immediate < evars.Length)
-                                    {
+                                    { 
+                                        
                                         if (!string.IsNullOrEmpty(evars[inst.immediate]))
                                         {
+                                           
                                             if (inst.cmd == "lw")
                                                 ccode = MIPS.GetRegister(inst.rt) + " = " + MIPS.GetRegister(inst.rs) + "." + evars[inst.immediate];
                                             else if (inst.cmd == "sw")
                                                 ccode = MIPS.GetRegister(inst.rs) + "." + evars[inst.immediate] + " = " + MIPS.GetRegister(inst.rt);
+                                            if (nudgewierdness)
+                                                inst.immediate -= 0x134;
                                             break;
                                         }
+                                        
                                     }
                                     if (inst.cmd == "lw")
                                         ccode = MIPS.GetRegister(inst.rt) + " = " + MIPS.GetRegister(inst.rs) + "[" + inst.immediate.ToString("x") + "]";
                                     else if (inst.cmd == "sw")
                                         ccode = MIPS.GetRegister(inst.rs) + "[" + inst.immediate.ToString("x") + "]" + " = " + MIPS.GetRegister(inst.rt);
+                                    if (nudgewierdness)
+                                        inst.immediate -= 0x134;
                                 }
+                                break;
+                            case "addiu":
+                                //get prev lui
+                                var mdex = block.Instructions.IndexOf(inst);
+                                uint addr = inst.immediateu;
+                                var reg = inst.rs;
+                                for (int dex = mdex-1;mdex>=dex-3 && dex >=0;dex--)
+                                {
+                                    var binst = block.Instructions[dex];
+                                    if (binst.cmd == "lui" && binst.rt == reg)
+                                    {
+                                        uint fulladdr = (uint)((UInt32)(((uint)binst.immediate & 0xff) << 16) | addr);
+
+                                        if (globalvars.ContainsKey(fulladdr))
+                                            ccode = "//" + globalvars[fulladdr];
+                                        else
+                                            ccode = "//0x" + fulladdr.ToString("x");
+                                        break;
+                                    }
+                                }
+                                
+                                //get prev
                                 break;
                         }
                     }

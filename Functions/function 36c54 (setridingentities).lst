@@ -13,7 +13,7 @@
 00036c80: 8cc2006c lw r2,0x006c(r6)				
 00036c84: 24030100 addiu r3,r0,0x0100
 00036c88: 30424100 andi r2,r2,0x4100
-00036c8c: 1443003c bne r2,r3,0x00036d80			if (entity[6c] & 0x4100 != 0x0100)
+00036c8c: 1443003c bne r2,r3,0x00036d80			if (entity.gravityflags & 0x4100 != 0x0100)
 00036c90: 00000000 nop								continue;
 00036c94: 8cc901d8 lw r9,0x01d8(r6)				
 00036c98: 8cc301f0 lw r3,0x01f0(r6)				

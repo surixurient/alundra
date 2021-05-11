@@ -16,7 +16,7 @@
 00037f68: afb10054 sw r17,0x0054(r29)   lvar_15 = r17
 00037f6c: 16020004 bne r16,r2,0x00037f80
 00037f70: afa70020 sw r7,0x0020(r29)    movefunc = 0x80037bcc//movenonplayer
-                                        if(entity == 0x801bc498)//player?
+                                        if(entity == player)
 00037f74: 3c078003 lui r7, 0x8003       {
 00037f78: 24e77c70 addiu r7,r7,0x7c70   
 00037f7c: afa70020 sw r7,0x0020(r29)    	movefunc = 0x80037c70//moveplayer
@@ -77,7 +77,7 @@
 00038038: 30630100 andi r3,r3,0x0100        
 0003803c: 10600031 beq r3,r0,0x00038104     
 00038040: ae060138 sw r6,0x0138(r16)        entity.zcollision = collision
-                                            if(entity[6c] && 0x100 != 0
+                                            if(entity.gravityflags && 0x100 != 0
 00038044: 8e0200b8 lw r2,0x00b8(r16)        
 00038048: 00000000 nop                      
 0003804c: 1440002d bne r2,r0,0x00038104     
@@ -209,7 +209,7 @@
 000381c0: 30422000 andi r2,r2,0x2000      
 000381c4: 144000e0 bne r2,r0,0x00038548   
 000381c8: 00000000 nop                    
-                                          if(entity[6c] & 0x2000 == 0)
+                                          if(entity.gravityflags & 0x2000 == 0)
 000381cc: 168000df bne r20,r0,0x0003854c  
 000381d0: 24020001 addiu r2,r0,0x0001     
                                           if(collidedentity == 0)
