@@ -357,8 +357,8 @@ namespace GraphicsTools
                                 if (inst.rs != 29)//if not local variable declaration
                                 {
                                     bool nudgewierdness = false;
-                                    if (inst.rt == 16 || inst.rs == 16)
-                                        nudgewierdness = true;
+                                    //if (inst.rt == 16 || inst.rs == 16)
+                                    //    nudgewierdness = true;
                                     if (nudgewierdness)
                                         inst.immediate += 0x134;
                                     //assume entity struct

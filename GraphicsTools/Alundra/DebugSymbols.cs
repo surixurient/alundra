@@ -50,14 +50,16 @@ namespace GraphicsTools.Alundra
             EntityVarOffsets[0x64] = "portraitsprite";
             EntityVarOffsets[0x68] = "name";
             EntityVarOffsets[0x6c] = "gravityflags";
-
+            EntityVarOffsets[0x88] = "targetanim";
             EntityVarOffsets[0x8c] = "targetdir";
+            EntityVarOffsets[0x90] = "curanim";
 
             EntityVarOffsets[0x94] = "dir";
             EntityVarOffsets[0x98] = "framedex";
             EntityVarOffsets[0x9c] = "animset";
             EntityVarOffsets[0xa0] = "curframe";
             EntityVarOffsets[0xa4] = "nextframe";
+            EntityVarOffsets[0xa8] = "nextframedelay";
 
             EntityVarOffsets[0xb8] = "zforce";//risefall speed
             EntityVarOffsets[0xbc] = "targetxforce";

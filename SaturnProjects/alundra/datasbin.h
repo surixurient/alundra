@@ -211,7 +211,7 @@ typedef struct packed DBSprite{
 	//Uint8 unknown[16];
 	Uint8 u1;
 	Uint8 gravityandcanpickup;
-	Uint8 shadowtype;
+	Uint8 portraitandshadowtype;
 	Uint8 u4;
 	Uint8 throwtype;
 	Uint8 u6;

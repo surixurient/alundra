@@ -60,6 +60,7 @@ typedef struct packed SpriteInstance
 	Uint8		canstack;
 	Uint8		canthrow;
 	Uint8		shadowtype;
+	Uint8		hasportrait;
 	DBSprite *	breakanim;
 	Uint8 *		breaksound;
 	Uint8 *		contents;//object contents must be a new sector, perhaps the one before dbsprites

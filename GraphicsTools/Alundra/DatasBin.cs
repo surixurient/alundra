@@ -498,6 +498,17 @@ namespace GraphicsTools.Alundra
             return anim;
         }
 
+        public SIImageSet GetPortraitImageset(BinaryReader br)
+        {
+            long savepos = br.BaseStream.Position;
+            var imagesetpointer = 0;//(its the first one)
+            br.BaseStream.Position = header.binoffset + header.framespointer + 0;
+            var imageset = new SIImageSet(br, header.sector5id << 16 | imagesetpointer, header.spriteinfomemaddr + header.framespointer + imagesetpointer, true);
+
+            br.BaseStream.Position = savepos;
+            return imageset;
+        }
+
         
         public SpriteTableHeader header;
         public SIAnimSet[] animsets;
@@ -557,7 +568,7 @@ namespace GraphicsTools.Alundra
             br.BaseStream.Position -= 16;
             u1 = br.ReadByte();
             canpickup = br.ReadByte();
-            shadowtype = br.ReadByte();
+            flags_portrait_shadowtype = br.ReadByte();
             u4 = br.ReadByte();
             throwtype = br.ReadByte();
             u6 = br.ReadByte();
@@ -585,7 +596,7 @@ namespace GraphicsTools.Alundra
 
         public byte u1;
         public byte canpickup;
-        public byte shadowtype;
+        public byte flags_portrait_shadowtype;
         public byte u4;
         public byte throwtype;
         public byte u6;
@@ -664,12 +675,14 @@ namespace GraphicsTools.Alundra
 
     public class SIImageSet
     {
-        public SIImageSet(BinaryReader br, int imagesetid, int memaddr)
+        public SIImageSet(BinaryReader br, int imagesetid, int memaddr, bool isportrait = false)
         {
             this.memaddr = memaddr;
             this.imagesetid = imagesetid;
             unknown = br.ReadByte();//palette?
             numimages = br.ReadByte();
+            if (isportrait)
+                numimages = 1;
             images = new SIImage[numimages];
             for (int dex = 0; dex < numimages; dex++)
             {

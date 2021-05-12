@@ -60,11 +60,11 @@
 00042ba8: 10620024 beq r3,r2,0x00042c3c 
 00042bac: 00000000 nop                  
 												if
-00042bb0: 8e42026c lw r2,0x026c(r18)    		r2 = entity[26c]
-00042bb4: 8e430270 lw r3,0x0270(r18)    		r3 = entity[270]
-00042bb8: ae420088 sw r2,0x0088(r18)    		entity[88] = r2
+00042bb0: 8e42026c lw r2,0x026c(r18)    		
+00042bb4: 8e430270 lw r3,0x0270(r18)    		
+00042bb8: ae420088 sw r2,0x0088(r18)    		entity.targetanim = entity[26c]
 00042bbc: 08010b0f j 0x00042c3c         
-00042bc0: ae43008c sw r3,0x008c(r18)    		entity.targetdir = r3
+00042bc0: ae43008c sw r3,0x008c(r18)    		entity.targetdir = entity[270]
 												else
 00042bc4: 3c01801b lui r1, 0x801b       
 00042bc8: ac20c570 sw r0,0xc570(r1)     		r1[ffffc570] = r0
@@ -81,10 +81,10 @@
 00042bf4: 14620006 bne r3,r2,0x00042c10 	
 00042bf8: 02402021 addu r4,r18,r0       	
 												if
-00042bfc: 8e420088 lw r2,0x0088(r18)    		r2 = entity[88]
-00042c00: 8e43008c lw r3,0x008c(r18)    		r3 = entity.targetdir
-00042c04: ae42026c sw r2,0x026c(r18)    		entity[26c] = r2
-00042c08: ae430270 sw r3,0x0270(r18)    		entity[270] = r3
+00042bfc: 8e420088 lw r2,0x0088(r18)    		
+00042c00: 8e43008c lw r3,0x008c(r18)    		
+00042c04: ae42026c sw r2,0x026c(r18)    		entity[26c] = entity.targetanim
+00042c08: ae430270 sw r3,0x0270(r18)    		entity[270] = entity.targetdir
 											}
 											
 0x00042c0c: 02402021 addu r4,r18,r0     	r4 = entityl

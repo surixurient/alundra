@@ -832,7 +832,7 @@ namespace GraphicsTools.Alundra
                 lblSector5Info.Text = string.Join(",", selectedSector5.header.ubuff.Select(x => x.ToString("x2")));
             }
             lstSector5Animations.SelectedIndex = 0;
-
+            pctPortrait.Refresh();
         }
 
         int curframe;
@@ -1218,13 +1218,28 @@ namespace GraphicsTools.Alundra
             }
         }
 
-        
+        private void pctPortrait_Paint(object sender, PaintEventArgs e)
+        {
+            try
+            {
+                e.Graphics.Clear(Color.Black);
 
-        
-        
+                if (selectedSector5 != null)
+                {
+                    if ((selectedSector5.header.flags_portrait_shadowtype & 0x80) == 0x80)
+                    {
+                        var br = datasBin.OpenBin();
+                        var portraitset = selectedSector5.GetPortraitImageset(br);
+                        br.Close();
+                        var portraitbmp = selectedGame.GenerateSpriteBitmap(portraitset.images[0], selectedGame.spriteinfo.palettes[portraitset.images[0].palette & 0x1f]);
+                        e.Graphics.DrawImage(portraitbmp, 0, 0);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
 
-        
-
-        
+            }
+        }
     }
 }

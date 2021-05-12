@@ -198,6 +198,7 @@
             this.lblAnimSetAddr = new System.Windows.Forms.Label();
             this.lblFrameAddr = new System.Windows.Forms.Label();
             this.lblImgAddr = new System.Windows.Forms.Label();
+            this.pctPortrait = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pctMapPalettes)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctTilesheet)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctSpritesheet)).BeginInit();
@@ -207,6 +208,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pctImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctFrame)).BeginInit();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pctPortrait)).BeginInit();
             this.SuspendLayout();
             // 
             // lstGameMaps
@@ -214,7 +216,7 @@
             this.lstGameMaps.FormattingEnabled = true;
             this.lstGameMaps.ItemHeight = 16;
             this.lstGameMaps.Location = new System.Drawing.Point(17, 25);
-            this.lstGameMaps.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.lstGameMaps.Margin = new System.Windows.Forms.Padding(4);
             this.lstGameMaps.Name = "lstGameMaps";
             this.lstGameMaps.Size = new System.Drawing.Size(136, 644);
             this.lstGameMaps.TabIndex = 0;
@@ -225,7 +227,7 @@
             this.lstMapPalettes.FormattingEnabled = true;
             this.lstMapPalettes.ItemHeight = 16;
             this.lstMapPalettes.Location = new System.Drawing.Point(163, 25);
-            this.lstMapPalettes.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.lstMapPalettes.Margin = new System.Windows.Forms.Padding(4);
             this.lstMapPalettes.Name = "lstMapPalettes";
             this.lstMapPalettes.Size = new System.Drawing.Size(93, 148);
             this.lstMapPalettes.TabIndex = 1;
@@ -234,7 +236,7 @@
             // pctMapPalettes
             // 
             this.pctMapPalettes.Location = new System.Drawing.Point(265, 25);
-            this.pctMapPalettes.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pctMapPalettes.Margin = new System.Windows.Forms.Padding(4);
             this.pctMapPalettes.Name = "pctMapPalettes";
             this.pctMapPalettes.Size = new System.Drawing.Size(123, 149);
             this.pctMapPalettes.TabIndex = 2;
@@ -248,7 +250,7 @@
             this.lstStringTable.HorizontalScrollbar = true;
             this.lstStringTable.ItemHeight = 16;
             this.lstStringTable.Location = new System.Drawing.Point(629, 25);
-            this.lstStringTable.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.lstStringTable.Margin = new System.Windows.Forms.Padding(4);
             this.lstStringTable.Name = "lstStringTable";
             this.lstStringTable.Size = new System.Drawing.Size(561, 148);
             this.lstStringTable.TabIndex = 3;
@@ -256,7 +258,7 @@
             // pctTilesheet
             // 
             this.pctTilesheet.Location = new System.Drawing.Point(163, 212);
-            this.pctTilesheet.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pctTilesheet.Margin = new System.Windows.Forms.Padding(4);
             this.pctTilesheet.Name = "pctTilesheet";
             this.pctTilesheet.Size = new System.Drawing.Size(420, 277);
             this.pctTilesheet.TabIndex = 4;
@@ -281,7 +283,7 @@
             // pctSpritesheet
             // 
             this.pctSpritesheet.Location = new System.Drawing.Point(629, 212);
-            this.pctSpritesheet.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pctSpritesheet.Margin = new System.Windows.Forms.Padding(4);
             this.pctSpritesheet.Name = "pctSpritesheet";
             this.pctSpritesheet.Size = new System.Drawing.Size(453, 277);
             this.pctSpritesheet.TabIndex = 14;
@@ -292,7 +294,7 @@
             this.lstSpritePalettes.FormattingEnabled = true;
             this.lstSpritePalettes.ItemHeight = 16;
             this.lstSpritePalettes.Location = new System.Drawing.Point(396, 25);
-            this.lstSpritePalettes.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.lstSpritePalettes.Margin = new System.Windows.Forms.Padding(4);
             this.lstSpritePalettes.Name = "lstSpritePalettes";
             this.lstSpritePalettes.Size = new System.Drawing.Size(93, 148);
             this.lstSpritePalettes.TabIndex = 16;
@@ -301,7 +303,7 @@
             // pctSpritePalettes
             // 
             this.pctSpritePalettes.Location = new System.Drawing.Point(499, 25);
-            this.pctSpritePalettes.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pctSpritePalettes.Margin = new System.Windows.Forms.Padding(4);
             this.pctSpritePalettes.Name = "pctSpritePalettes";
             this.pctSpritePalettes.Size = new System.Drawing.Size(123, 149);
             this.pctSpritePalettes.TabIndex = 17;
@@ -362,7 +364,7 @@
             // btnAnalyzeInfo
             // 
             this.btnAnalyzeInfo.Location = new System.Drawing.Point(1231, 212);
-            this.btnAnalyzeInfo.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnAnalyzeInfo.Margin = new System.Windows.Forms.Padding(4);
             this.btnAnalyzeInfo.Name = "btnAnalyzeInfo";
             this.btnAnalyzeInfo.Size = new System.Drawing.Size(68, 33);
             this.btnAnalyzeInfo.TabIndex = 23;
@@ -373,7 +375,7 @@
             // btnAnalyzeMap
             // 
             this.btnAnalyzeMap.Location = new System.Drawing.Point(1231, 252);
-            this.btnAnalyzeMap.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnAnalyzeMap.Margin = new System.Windows.Forms.Padding(4);
             this.btnAnalyzeMap.Name = "btnAnalyzeMap";
             this.btnAnalyzeMap.Size = new System.Drawing.Size(68, 33);
             this.btnAnalyzeMap.TabIndex = 26;
@@ -404,7 +406,7 @@
             // btnAnalyzeTiles
             // 
             this.btnAnalyzeTiles.Location = new System.Drawing.Point(1231, 334);
-            this.btnAnalyzeTiles.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnAnalyzeTiles.Margin = new System.Windows.Forms.Padding(4);
             this.btnAnalyzeTiles.Name = "btnAnalyzeTiles";
             this.btnAnalyzeTiles.Size = new System.Drawing.Size(68, 33);
             this.btnAnalyzeTiles.TabIndex = 29;
@@ -435,7 +437,7 @@
             // btnAnalyzeSInfo
             // 
             this.btnAnalyzeSInfo.Location = new System.Drawing.Point(1231, 374);
-            this.btnAnalyzeSInfo.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnAnalyzeSInfo.Margin = new System.Windows.Forms.Padding(4);
             this.btnAnalyzeSInfo.Name = "btnAnalyzeSInfo";
             this.btnAnalyzeSInfo.Size = new System.Drawing.Size(68, 33);
             this.btnAnalyzeSInfo.TabIndex = 32;
@@ -466,7 +468,7 @@
             // btnAnalyzeSprites
             // 
             this.btnAnalyzeSprites.Location = new System.Drawing.Point(1231, 415);
-            this.btnAnalyzeSprites.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnAnalyzeSprites.Margin = new System.Windows.Forms.Padding(4);
             this.btnAnalyzeSprites.Name = "btnAnalyzeSprites";
             this.btnAnalyzeSprites.Size = new System.Drawing.Size(68, 33);
             this.btnAnalyzeSprites.TabIndex = 35;
@@ -497,7 +499,7 @@
             // btnAnalyzeScroll
             // 
             this.btnAnalyzeScroll.Location = new System.Drawing.Point(1231, 455);
-            this.btnAnalyzeScroll.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnAnalyzeScroll.Margin = new System.Windows.Forms.Padding(4);
             this.btnAnalyzeScroll.Name = "btnAnalyzeScroll";
             this.btnAnalyzeScroll.Size = new System.Drawing.Size(68, 33);
             this.btnAnalyzeScroll.TabIndex = 38;
@@ -528,7 +530,7 @@
             // btnanalyzeStrings
             // 
             this.btnanalyzeStrings.Location = new System.Drawing.Point(1231, 496);
-            this.btnanalyzeStrings.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnanalyzeStrings.Margin = new System.Windows.Forms.Padding(4);
             this.btnanalyzeStrings.Name = "btnanalyzeStrings";
             this.btnanalyzeStrings.Size = new System.Drawing.Size(68, 33);
             this.btnanalyzeStrings.TabIndex = 41;
@@ -559,7 +561,7 @@
             // pctMap
             // 
             this.pctMap.Location = new System.Drawing.Point(163, 519);
-            this.pctMap.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pctMap.Margin = new System.Windows.Forms.Padding(4);
             this.pctMap.Name = "pctMap";
             this.pctMap.Size = new System.Drawing.Size(853, 434);
             this.pctMap.TabIndex = 42;
@@ -588,7 +590,7 @@
             // btnAnalyzeWallTiles
             // 
             this.btnAnalyzeWallTiles.Location = new System.Drawing.Point(1231, 293);
-            this.btnAnalyzeWallTiles.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnAnalyzeWallTiles.Margin = new System.Windows.Forms.Padding(4);
             this.btnAnalyzeWallTiles.Name = "btnAnalyzeWallTiles";
             this.btnAnalyzeWallTiles.Size = new System.Drawing.Size(68, 33);
             this.btnAnalyzeWallTiles.TabIndex = 47;
@@ -622,7 +624,7 @@
             this.lstPortals.HorizontalScrollbar = true;
             this.lstPortals.ItemHeight = 16;
             this.lstPortals.Location = new System.Drawing.Point(1071, 549);
-            this.lstPortals.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.lstPortals.Margin = new System.Windows.Forms.Padding(4);
             this.lstPortals.Name = "lstPortals";
             this.lstPortals.Size = new System.Drawing.Size(117, 404);
             this.lstPortals.TabIndex = 48;
@@ -851,7 +853,7 @@
             // btnPortal
             // 
             this.btnPortal.Location = new System.Drawing.Point(1217, 697);
-            this.btnPortal.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnPortal.Margin = new System.Windows.Forms.Padding(4);
             this.btnPortal.Name = "btnPortal";
             this.btnPortal.Size = new System.Drawing.Size(96, 27);
             this.btnPortal.TabIndex = 71;
@@ -886,7 +888,7 @@
             this.columnHeader12});
             this.lsvEntities.HideSelection = false;
             this.lsvEntities.Location = new System.Drawing.Point(1201, 25);
-            this.lsvEntities.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.lsvEntities.Margin = new System.Windows.Forms.Padding(4);
             this.lsvEntities.MultiSelect = false;
             this.lsvEntities.Name = "lsvEntities";
             this.lsvEntities.Size = new System.Drawing.Size(804, 148);
@@ -1179,7 +1181,7 @@
             this.columnHeader21});
             this.lsvSector4.HideSelection = false;
             this.lsvSector4.Location = new System.Drawing.Point(1367, 415);
-            this.lsvSector4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.lsvSector4.Margin = new System.Windows.Forms.Padding(4);
             this.lsvSector4.MultiSelect = false;
             this.lsvSector4.Name = "lsvSector4";
             this.lsvSector4.Size = new System.Drawing.Size(609, 148);
@@ -1249,7 +1251,7 @@
             this.lstSector5.HorizontalScrollbar = true;
             this.lstSector5.ItemHeight = 16;
             this.lstSector5.Location = new System.Drawing.Point(1365, 588);
-            this.lstSector5.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.lstSector5.Margin = new System.Windows.Forms.Padding(4);
             this.lstSector5.Name = "lstSector5";
             this.lstSector5.Size = new System.Drawing.Size(127, 68);
             this.lstSector5.TabIndex = 97;
@@ -1271,7 +1273,7 @@
             this.lstSector5Animations.HorizontalScrollbar = true;
             this.lstSector5Animations.ItemHeight = 16;
             this.lstSector5Animations.Location = new System.Drawing.Point(1364, 716);
-            this.lstSector5Animations.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.lstSector5Animations.Margin = new System.Windows.Forms.Padding(4);
             this.lstSector5Animations.Name = "lstSector5Animations";
             this.lstSector5Animations.Size = new System.Drawing.Size(128, 132);
             this.lstSector5Animations.TabIndex = 99;
@@ -1280,7 +1282,7 @@
             // pctAnim
             // 
             this.pctAnim.Location = new System.Drawing.Point(1501, 857);
-            this.pctAnim.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pctAnim.Margin = new System.Windows.Forms.Padding(4);
             this.pctAnim.Name = "pctAnim";
             this.pctAnim.Size = new System.Drawing.Size(121, 105);
             this.pctAnim.TabIndex = 101;
@@ -1530,7 +1532,7 @@
             // pctImage
             // 
             this.pctImage.Location = new System.Drawing.Point(1820, 857);
-            this.pctImage.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pctImage.Margin = new System.Windows.Forms.Padding(4);
             this.pctImage.Name = "pctImage";
             this.pctImage.Size = new System.Drawing.Size(164, 105);
             this.pctImage.TabIndex = 126;
@@ -1543,7 +1545,7 @@
             this.lstSector5Frames.HorizontalScrollbar = true;
             this.lstSector5Frames.ItemHeight = 16;
             this.lstSector5Frames.Location = new System.Drawing.Point(1655, 716);
-            this.lstSector5Frames.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.lstSector5Frames.Margin = new System.Windows.Forms.Padding(4);
             this.lstSector5Frames.Name = "lstSector5Frames";
             this.lstSector5Frames.Size = new System.Drawing.Size(184, 116);
             this.lstSector5Frames.TabIndex = 127;
@@ -1555,7 +1557,7 @@
             this.lstSector5Images.HorizontalScrollbar = true;
             this.lstSector5Images.ItemHeight = 16;
             this.lstSector5Images.Location = new System.Drawing.Point(1863, 716);
-            this.lstSector5Images.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.lstSector5Images.Margin = new System.Windows.Forms.Padding(4);
             this.lstSector5Images.Name = "lstSector5Images";
             this.lstSector5Images.Size = new System.Drawing.Size(120, 116);
             this.lstSector5Images.TabIndex = 129;
@@ -1564,7 +1566,7 @@
             // pctFrame
             // 
             this.pctFrame.Location = new System.Drawing.Point(1659, 857);
-            this.pctFrame.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pctFrame.Margin = new System.Windows.Forms.Padding(4);
             this.pctFrame.Name = "pctFrame";
             this.pctFrame.Size = new System.Drawing.Size(153, 105);
             this.pctFrame.TabIndex = 128;
@@ -1598,9 +1600,9 @@
             this.groupBox1.Controls.Add(this.rdoUp);
             this.groupBox1.Controls.Add(this.rdoDown);
             this.groupBox1.Location = new System.Drawing.Point(1501, 716);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox1.Size = new System.Drawing.Size(123, 114);
             this.groupBox1.TabIndex = 133;
             this.groupBox1.TabStop = false;
@@ -1610,7 +1612,7 @@
             // 
             this.rdoRight.AutoSize = true;
             this.rdoRight.Location = new System.Drawing.Point(8, 90);
-            this.rdoRight.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.rdoRight.Margin = new System.Windows.Forms.Padding(4);
             this.rdoRight.Name = "rdoRight";
             this.rdoRight.Size = new System.Drawing.Size(57, 21);
             this.rdoRight.TabIndex = 3;
@@ -1623,7 +1625,7 @@
             // 
             this.rdoLeft.AutoSize = true;
             this.rdoLeft.Location = new System.Drawing.Point(8, 65);
-            this.rdoLeft.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.rdoLeft.Margin = new System.Windows.Forms.Padding(4);
             this.rdoLeft.Name = "rdoLeft";
             this.rdoLeft.Size = new System.Drawing.Size(48, 21);
             this.rdoLeft.TabIndex = 2;
@@ -1636,7 +1638,7 @@
             // 
             this.rdoUp.AutoSize = true;
             this.rdoUp.Location = new System.Drawing.Point(8, 39);
-            this.rdoUp.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.rdoUp.Margin = new System.Windows.Forms.Padding(4);
             this.rdoUp.Name = "rdoUp";
             this.rdoUp.Size = new System.Drawing.Size(45, 21);
             this.rdoUp.TabIndex = 1;
@@ -1649,7 +1651,7 @@
             // 
             this.rdoDown.AutoSize = true;
             this.rdoDown.Location = new System.Drawing.Point(8, 16);
-            this.rdoDown.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.rdoDown.Margin = new System.Windows.Forms.Padding(4);
             this.rdoDown.Name = "rdoDown";
             this.rdoDown.Size = new System.Drawing.Size(62, 21);
             this.rdoDown.TabIndex = 0;
@@ -1672,7 +1674,7 @@
             // 
             this.chkTileXy.AutoSize = true;
             this.chkTileXy.Location = new System.Drawing.Point(20, 681);
-            this.chkTileXy.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.chkTileXy.Margin = new System.Windows.Forms.Padding(4);
             this.chkTileXy.Name = "chkTileXy";
             this.chkTileXy.Size = new System.Drawing.Size(105, 21);
             this.chkTileXy.TabIndex = 135;
@@ -1743,7 +1745,7 @@
             // btnSector1cCmds
             // 
             this.btnSector1cCmds.Location = new System.Drawing.Point(1312, 261);
-            this.btnSector1cCmds.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSector1cCmds.Margin = new System.Windows.Forms.Padding(4);
             this.btnSector1cCmds.Name = "btnSector1cCmds";
             this.btnSector1cCmds.Size = new System.Drawing.Size(53, 33);
             this.btnSector1cCmds.TabIndex = 141;
@@ -1754,7 +1756,7 @@
             // btnSector1bCmds
             // 
             this.btnSector1bCmds.Location = new System.Drawing.Point(1312, 231);
-            this.btnSector1bCmds.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSector1bCmds.Margin = new System.Windows.Forms.Padding(4);
             this.btnSector1bCmds.Name = "btnSector1bCmds";
             this.btnSector1bCmds.Size = new System.Drawing.Size(53, 33);
             this.btnSector1bCmds.TabIndex = 142;
@@ -1765,7 +1767,7 @@
             // btnSector1aCmds
             // 
             this.btnSector1aCmds.Location = new System.Drawing.Point(1312, 203);
-            this.btnSector1aCmds.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSector1aCmds.Margin = new System.Windows.Forms.Padding(4);
             this.btnSector1aCmds.Name = "btnSector1aCmds";
             this.btnSector1aCmds.Size = new System.Drawing.Size(53, 33);
             this.btnSector1aCmds.TabIndex = 143;
@@ -1776,7 +1778,7 @@
             // btnSector1dCmds
             // 
             this.btnSector1dCmds.Location = new System.Drawing.Point(1312, 293);
-            this.btnSector1dCmds.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSector1dCmds.Margin = new System.Windows.Forms.Padding(4);
             this.btnSector1dCmds.Name = "btnSector1dCmds";
             this.btnSector1dCmds.Size = new System.Drawing.Size(53, 33);
             this.btnSector1dCmds.TabIndex = 145;
@@ -1786,7 +1788,7 @@
             // btnSector1eCmds
             // 
             this.btnSector1eCmds.Location = new System.Drawing.Point(1312, 321);
-            this.btnSector1eCmds.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSector1eCmds.Margin = new System.Windows.Forms.Padding(4);
             this.btnSector1eCmds.Name = "btnSector1eCmds";
             this.btnSector1eCmds.Size = new System.Drawing.Size(53, 33);
             this.btnSector1eCmds.TabIndex = 144;
@@ -1796,7 +1798,7 @@
             // btnSector1fCmds
             // 
             this.btnSector1fCmds.Location = new System.Drawing.Point(1312, 354);
-            this.btnSector1fCmds.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSector1fCmds.Margin = new System.Windows.Forms.Padding(4);
             this.btnSector1fCmds.Name = "btnSector1fCmds";
             this.btnSector1fCmds.Size = new System.Drawing.Size(53, 33);
             this.btnSector1fCmds.TabIndex = 147;
@@ -1807,7 +1809,7 @@
             // btnSector4Analyze
             // 
             this.btnSector4Analyze.Location = new System.Drawing.Point(1557, 383);
-            this.btnSector4Analyze.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSector4Analyze.Margin = new System.Windows.Forms.Padding(4);
             this.btnSector4Analyze.Name = "btnSector4Analyze";
             this.btnSector4Analyze.Size = new System.Drawing.Size(68, 33);
             this.btnSector4Analyze.TabIndex = 148;
@@ -1828,7 +1830,7 @@
             // btnAnalyzeEntity
             // 
             this.btnAnalyzeEntity.Location = new System.Drawing.Point(1165, 175);
-            this.btnAnalyzeEntity.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnAnalyzeEntity.Margin = new System.Windows.Forms.Padding(4);
             this.btnAnalyzeEntity.Name = "btnAnalyzeEntity";
             this.btnAnalyzeEntity.Size = new System.Drawing.Size(68, 33);
             this.btnAnalyzeEntity.TabIndex = 150;
@@ -1876,11 +1878,22 @@
             this.lblImgAddr.TabIndex = 154;
             this.lblImgAddr.Text = "000000";
             // 
+            // pctPortrait
+            // 
+            this.pctPortrait.Location = new System.Drawing.Point(1633, 588);
+            this.pctPortrait.Margin = new System.Windows.Forms.Padding(4);
+            this.pctPortrait.Name = "pctPortrait";
+            this.pctPortrait.Size = new System.Drawing.Size(64, 64);
+            this.pctPortrait.TabIndex = 155;
+            this.pctPortrait.TabStop = false;
+            this.pctPortrait.Paint += new System.Windows.Forms.PaintEventHandler(this.pctPortrait_Paint);
+            // 
             // frmAlundra
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1924, 996);
+            this.Controls.Add(this.pctPortrait);
             this.Controls.Add(this.lblImgAddr);
             this.Controls.Add(this.lblFrameAddr);
             this.Controls.Add(this.lblAnimSetAddr);
@@ -2026,7 +2039,7 @@
             this.Controls.Add(this.pctMapPalettes);
             this.Controls.Add(this.lstMapPalettes);
             this.Controls.Add(this.lstGameMaps);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "frmAlundra";
             this.Text = "frmAlundra";
             this.Load += new System.EventHandler(this.frmAlundra_Load);
@@ -2040,6 +2053,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pctFrame)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pctPortrait)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2217,5 +2231,6 @@
         private System.Windows.Forms.Label lblAnimSetAddr;
         private System.Windows.Forms.Label lblFrameAddr;
         private System.Windows.Forms.Label lblImgAddr;
+        private System.Windows.Forms.PictureBox pctPortrait;
     }
 }

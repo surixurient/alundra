@@ -282,7 +282,8 @@ int loadsprites(DBSpriteInfo * sinfo, SpriteInstance sprites[], Uint16 curtick)
 			
 			spr->gravity = spr->spr->gravityandcanpickup & 1;
 			spr->canpickup = spr->spr->gravityandcanpickup >> 1 & 1;
-			spr->shadowtype = spr->spr->shadowtype;
+			spr->shadowtype = spr->spr->portraitandshadowtype & 0x3f;//probably not this many bits
+			spr->hasportrait = spr-spr->portraitandshadowtype >> 7 & 1;
 			spr->canthrow = spr->spr->throwtype;
 			spr->canstack = spr->spr->stackable >> 4 & 1;
 
