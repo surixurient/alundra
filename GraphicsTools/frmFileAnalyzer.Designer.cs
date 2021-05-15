@@ -71,12 +71,13 @@
             this.chk24bpp = new System.Windows.Forms.CheckBox();
             this.btnJumpFunctionList = new System.Windows.Forms.Button();
             this.btnAlundraEventFuncs = new System.Windows.Forms.Button();
+            this.btnFunctionTracer = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // rtfText
             // 
             this.rtfText.Location = new System.Drawing.Point(16, 15);
-            this.rtfText.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.rtfText.Margin = new System.Windows.Forms.Padding(4);
             this.rtfText.Name = "rtfText";
             this.rtfText.Size = new System.Drawing.Size(615, 427);
             this.rtfText.TabIndex = 0;
@@ -247,7 +248,7 @@
             // btnViewImage
             // 
             this.btnViewImage.Location = new System.Drawing.Point(672, 187);
-            this.btnViewImage.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnViewImage.Margin = new System.Windows.Forms.Padding(4);
             this.btnViewImage.Name = "btnViewImage";
             this.btnViewImage.Size = new System.Drawing.Size(107, 31);
             this.btnViewImage.TabIndex = 18;
@@ -258,7 +259,7 @@
             // txtStride
             // 
             this.txtStride.Location = new System.Drawing.Point(721, 225);
-            this.txtStride.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtStride.Margin = new System.Windows.Forms.Padding(4);
             this.txtStride.Name = "txtStride";
             this.txtStride.Size = new System.Drawing.Size(56, 22);
             this.txtStride.TabIndex = 19;
@@ -267,7 +268,7 @@
             // txtWidth
             // 
             this.txtWidth.Location = new System.Drawing.Point(721, 257);
-            this.txtWidth.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtWidth.Margin = new System.Windows.Forms.Padding(4);
             this.txtWidth.Name = "txtWidth";
             this.txtWidth.Size = new System.Drawing.Size(56, 22);
             this.txtWidth.TabIndex = 20;
@@ -276,7 +277,7 @@
             // txtHeight
             // 
             this.txtHeight.Location = new System.Drawing.Point(721, 289);
-            this.txtHeight.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtHeight.Margin = new System.Windows.Forms.Padding(4);
             this.txtHeight.Name = "txtHeight";
             this.txtHeight.Size = new System.Drawing.Size(56, 22);
             this.txtHeight.TabIndex = 21;
@@ -315,7 +316,7 @@
             // txtOffset
             // 
             this.txtOffset.Location = new System.Drawing.Point(745, 10);
-            this.txtOffset.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtOffset.Margin = new System.Windows.Forms.Padding(4);
             this.txtOffset.Name = "txtOffset";
             this.txtOffset.Size = new System.Drawing.Size(56, 22);
             this.txtOffset.TabIndex = 27;
@@ -324,9 +325,9 @@
             // btnJump
             // 
             this.btnJump.Location = new System.Drawing.Point(811, 6);
-            this.btnJump.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnJump.Margin = new System.Windows.Forms.Padding(4);
             this.btnJump.Name = "btnJump";
-            this.btnJump.Size = new System.Drawing.Size(59, 31);
+            this.btnJump.Size = new System.Drawing.Size(50, 31);
             this.btnJump.TabIndex = 28;
             this.btnJump.Text = "jump";
             this.btnJump.UseVisualStyleBackColor = true;
@@ -335,7 +336,7 @@
             // btnViewPal
             // 
             this.btnViewPal.Location = new System.Drawing.Point(787, 187);
-            this.btnViewPal.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnViewPal.Margin = new System.Windows.Forms.Padding(4);
             this.btnViewPal.Name = "btnViewPal";
             this.btnViewPal.Size = new System.Drawing.Size(97, 31);
             this.btnViewPal.TabIndex = 29;
@@ -366,7 +367,7 @@
             // txtStartx
             // 
             this.txtStartx.Location = new System.Drawing.Point(721, 321);
-            this.txtStartx.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtStartx.Margin = new System.Windows.Forms.Padding(4);
             this.txtStartx.Name = "txtStartx";
             this.txtStartx.Size = new System.Drawing.Size(56, 22);
             this.txtStartx.TabIndex = 32;
@@ -375,7 +376,7 @@
             // txtStarty
             // 
             this.txtStarty.Location = new System.Drawing.Point(721, 353);
-            this.txtStarty.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtStarty.Margin = new System.Windows.Forms.Padding(4);
             this.txtStarty.Name = "txtStarty";
             this.txtStarty.Size = new System.Drawing.Size(56, 22);
             this.txtStarty.TabIndex = 33;
@@ -387,7 +388,7 @@
             this.lstInstructions.FormattingEnabled = true;
             this.lstInstructions.ItemHeight = 14;
             this.lstInstructions.Location = new System.Drawing.Point(917, 14);
-            this.lstInstructions.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.lstInstructions.Margin = new System.Windows.Forms.Padding(4);
             this.lstInstructions.Name = "lstInstructions";
             this.lstInstructions.Size = new System.Drawing.Size(399, 410);
             this.lstInstructions.TabIndex = 34;
@@ -395,7 +396,7 @@
             // txtInstructionsOffset
             // 
             this.txtInstructionsOffset.Location = new System.Drawing.Point(803, 410);
-            this.txtInstructionsOffset.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtInstructionsOffset.Margin = new System.Windows.Forms.Padding(4);
             this.txtInstructionsOffset.Name = "txtInstructionsOffset";
             this.txtInstructionsOffset.Size = new System.Drawing.Size(105, 22);
             this.txtInstructionsOffset.TabIndex = 35;
@@ -404,7 +405,7 @@
             // txtAddressOffset
             // 
             this.txtAddressOffset.Location = new System.Drawing.Point(672, 410);
-            this.txtAddressOffset.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtAddressOffset.Margin = new System.Windows.Forms.Padding(4);
             this.txtAddressOffset.Name = "txtAddressOffset";
             this.txtAddressOffset.Size = new System.Drawing.Size(105, 22);
             this.txtAddressOffset.TabIndex = 36;
@@ -413,7 +414,7 @@
             // txtSearch
             // 
             this.txtSearch.Location = new System.Drawing.Point(672, 385);
-            this.txtSearch.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtSearch.Margin = new System.Windows.Forms.Padding(4);
             this.txtSearch.Name = "txtSearch";
             this.txtSearch.Size = new System.Drawing.Size(83, 22);
             this.txtSearch.TabIndex = 37;
@@ -422,7 +423,7 @@
             // btnFindInt32
             // 
             this.btnFindInt32.Location = new System.Drawing.Point(803, 379);
-            this.btnFindInt32.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnFindInt32.Margin = new System.Windows.Forms.Padding(4);
             this.btnFindInt32.Name = "btnFindInt32";
             this.btnFindInt32.Size = new System.Drawing.Size(67, 31);
             this.btnFindInt32.TabIndex = 38;
@@ -433,7 +434,7 @@
             // txtSearchRange
             // 
             this.txtSearchRange.Location = new System.Drawing.Point(761, 385);
-            this.txtSearchRange.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtSearchRange.Margin = new System.Windows.Forms.Padding(4);
             this.txtSearchRange.Name = "txtSearchRange";
             this.txtSearchRange.Size = new System.Drawing.Size(32, 22);
             this.txtSearchRange.TabIndex = 39;
@@ -442,7 +443,7 @@
             // frmFindInt16
             // 
             this.frmFindInt16.Location = new System.Drawing.Point(803, 346);
-            this.frmFindInt16.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.frmFindInt16.Margin = new System.Windows.Forms.Padding(4);
             this.frmFindInt16.Name = "frmFindInt16";
             this.frmFindInt16.Size = new System.Drawing.Size(67, 31);
             this.frmFindInt16.TabIndex = 40;
@@ -456,7 +457,7 @@
             this.lstFunctions.FormattingEnabled = true;
             this.lstFunctions.ItemHeight = 14;
             this.lstFunctions.Location = new System.Drawing.Point(1325, 14);
-            this.lstFunctions.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.lstFunctions.Margin = new System.Windows.Forms.Padding(4);
             this.lstFunctions.Name = "lstFunctions";
             this.lstFunctions.Size = new System.Drawing.Size(213, 410);
             this.lstFunctions.TabIndex = 41;
@@ -466,7 +467,7 @@
             // 
             this.txtFunction.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtFunction.Location = new System.Drawing.Point(1548, 14);
-            this.txtFunction.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtFunction.Margin = new System.Windows.Forms.Padding(4);
             this.txtFunction.Multiline = true;
             this.txtFunction.Name = "txtFunction";
             this.txtFunction.ScrollBars = System.Windows.Forms.ScrollBars.Both;
@@ -478,7 +479,7 @@
             // 
             this.chk24bpp.AutoSize = true;
             this.chk24bpp.Location = new System.Drawing.Point(787, 229);
-            this.chk24bpp.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.chk24bpp.Margin = new System.Windows.Forms.Padding(4);
             this.chk24bpp.Name = "chk24bpp";
             this.chk24bpp.Size = new System.Drawing.Size(74, 21);
             this.chk24bpp.TabIndex = 43;
@@ -487,10 +488,10 @@
             // 
             // btnJumpFunctionList
             // 
-            this.btnJumpFunctionList.Location = new System.Drawing.Point(811, 45);
+            this.btnJumpFunctionList.Location = new System.Drawing.Point(862, 3);
             this.btnJumpFunctionList.Margin = new System.Windows.Forms.Padding(4);
             this.btnJumpFunctionList.Name = "btnJumpFunctionList";
-            this.btnJumpFunctionList.Size = new System.Drawing.Size(89, 53);
+            this.btnJumpFunctionList.Size = new System.Drawing.Size(47, 85);
             this.btnJumpFunctionList.TabIndex = 44;
             this.btnJumpFunctionList.Text = "jump to function list";
             this.btnJumpFunctionList.UseVisualStyleBackColor = true;
@@ -498,20 +499,32 @@
             // 
             // btnAlundraEventFuncs
             // 
-            this.btnAlundraEventFuncs.Location = new System.Drawing.Point(811, 106);
+            this.btnAlundraEventFuncs.Location = new System.Drawing.Point(862, 89);
             this.btnAlundraEventFuncs.Margin = new System.Windows.Forms.Padding(4);
             this.btnAlundraEventFuncs.Name = "btnAlundraEventFuncs";
-            this.btnAlundraEventFuncs.Size = new System.Drawing.Size(89, 53);
+            this.btnAlundraEventFuncs.Size = new System.Drawing.Size(47, 97);
             this.btnAlundraEventFuncs.TabIndex = 45;
             this.btnAlundraEventFuncs.Text = "alundra event funcs";
             this.btnAlundraEventFuncs.UseVisualStyleBackColor = true;
             this.btnAlundraEventFuncs.Click += new System.EventHandler(this.btnAlundraEventFuncs_Click);
             // 
+            // btnFunctionTracer
+            // 
+            this.btnFunctionTracer.Location = new System.Drawing.Point(839, 260);
+            this.btnFunctionTracer.Margin = new System.Windows.Forms.Padding(4);
+            this.btnFunctionTracer.Name = "btnFunctionTracer";
+            this.btnFunctionTracer.Size = new System.Drawing.Size(70, 46);
+            this.btnFunctionTracer.TabIndex = 46;
+            this.btnFunctionTracer.Text = "function tracer";
+            this.btnFunctionTracer.UseVisualStyleBackColor = true;
+            this.btnFunctionTracer.Click += new System.EventHandler(this.btnFunctionTracer_Click);
+            // 
             // frmFileAnalyzer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(2057, 458);
+            this.ClientSize = new System.Drawing.Size(2057, 456);
+            this.Controls.Add(this.btnFunctionTracer);
             this.Controls.Add(this.btnAlundraEventFuncs);
             this.Controls.Add(this.btnJumpFunctionList);
             this.Controls.Add(this.chk24bpp);
@@ -556,7 +569,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.rtfText);
             this.KeyPreview = true;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "frmFileAnalyzer";
             this.Text = "frmFileAnalyzer";
             this.Load += new System.EventHandler(this.frmFileAnalyzer_Load);
@@ -611,5 +624,6 @@
         private System.Windows.Forms.CheckBox chk24bpp;
         private System.Windows.Forms.Button btnJumpFunctionList;
         private System.Windows.Forms.Button btnAlundraEventFuncs;
+        private System.Windows.Forms.Button btnFunctionTracer;
     }
 }

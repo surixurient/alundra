@@ -103,7 +103,15 @@ namespace GraphicsTools
                 {
                     string fname = "";
                     if (Alundra.DebugSymbols.FunctionNames.ContainsKey(functaddr))
-                        fname = " (" + Alundra.DebugSymbols.FunctionNames[functaddr] + ")";
+                    {
+                        fname += "(";
+                        var fref = Alundra.DebugSymbols.FunctionNames[functaddr];
+                        if (!string.IsNullOrEmpty(fref.name))
+                            fname += fref.name;
+                        if (!string.IsNullOrEmpty(fref.comment))
+                            fname += "//" + fref.comment;
+                        fname += ")";
+                    }
                     lstFunctions.Items.Add("0x" + functaddr.ToString("x8") + fname);
                 }
             }
@@ -307,7 +315,7 @@ namespace GraphicsTools
                     if (inst.IsReturn)
                         exit = true;
                 }
-                var blocks = AnalyzeFunction();
+                var blocks = AnalyzeFunction(selectedFunction);
                 txtFunction.Text = PrintFunction(blocks);
 
             }
@@ -339,18 +347,26 @@ namespace GraphicsTools
                     string ccode = "";
                     if (fnames.ContainsKey(inst.address))
                     {
-                        ccode = "void " + fnames[inst.address] + "()";
+                        ccode = "void " + fnames[inst.address].name + "()";
+                        if (!string.IsNullOrEmpty(fnames[inst.address].comment))
+                            ccode += "//" + fnames[inst.address].comment;
                     }
                     else
                     {
                         switch (inst.cmd)
                         {
                             case "jal":
+                                var sname = inst.referencedAddress.ToString("x");
+                                var scomment = "";
                                 if (fnames.ContainsKey(inst.referencedAddress))
-                                    ccode = fnames[inst.referencedAddress];
-                                else
-                                    ccode = inst.referencedAddress.ToString("x");
-                                ccode += "()";
+                                {
+                                    var fref = fnames[inst.referencedAddress];
+                                    if (!string.IsNullOrEmpty(fref.name))
+                                        sname = fref.name;
+                                    if (!string.IsNullOrEmpty(fref.comment))
+                                        scomment = fref.comment;
+                                }
+                                ccode = sname + "()//" + scomment;
                                 break;
                             case "sw":
                             case "lw":
@@ -378,15 +394,50 @@ namespace GraphicsTools
                                         }
                                         
                                     }
-                                    if (inst.cmd == "lw")
-                                        ccode = MIPS.GetRegister(inst.rt) + " = " + MIPS.GetRegister(inst.rs) + "[" + inst.immediate.ToString("x") + "]";
-                                    else if (inst.cmd == "sw")
-                                        ccode = MIPS.GetRegister(inst.rs) + "[" + inst.immediate.ToString("x") + "]" + " = " + MIPS.GetRegister(inst.rt);
+
+                                    var fulladdr2 = inst.GetGlobalVariable(block);
+                                    if (fulladdr2 > 0)
+                                    {
+                                        var name2 = "0x" + fulladdr2.ToString("x");
+                                        if (globalvars.ContainsKey(fulladdr2))
+                                            name2 = globalvars[fulladdr2].name;
+                                        
+                                        if (inst.cmd == "lw")
+                                            ccode = MIPS.GetRegister(inst.rt) + " = *" + name2;
+                                        else if (inst.cmd == "sw")
+                                            ccode = "*" + name2 + " = " + MIPS.GetRegister(inst.rt);
+                                    }
+                                    else
+                                    {
+                                        if (inst.cmd == "lw")
+                                            ccode = MIPS.GetRegister(inst.rt) + " = " + MIPS.GetRegister(inst.rs) + "[" + inst.immediate.ToString("x") + "]";
+                                        else if (inst.cmd == "sw")
+                                            ccode = MIPS.GetRegister(inst.rs) + "[" + inst.immediate.ToString("x") + "]" + " = " + MIPS.GetRegister(inst.rt);    
+                                    }
                                     if (nudgewierdness)
                                         inst.immediate -= 0x134;
                                 }
                                 break;
+
                             case "addiu":
+                            case "addi":
+                            case "ori":
+                            //case "lw":
+                            //case "sw":
+                            case "lhu":
+                            case "lh":
+                            case "shu":
+                            case "sh":
+                                var fulladdr = inst.GetGlobalVariable(block);
+                                if (fulladdr != 0)
+                                {
+                                    if (globalvars.ContainsKey(fulladdr))
+                                        ccode = "//" + globalvars[fulladdr].name;
+                                    else
+                                        ccode = "//0x" + fulladdr.ToString("x");
+                                }
+                                break;
+                            /*case "addiu":
                                 //get prev lui
                                 var mdex = block.Instructions.IndexOf(inst);
                                 uint addr = inst.immediateu;
@@ -407,7 +458,7 @@ namespace GraphicsTools
                                 }
                                 
                                 //get prev
-                                break;
+                                break;*/
                         }
                     }
                     string asm = string.Format("{0}: {1} {2}", ((block.Instructions.IndexOf(inst) == 0 && block.IsJumpTarget) ? "0x" : "") + inst.address.ToString("x8"), inst.instruction.ToString("x8"), inst.display);
@@ -423,6 +474,10 @@ namespace GraphicsTools
                     if (block.EndsLoop)
                     {
                         //output nothing special, this jump is just ending a posttested loop
+                    }
+                    else if (block.BranchOperation != null)
+                    {
+                        ftext += RawIndent(codestart) + Indent(indentlevel) + block.BranchOperation.Print()  + "\r\n";
                     }
                     else
                     {
@@ -475,18 +530,18 @@ namespace GraphicsTools
             return indent;
         }
 
-        List<MIPS.CodeBlock> AnalyzeFunction()
+        static List<MIPS.CodeBlock> AnalyzeFunction(List<MIPS.Instruction> function)
         {
-            List<uint> refs = selectedFunction.Select(x => x.referencedAddress).Where(x => x != 0).ToList();
+            List<uint> refs = function.Select(x => x.referencedAddress).Where(x => x != 0).ToList();
 
 
             List<MIPS.CodeBlock> blocks = new List<MIPS.CodeBlock>();
 
             var block = new MIPS.CodeBlock();
 
-            for (int dex = 0; dex < selectedFunction.Count; dex++)
+            for (int dex = 0; dex < function.Count; dex++)
             {
-                var inst = selectedFunction[dex];
+                var inst = function[dex];
                 if (refs.Contains(inst.address))
                 {
                     if (block.Instructions.Count > 0)
@@ -503,7 +558,7 @@ namespace GraphicsTools
                     block.OutAddresses.Add(inst.address + 8);
                     block.Instructions.Add(inst);
                     dex++;
-                    inst = selectedFunction[dex];
+                    inst = function[dex];
                     block.Instructions.Add(inst);
                     blocks.Add(block);
                     block = new MIPS.CodeBlock();
@@ -513,9 +568,9 @@ namespace GraphicsTools
                     block.BlockType = MIPS.BlockType.Return;
                     block.Instructions.Add(inst);
                     dex++;
-                    if (dex < selectedFunction.Count)
+                    if (dex < function.Count)
                     {
-                        inst = selectedFunction[dex];
+                        inst = function[dex];
                         block.Instructions.Add(inst);
                     }
                     blocks.Add(block);
@@ -528,7 +583,7 @@ namespace GraphicsTools
                     block.OutAddresses.Add(inst.address + 8);
                     block.Instructions.Add(inst);
                     dex++;
-                    inst = selectedFunction[dex];
+                    inst = function[dex];
                     block.Instructions.Add(inst);
                     blocks.Add(block);
                     block = new MIPS.CodeBlock();
@@ -539,7 +594,7 @@ namespace GraphicsTools
                     block.OutAddresses.Add(inst.referencedAddress);
                     block.Instructions.Add(inst);
                     dex++;
-                    inst = selectedFunction[dex];
+                    inst = function[dex];
                     block.Instructions.Add(inst);
                     blocks.Add(block);
                     block = new MIPS.CodeBlock();
@@ -576,6 +631,242 @@ namespace GraphicsTools
             txtFunction.Width += 10;
             offset = 0x9b5b4;
             loadchunk(offset, true);
+        }
+
+
+        public class AnalyzedGlobalVariable
+        {
+            public AnalyzedGlobalVariable (uint addr, List<AnalyzedGlobalVariable> varlist)
+            {
+                varlist.Add(this);
+                var globalvars = Alundra.DebugSymbols.GlobalVariableNames;
+                address = addr;
+                if (globalvars.ContainsKey(address))
+                    name = globalvars[address].name;
+            }
+            public uint address;
+            public string name;
+            public string notes;
+            public List<AnalyzedFunction> functions = new List<AnalyzedFunction>();
+
+            public string DisplayName
+            {
+                get
+                {
+                    if (!string.IsNullOrEmpty(name))
+                        return name + "(" + address.ToString("x") + ")";
+                    return address.ToString("x");
+                }
+            }
+
+            public override string ToString()
+            {
+                return DisplayName + "[" + functions.Count + "]";
+            }
+        }
+        public class AnalyzedFunction
+        {
+            public AnalyzedFunction(uint addr, List<AnalyzedFunction> funclist, List<AnalyzedGlobalVariable> varlist, string datafile, Func<List<MIPS.Instruction>,List<MIPS.CodeBlock>> AnalyzeFunction, uint endaddr = 0)
+            {
+                var fnames = Alundra.DebugSymbols.FunctionNames;
+                var evars = Alundra.DebugSymbols.EntityVarOffsets;
+                var globalvars = Alundra.DebugSymbols.GlobalVariableNames;
+                int chunklength = 1024 * 1024;
+
+                funclist.Add(this);
+                address = addr;
+                if (fnames.ContainsKey(address))
+                {
+                    name = fnames[address].name;
+                    notes = fnames[address].comment;
+                }
+
+                
+
+                var fdat = new byte[chunklength];
+                var stream = File.OpenRead(datafile);
+                stream.Position = address;
+                int numread = stream.Read(fdat, 0, chunklength);
+                stream.Close();
+
+                bool exit = false;
+
+                var function = new List<MIPS.Instruction>();
+
+                for (int dex = 0; dex < 10000; dex += 4)
+                {
+                    var inst = new MIPS.Instruction((uint)(address + dex), (uint)(fdat[dex] | fdat[dex + 1] << 8 | fdat[dex + 2] << 16 | (uint)fdat[dex + 3] << 24));
+                    function.Add(inst);
+                    if (exit)
+                        break;
+                    if (inst.IsReturn || ( endaddr != 0 && inst.address == endaddr))
+                        exit = true;
+                }
+                length = (int)(function.Last().address - address);
+                var blocks = AnalyzeFunction(function);
+
+                
+
+                foreach (var block in blocks)
+                {
+                    foreach (var inst in block.Instructions)
+                    {
+                        switch (inst.cmd)
+                        {
+                            case "jal":
+                                var calledfunc = funclist.FirstOrDefault(x => x.address == inst.referencedAddress);
+                                if (calledfunc == null)
+                                {
+                                    calledfunc = new AnalyzedFunction(inst.referencedAddress, funclist, varlist, datafile, AnalyzeFunction);
+                                }
+                                if (!calledfunctions.Contains(calledfunc))
+                                    calledfunctions.Add(calledfunc);
+                                break;
+                            case "jalr":
+                                callsfunctionpointers = true;
+                                break;
+                            //TODO record global variables
+                            case "addiu":
+                            case "addi":
+                            case "ori":
+                            case "lw":
+                            case "sw":
+                            case "lhu":
+                            case "lh":
+                            case "shu":
+                            case "sh":
+                                var fulladdr = inst.GetGlobalVariable(block);
+                                if (fulladdr != 0)
+                                {
+                                    var gvar = varlist.FirstOrDefault(x => x.address == fulladdr);
+                                    if (gvar == null)
+                                    {
+                                        gvar = new AnalyzedGlobalVariable(fulladdr, varlist);
+                                    }
+                                    if (!globalvariables.Contains(gvar))
+                                        globalvariables.Add(gvar);
+                                }
+                                break;
+                            
+
+                        }
+       
+                    }
+                    if (block.EndsLoop)
+                    {
+                        hasloop = true;
+                    }
+                }
+
+                var debugnames = new[] { "outputdebuginfo", "printdebug", "printdebugparams", "printdebugerror" };
+                if (calledfunctions.Any(x => debugnames.Contains(x.name)))
+                    hasdebugoutput = true;
+            }
+            public uint address;
+            public int length;
+            public string name;
+            public string notes;
+            public List<string> parameters = new List<string>();
+            public string returnval;
+            public List<AnalyzedFunction> calledfunctions = new List<AnalyzedFunction>();
+            public List<AnalyzedGlobalVariable> globalvariables = new List<AnalyzedGlobalVariable>();
+            public List<AnalyzedFunction> calledby = new List<AnalyzedFunction>();
+            public bool callsfunctionpointers = false;
+            public bool hasloop = false;
+            public bool hasdebugoutput = false;
+
+            public List<AnalyzedFunction> stack = new List<AnalyzedFunction>();
+            public List<AnalyzedFunction> maxstack = new List<AnalyzedFunction>();
+
+            public List<AnalyzedFunction> GetDepth(List<AnalyzedFunction> depthstack)
+            {
+                stack = depthstack;
+                maxstack = stack;
+                //detect recursion
+                if (depthstack.Contains(this))
+                    return depthstack;
+
+                depthstack.Add(this);
+
+
+                foreach (var func in calledfunctions)
+                {
+                    var potentialstack = func.GetDepth(depthstack.ToList());
+                    if (potentialstack.Count > maxstack.Count)
+                        maxstack = potentialstack;
+                }
+
+                return maxstack;
+            }
+
+            public string DisplayName
+            {
+                get
+                {
+                    if (!string.IsNullOrEmpty(name))
+                        return name;
+                    return address.ToString("x");
+                }
+            }
+
+            public override string ToString()
+            {
+                return DisplayName + "()" + (!string.IsNullOrEmpty(notes) ? $"//{notes}" : "") +
+                    " funcs:" + calledfunctions.Count +
+                    " calledby:" + calledby.Count +
+                    " depth:" + maxstack.Count + 
+                    (hasdebugoutput ? "hasdebug" : "");
+            }
+        }
+
+        List<AnalyzedFunction> analyzedfunctions = new List<AnalyzedFunction>();
+        List<AnalyzedGlobalVariable> analyzedglobalvariables = new List<AnalyzedGlobalVariable>();
+        AnalyzedFunction root = null;
+        
+        private void btnFunctionTracer_Click(object sender, EventArgs e)
+        {
+            this.Height = 1000;
+            var address = (uint)ParseNum(txtOffset.Text);
+
+            address = 0x0002c4a4;
+            var endaddress = (uint)0x0002c518;
+            analyzedfunctions = new List<AnalyzedFunction>();
+            analyzedglobalvariables = new List<AnalyzedGlobalVariable>();
+            root = new AnalyzedFunction(address, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction, endaddress);
+
+            foreach(var func in analyzedfunctions)
+            {
+                //set calledby
+                foreach(var testfunc in analyzedfunctions)
+                {
+                    if (func!=testfunc)
+                    {
+                        if (testfunc.calledfunctions.Contains(func))
+                        {
+                            func.calledby.Add(testfunc);
+                        }
+                    }
+                }
+                func.calledby = func.calledby.OrderBy(x => x.address).ToList();
+            }
+
+            var maxstack = root.GetDepth(new List<AnalyzedFunction>());
+
+            analyzedfunctions = analyzedfunctions.OrderBy(x => x.address).ToList();
+
+            foreach(var gvar in analyzedglobalvariables)
+            {
+                foreach(var testfunc in analyzedfunctions)
+                {
+                    if (testfunc.globalvariables.Contains(gvar))
+                    {
+                        gvar.functions.Add(testfunc);
+                    }
+                }
+            }
+
+            analyzedglobalvariables = analyzedglobalvariables.OrderByDescending(x => x.functions.Count).ToList();
+
         }
     }
 }

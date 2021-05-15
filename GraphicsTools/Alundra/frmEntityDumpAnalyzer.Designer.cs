@@ -70,6 +70,10 @@
             this.label31 = new System.Windows.Forms.Label();
             this.label32 = new System.Windows.Forms.Label();
             this.label33 = new System.Windows.Forms.Label();
+            this.label34 = new System.Windows.Forms.Label();
+            this.label35 = new System.Windows.Forms.Label();
+            this.label36 = new System.Windows.Forms.Label();
+            this.label37 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lstValues
@@ -184,9 +188,9 @@
             this.label5.Location = new System.Drawing.Point(267, 668);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(177, 17);
+            this.label5.Size = new System.Drawing.Size(238, 17);
             this.label5.TabIndex = 11;
-            this.label5.Text = "tickprog sp, tickprog exp, ?";
+            this.label5.Text = "tickprog sp, tickprog exp, evttickprog";
             // 
             // label6
             // 
@@ -274,9 +278,9 @@
             this.label13.Location = new System.Drawing.Point(265, 194);
             this.label13.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(106, 17);
+            this.label13.Size = new System.Drawing.Size(148, 17);
             this.label13.TabIndex = 21;
-            this.label13.Text = "?, dir, framedex";
+            this.label13.Text = "curanim, dir, framedex";
             // 
             // label15
             // 
@@ -284,9 +288,9 @@
             this.label15.Location = new System.Drawing.Point(265, 180);
             this.label15.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(97, 17);
+            this.label15.Size = new System.Drawing.Size(148, 17);
             this.label15.TabIndex = 22;
-            this.label15.Text = "?, ?, target dir";
+            this.label15.Text = "?,targetanim, targetdir";
             // 
             // label16
             // 
@@ -501,11 +505,56 @@
             this.label33.TabIndex = 43;
             this.label33.Text = "?, ?, logicresult?";
             // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Location = new System.Drawing.Point(267, 221);
+            this.label34.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(136, 17);
+            this.label34.TabIndex = 44;
+            this.label34.Text = "nextframedelay, ?, ?";
+            // 
+            // label35
+            // 
+            this.label35.AutoSize = true;
+            this.label35.Location = new System.Drawing.Point(267, 113);
+            this.label35.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(98, 17);
+            this.label35.TabIndex = 45;
+            this.label35.Text = "entityrefid,? ,?";
+            // 
+            // label36
+            // 
+            this.label36.AutoSize = true;
+            this.label36.Location = new System.Drawing.Point(268, 684);
+            this.label36.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label36.Name = "label36";
+            this.label36.Size = new System.Drawing.Size(83, 17);
+            this.label36.TabIndex = 46;
+            this.label36.Text = "evtx, evty, ?";
+            // 
+            // label37
+            // 
+            this.label37.AutoSize = true;
+            this.label37.Location = new System.Drawing.Point(269, 46);
+            this.label37.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(78, 17);
+            this.label37.TabIndex = 47;
+            this.label37.Text = "?, status, ?";
+            // 
             // frmEntityDumpAnalyzer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(512, 844);
+            this.Controls.Add(this.label37);
+            this.Controls.Add(this.label36);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.label35);
+            this.Controls.Add(this.label34);
             this.Controls.Add(this.label33);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label32);
@@ -536,7 +585,6 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
-            this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.lbladdr3);
@@ -601,5 +649,9 @@
         private System.Windows.Forms.Label label31;
         private System.Windows.Forms.Label label32;
         private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.Label label34;
+        private System.Windows.Forms.Label label35;
+        private System.Windows.Forms.Label label36;
+        private System.Windows.Forms.Label label37;
     }
 }

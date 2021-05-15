@@ -956,12 +956,14 @@ namespace GraphicsTools.Alundra
                     name = "reverse";//switch direction, used for paceing npcs
                     size = 1;
                     break;
-
+                case 0x0c:
+                    name = "setdirectionwithmath";
+                    size = 1;
+                    break;
                 case 0x0d:
                     name = "dialog";//show dialog
                     size = 3;
                     break;
-
                 case 0x10:
                     name = "losecontrol";
                     size = 1;
@@ -970,9 +972,12 @@ namespace GraphicsTools.Alundra
                     name = "gaincontrol";
                     size = 1;
                     break;
-
+                case 0x12:
+                    name = "playsound1";//only 1 byte sound index
+                    size = 2;
+                    break;
                 case 0x16:
-                    name = "highgravity";//fall as normal
+                    name = "highgravity";//fall as normal  //bit 0x100
                     size = 1;
                     break;
                 case 0x17:
@@ -994,7 +999,10 @@ namespace GraphicsTools.Alundra
                     name = "fly"; //stop flying 0x0000   flying down 0xff7f     flying foward and up  0x0380
                     size = 3;
                     break;
-
+                case 0x1c:
+                    name = "waitanim?";
+                    size = 2;
+                    break;
                 case 0x1e:
                     name = "walk2";//collision blocks/pauses the walk
                     size = 3;
@@ -1003,12 +1011,30 @@ namespace GraphicsTools.Alundra
                     name = "walk";//collision ends the walk
                     size = 3;
                     break;
-
+                case 0x24:
+                    name = "waitforceadjusted";//waits until force adjust is > 0
+                    size = 1;
+                    break;
                 case 0x27:
                     name = "faceplayer";
                     size = 1;
                     break;
-
+                case 0x28:
+                    name = "gravityflag2on";//bit 0x8
+                    size = 1;
+                    break;
+                case 0x29:
+                    name = "gravityflag2off";//bit 0x8
+                    size = 1;
+                    break;
+                case 0x2a:
+                    name = "gravityflag3on";//bit 0x1
+                    size = 1;
+                    break;
+                case 0x2b:
+                    name = "gravityflag3off";//bit 0x1
+                    size = 1;
+                    break;
                 case 0x2d:
                     name = "activateentity";//look into this event to study entity type
                     size = 2;
@@ -1056,22 +1082,46 @@ namespace GraphicsTools.Alundra
                     name = "checkplayerinarea";
                     size = 7;
                     break;
-
+                case 0x40:
+                    name = "setentityvarafterrefid";
+                    size = 3;
+                    break;
+                case 0x41:
+                    name = "setentityvaraftergravflags";
+                    size = 3;
+                    break;
                 case 0x44:
                     name = "waitdialogchoice";
                     size = 1;
                     break;
-
+                case 0x45:
+                    name = "gravityflag4off";//bit 0x2000
+                    size = 1;
+                    break;
+                case 0x46:
+                    name = "gravityflag4on";//bit 0x2000
+                    size = 1;
+                    break;
                 case 0x49:
                     name = "restart";//seeks back to the beginning of event program
                     size = 1;
                     break;
-
+                case 0x4a:
+                    name = "iftruerestart";
+                    size = 1;
+                    break;
                 case 0x4b:
                     name = "iffalserestart";
                     size = 1;
                     break;
-
+                case 0x4c:
+                    name = "setsoemthing?";//*0x107200 = val
+                    size = 2;
+                    break;
+                case 0x4d:
+                    name = "dosoemthingwithsoemthing?";//*0x107204 = *0x107200 & 0x4
+                    size = 1;
+                    break;
                 case 0x51:
                     name = "getdialogchoice";
                     size = 1;
@@ -1085,7 +1135,10 @@ namespace GraphicsTools.Alundra
                     name = "setunwalkable";
                     size = 5;
                     break;
-
+                case 0x59:
+                    name = "setentityanim";
+                    size = 3;
+                    break;
                 case 0x5a:
                     name = "turnentity";
                     size = 3;
@@ -1127,9 +1180,16 @@ namespace GraphicsTools.Alundra
                     name = "spawnentity";//pulls entity to ones self and activates it at pixel offset
                     size = 9;
                     break;
-
+                case 0xa7:
+                    name = "playmusic";
+                    size = 3;
+                    break;
+                case 0xac:
+                    name = "setgravityflagsonentity";
+                    size = 4;
+                    break;
                 case 0xbd:
-                    name = "playsound";
+                    name = "playsound2";//2 byte sound index
                     size = 3;
                     break;
 
@@ -1153,12 +1213,6 @@ namespace GraphicsTools.Alundra
                 case 0x58:
                     name = "directionalbranch";
                     size = 9;
-                    break;
-                case 0x59://dialog?
-                    size = 3;
-                    break;
-                case 0xac://used on birds
-                    size = 4;
                     break;
                 default:
                     Debug.Print("Unknown code " + b.ToString("x2"));

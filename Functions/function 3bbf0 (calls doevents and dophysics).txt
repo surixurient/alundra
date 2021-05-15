@@ -5,11 +5,11 @@
 0003bc00: 1440001b bne r2,r0,0x0003bc70 
 0003bc04: afbf0018 sw r31,0x0018(r29)   
                                         if (*0xiefe00 & 0x48 == 0) {
-0003bc08: 0c00e392 jal 0x00038e48       	38e48()
+0003bc08: 0c00e392 jal 0x00038e48       	processdestroyedentities()//status == 4
 0003bc0c: 00000000 nop                  
 0003bc10: 0c00e3ba jal 0x00038ee8       	doevents()
 0003bc14: 00000000 nop                  
-0003bc18: 0c00e468 jal 0x000391a0       	391a0()
+0003bc18: 0c00e468 jal 0x000391a0       	391a0()//something with effects
 0003bc1c: 00000000 nop                  
 0003bc20: 3c0b1f80 lui r11, 0x1f80      
 0003bc24: 356b03fc ori r11,r11,0x03fc   
@@ -33,7 +33,7 @@
 0003bc6c: 3c0b1f80 lui r11, 0x1f80      
                                         }
 										else {
-0x0003bc70: 0c00e33c jal 0x00038cf0     	38cf0()
+0x0003bc70: 0c00e33c jal 0x00038cf0     	addtolists()
 0003bc74: 00000000 nop                  
 0003bc78: 3c0b1f80 lui r11, 0x1f80      
 										}

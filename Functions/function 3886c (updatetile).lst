@@ -63,8 +63,9 @@ oneway
 00038944: 0069102a slt r2,r3,r9
 00038948: 10400005 beq r2,r0,0x00038960						if (entity.maptile[dex].firstval && 0x0e00 < tohit) {
 0003894c: ace50000 sw r5,0x0000(r7)								somevariable = entity.maptile[dex].firstval
-00038950: 0800e258 j 0x00038960								}
-00038954: 00604821 addu r9,r3,r0							tohit = entity.maptile[dex].firstval && 0x0e00
+00038950: 0800e258 j 0x00038960								
+00038954: 00604821 addu r9,r3,r0								tohit = entity.maptile[dex].firstval && 0x0e00
+															}
 														}
 fallthrough												else {
 0x00038958: ace00000 sw r0,0x0000(r7)						somevariable=0

@@ -66,6 +66,8 @@
     <Compile Include="Alundra\FrmEventProgram.Designer.cs">
       <DependentUpon>FrmEventProgram.cs</DependentUpon>
     </Compile>
+    <Compile Include="Alundra\GameEngine.cs" />
+    <Compile Include="Alundra\SpriteInstance.cs" />
     <Compile Include="bmp.cs" />
     <Compile Include="carpet\DataDir.cs" />
     <Compile Include="carpet\frmMagicCarpet.cs">

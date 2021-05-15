@@ -9,16 +9,101 @@ namespace GraphicsTools.Alundra
     {
 
         public static string[] EntityVarOffsets = new string[GameMap.eventobject_size];
-        public static Dictionary<uint, string> FunctionNames = new Dictionary<uint, string>();
-        public static Dictionary<uint, string> GlobalVariableNames = new Dictionary<uint, string>();
+        public static Dictionary<uint, NameComment> FunctionNames = new Dictionary<uint, NameComment>();
+        public static Dictionary<uint, NameComment> GlobalVariableNames = new Dictionary<uint, NameComment>();
         public static string[] MapNames = new string[502];
 
         public static uint Adjustment = 0 + 0xdc;
 
+        public class NameComment
+        {
+            public string name;
+            public string comment;
+        }
+
+        static void AddFunction(uint addr, string name, string comment)
+        {
+            FunctionNames.Add(addr, new NameComment { name = name, comment = comment });
+        }
+        static void AddGlobalVariable(uint addr, string name, string comment)
+        {
+            GlobalVariableNames.Add(addr, new NameComment { name = name, comment = comment });
+        }
         public static void Init()
         {
             FunctionNames.Clear();
-            FunctionNames.Add(0x36d30, "setridingentities");
+            AddFunction(0x2abe8, "", "tons of potential error messages");
+            AddFunction(0x2bc18, "update", "main update");
+            AddFunction(0x2bdb8, "render", "renders maps and sprites");
+            AddFunction(0x2bef0, "", "calls 2e2c0");
+            AddFunction(0x2c038, "main", "main loop");
+            AddFunction(0x2cf8c, "", "something with map");
+            AddFunction(0x2e2c0, "", "calls 3bbf0");
+            AddFunction(0x2f440, "checkportals", "");
+            AddFunction(0x317a4, "domapwarp", "");
+            AddFunction(0x31b4c, "getportalunderplayer", "");
+            AddFunction(0x32098, "moveplayer", "checkportals moveplayer big function");
+            AddFunction(0x36c54, "setridingentities", "");
+            AddFunction(0x36da4, "setxyforces", "");
+            AddFunction(0x36e88, "setadjustedxyforces", "");
+            AddFunction(0x36f64, "incrementforce", "");
+            AddFunction(0x36f9c, "updateforces", "");
+            AddFunction(0x373cc, "collidewithentitiesjumping", "");
+            AddFunction(0x37564, "collidewithentities", "");
+            AddFunction(0x37704, "collideentities2", "");
+            AddFunction(0x378a0, "collidewithmap", "");
+            AddFunction(0x37b4c, "updateridingentity", "");
+            AddFunction(0x37ddc, "movez", "");
+            AddFunction(0x37f2c, "movexy", "");
+            AddFunction(0x3862c, "moveentity", "");
+            AddFunction(0x38724, "calcytile", "");
+            AddFunction(0x3886c, "updatetile", "");
+            AddFunction(0x38b68, "dophysics", "");
+            AddFunction(0x38cf0, "addtolists", "");
+            AddFunction(0x38e48, "processdestroyedentities", "");
+            AddFunction(0x38ee8, "doevents", "");
+            AddFunction(0x391a0, "", "after doevents");
+            AddFunction(0x392c8, "updateanims", "");
+            AddFunction(0x39648, "", "called before dophysics");
+            AddFunction(0x396ac, "", "called after dophysics");
+            AddFunction(0x39b24, "", "after dophysics");
+            AddFunction(0x3bbf0, "", "calls doevents and dophysics");
+            AddFunction(0x3c390, "", "init thing");
+            AddFunction(0x3c46c, "", "something with effect animation");
+            AddFunction(0x3c730, "", "after after dophysics, drop something on map?");
+            AddFunction(0x3cd18, "", "after calls doevents");
+            AddFunction(0x3cf7c, "", "before calls doevents");
+            AddFunction(0x3d298, "getentityfromrefid", "can also get entities");
+            AddFunction(0x3d160, "outputdebuginfo", "");
+            AddFunction(0x42adc, "innerdoevents", "");
+            AddFunction(0x48ed4, "", "overlays ui/dialogs");
+            AddFunction(0x4a04c, "playsoundeffect", "");
+            AddFunction(0x4c2a4, "playmusic", "");
+            AddFunction(0x50054, "", "something with sound.bin");
+            AddFunction(0x8cd24, "", "advance frame and sound");
+            AddFunction(0x8ce6c, "", "framecounter wait");
+            AddFunction(0x432a4, "", "advances frame and sound");
+            AddFunction(0x83e08, "printdebug","");
+            AddFunction(0x83e18, "printdebugparams","");
+            AddFunction(0x84ef8, "printdebugerror", "");
+            AddFunction(0x84534, "seektopartofstring?", "");
+            AddFunction(0x845dc, "seektozero", "");
+
+            //new[] { "outputdebuginfo", "printdebug", "printdebugparams", "printdebugerror" }
+
+
+
+
+
+
+
+
+
+
+
+
+
+            /*FunctionNames.Add(0x36d30, "setridingentities");
             FunctionNames.Add(0x36e80, "setxyforces");
             FunctionNames.Add(0x36f64, "setadjustedxyforces");
             FunctionNames.Add(0x37040, "incrementforce");
@@ -34,19 +119,27 @@ namespace GraphicsTools.Alundra
             FunctionNames.Add(0x38800, "calcytile");
             FunctionNames.Add(0x38948, "processtile");
             FunctionNames.Add(0x38c44, "dophysics");
+            */
+
+            //NudgeAddresses();
 
 
-            NudgeAddresses();
 
+
+
+
+
+            //FunctionNames.Add(0x, "");
 
             EntityVarOffsets[0x0] = "entityid";
-
+            EntityVarOffsets[0x10] = "status";//3 = invisible, 4 = destroyed
             EntityVarOffsets[0x28] = "refentity";//platform entity
             EntityVarOffsets[0x30] = "refxoff";//platformxoff
             EntityVarOffsets[0x34] = "refyoff";//platformyoff
             EntityVarOffsets[0x38] = "refzoff";//platformzoff
 
             EntityVarOffsets[0x44] = "datasbinrecord";
+            EntityVarOffsets[0x48] = "entityrefid";
             EntityVarOffsets[0x64] = "portraitsprite";
             EntityVarOffsets[0x68] = "name";
             EntityVarOffsets[0x6c] = "gravityflags";
@@ -142,8 +235,13 @@ namespace GraphicsTools.Alundra
             EntityVarOffsets[0x234] = "tickprogsp";
             EntityVarOffsets[0x238] = "tickprogexp";
 
-            EntityVarOffsets[0x260] = "logicresult";
+            EntityVarOffsets[0x23c] = "evttickprog";
+            EntityVarOffsets[0x240] = "evtx";
+            EntityVarOffsets[0x244] = "evty";
 
+            EntityVarOffsets[0x260] = "evtlogicresult";
+
+            MapNames[115] = "tarns manor";
 
             MapNames[162] = "inoa";
             MapNames[163] = "jess house";
@@ -221,14 +319,19 @@ namespace GraphicsTools.Alundra
             MapNames[392] = "ship int";
 
             GlobalVariableNames.Clear();
-            GlobalVariableNames.Add(0x9b5b4, "eventhandlers");
-            GlobalVariableNames.Add(0x1e6118, "mapgameflags");
-            GlobalVariableNames.Add(0x1ed0d4, "globalgameflags");
-            GlobalVariableNames.Add(0x1bc498, "playerentity");
+            AddGlobalVariable(0x9b5b4, "eventhandlers","");
+            AddGlobalVariable(0x1e6118, "mapgameflags", "");
+            AddGlobalVariable(0x1ed0d4, "globalgameflags", "");
+            AddGlobalVariable(0x1bc498, "playerentity", "");
+
+            AddGlobalVariable(0x1f0f94, "breakoutgameloop", "");
+            AddGlobalVariable(0x1efe10, "gamemap", "gamemapinfo");
+            AddGlobalVariable(0x1ac5b8, "playerxtile", "");
+            AddGlobalVariable(0x1ac5bc, "playerytile", "");
 
         }
 
-        static void NudgeAddresses()
+        /*static void NudgeAddresses()
         {
             var backup = FunctionNames;
             FunctionNames = new Dictionary<uint, string>();
@@ -236,6 +339,6 @@ namespace GraphicsTools.Alundra
             {
                 FunctionNames.Add(ent.Key - Adjustment, ent.Value);
             }
-        }
+        }*/
     }
 }

@@ -251,6 +251,10 @@ namespace alundramultitool
                             cmd = "ori";
                             display = string.Format(threevalformat, "ori", srt, srs, simmediate);
                             break;
+                        case 0xe://xor immediate
+                            cmd = "xori";
+                            display = string.Format(threevalformat, "xori", srt, srs, simmediate);
+                            break;
                         case 0xa://set on less than immediate
                             cmd = "slti";
                             display = string.Format(threevalformat, "slti", srt, srs, simmediate);
@@ -346,7 +350,50 @@ namespace alundramultitool
                     return cmd == "jr" && rs == 31;
                 }
             }
-            
+
+            public uint GetGlobalVariable(CodeBlock block)
+            {
+                //var varlist = GraphicsTools.Alundra.DebugSymbols.GlobalVariableNames;
+                //if its a global variable then return the address
+                var typesthatreallyare = new[] { "addiu", "addi", "ori" };
+                var typesthatpotentiallyare = new[] { "lw", "sw", "lhu", "lh", "shu", "sh" };//, "lbu", "lb", "sbu", "sb" };//
+                if (typesthatreallyare.Contains(this.cmd) || typesthatpotentiallyare.Contains(this.cmd))
+                {
+                    var mdex = block.Instructions.IndexOf(this);
+                    int seekback = 1;
+                    for (int dex = mdex - 1; dex >= mdex - (1 + seekback) && dex >= 0; dex--)
+                    {
+                        var binst = block.Instructions[dex];
+                        if (binst.cmd == "lui" && binst.rt == this.rs)
+                        {
+                            uint fulladdr = 0;
+                            switch (this.cmd)
+                            {
+                                case "ori":
+                                case "addiu":
+                                    fulladdr = (uint)((UInt32)(((uint)binst.immediate & 0xff) << 16) | this.immediateu);
+                                    break;
+                                case "addi":
+                                    fulladdr = (uint)((UInt32)(((uint)binst.immediate & 0xff) << 16) + this.immediate);
+                                    break;
+
+                                case "lw":
+                                case "sw":
+                                case "lhu":
+                                case "lh":
+                                case "shu":
+                                case "sh":
+                                    fulladdr = (uint)((UInt32)(((uint)binst.immediate & 0xff) << 16) + this.immediate);
+                                    break;
+                            }
+                            return fulladdr;
+
+                        }
+                    }
+                }
+
+                return 0;
+            }
         }
 
         public class BranchOperation
