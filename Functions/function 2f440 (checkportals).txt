@@ -60,7 +60,7 @@
 0002f4fc: 00220821 addu r1,r1,r2        
 0002f500: 94232778 lhu r3,0x2778(r1)    //0x22778
 0002f504: 3c02801e lui r2, 0x801e       
-0002f508: 9442d7e8 lhu r2,0xd7e8(r2)    //0x1dd7e8
+0002f508: 9442d7e8 lhu r2,0xd7e8(r2)    //0x1dd7e8//characterinput
 0002f50c: 00000000 nop                  
 0002f510: 00431024 and r2,r2,r3         
 0002f514: 104000a1 beq r2,r0,0x0002f79c 
@@ -194,7 +194,7 @@
 0002f6c4: 00220821 addu r1,r1,r2        
 0002f6c8: 94232778 lhu r3,0x2778(r1)    //0x22778
 0002f6cc: 3c02801e lui r2, 0x801e       
-0002f6d0: 9442d7e8 lhu r2,0xd7e8(r2)    //0x1dd7e8
+0002f6d0: 9442d7e8 lhu r2,0xd7e8(r2)    //0x1dd7e8//characterinput
 0002f6d4: 00000000 nop                  
 0002f6d8: 00431024 and r2,r2,r3         
 0002f6dc: 10400018 beq r2,r0,0x0002f740 

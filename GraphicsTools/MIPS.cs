@@ -356,11 +356,11 @@ namespace alundramultitool
                 //var varlist = GraphicsTools.Alundra.DebugSymbols.GlobalVariableNames;
                 //if its a global variable then return the address
                 var typesthatreallyare = new[] { "addiu", "addi", "ori" };
-                var typesthatpotentiallyare = new[] { "lw", "sw", "lhu", "lh", "shu", "sh" };//, "lbu", "lb", "sbu", "sb" };//
+                var typesthatpotentiallyare = new[] { "lw", "sw", "lhu", "lh", "shu", "sh", "lbu", "lb", "sbu", "sb" };//
                 if (typesthatreallyare.Contains(this.cmd) || typesthatpotentiallyare.Contains(this.cmd))
                 {
                     var mdex = block.Instructions.IndexOf(this);
-                    int seekback = 1;
+                    int seekback = 2;
                     for (int dex = mdex - 1; dex >= mdex - (1 + seekback) && dex >= 0; dex--)
                     {
                         var binst = block.Instructions[dex];
@@ -383,11 +383,20 @@ namespace alundramultitool
                                 case "lh":
                                 case "shu":
                                 case "sh":
+                                case "lb":
+                                case "sb":
+                                case "lbu":
+                                case "sbu":
                                     fulladdr = (uint)((UInt32)(((uint)binst.immediate & 0xff) << 16) + this.immediate);
                                     break;
                             }
                             return fulladdr;
 
+                        }
+                        else if ((binst.type == InstructionType.Itype && binst.rt == this.rs) || 
+                            (binst.type == InstructionType.Rtype && binst.rd == this.rs ))
+                        {
+                            break;//dont seek back any further because the register in question was already overwritten
                         }
                     }
                 }

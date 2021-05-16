@@ -370,6 +370,14 @@ namespace GraphicsTools
                                 break;
                             case "sw":
                             case "lw":
+                            case "lhu":
+                            case "lh":
+                            case "shu":
+                            case "sh":
+                            case "lb":
+                            case "sb":
+                            case "lbu":
+                            case "sbu":
                                 if (inst.rs != 29)//if not local variable declaration
                                 {
                                     bool nudgewierdness = false;
@@ -378,15 +386,15 @@ namespace GraphicsTools
                                     if (nudgewierdness)
                                         inst.immediate += 0x134;
                                     //assume entity struct
-                                    if (inst.immediate > 0 && inst.immediate < evars.Length)
+                                    if (inst.immediate > 0xc && inst.immediate < evars.Length)
                                     { 
                                         
                                         if (!string.IsNullOrEmpty(evars[inst.immediate]))
                                         {
                                            
-                                            if (inst.cmd == "lw")
+                                            if (inst.cmd == "lw" || inst.cmd == "lh" || inst.cmd == "lhu" || inst.cmd == "lb" || inst.cmd == "lbu")
                                                 ccode = MIPS.GetRegister(inst.rt) + " = " + MIPS.GetRegister(inst.rs) + "." + evars[inst.immediate];
-                                            else if (inst.cmd == "sw")
+                                            else if (inst.cmd == "sw" || inst.cmd == "sh" || inst.cmd == "shu" || inst.cmd == "sb" || inst.cmd == "sbu")
                                                 ccode = MIPS.GetRegister(inst.rs) + "." + evars[inst.immediate] + " = " + MIPS.GetRegister(inst.rt);
                                             if (nudgewierdness)
                                                 inst.immediate -= 0x134;
@@ -402,16 +410,16 @@ namespace GraphicsTools
                                         if (globalvars.ContainsKey(fulladdr2))
                                             name2 = globalvars[fulladdr2].name;
                                         
-                                        if (inst.cmd == "lw")
+                                        if (inst.cmd == "lw" || inst.cmd == "lh" || inst.cmd == "lhu" || inst.cmd == "lb" || inst.cmd == "lbu")
                                             ccode = MIPS.GetRegister(inst.rt) + " = *" + name2;
-                                        else if (inst.cmd == "sw")
+                                        else if (inst.cmd == "sw" || inst.cmd == "sh" || inst.cmd == "shu" || inst.cmd == "sb" || inst.cmd == "sbu")
                                             ccode = "*" + name2 + " = " + MIPS.GetRegister(inst.rt);
                                     }
                                     else
                                     {
-                                        if (inst.cmd == "lw")
+                                        if (inst.cmd == "lw" || inst.cmd == "lh" || inst.cmd == "lhu" || inst.cmd == "lb" || inst.cmd == "lbu")
                                             ccode = MIPS.GetRegister(inst.rt) + " = " + MIPS.GetRegister(inst.rs) + "[" + inst.immediate.ToString("x") + "]";
-                                        else if (inst.cmd == "sw")
+                                        else if (inst.cmd == "sw" || inst.cmd == "sh" || inst.cmd == "shu" || inst.cmd == "sb" || inst.cmd == "sbu")
                                             ccode = MIPS.GetRegister(inst.rs) + "[" + inst.immediate.ToString("x") + "]" + " = " + MIPS.GetRegister(inst.rt);    
                                     }
                                     if (nudgewierdness)
@@ -424,10 +432,10 @@ namespace GraphicsTools
                             case "ori":
                             //case "lw":
                             //case "sw":
-                            case "lhu":
-                            case "lh":
-                            case "shu":
-                            case "sh":
+                            //case "lhu":
+                            //case "lh":
+                            //case "shu":
+                            //case "sh":
                                 var fulladdr = inst.GetGlobalVariable(block);
                                 if (fulladdr != 0)
                                 {
@@ -735,6 +743,10 @@ namespace GraphicsTools
                             case "lh":
                             case "shu":
                             case "sh":
+                            case "lb":
+                            case "sb":
+                            case "lbu":
+                            case "sbu":
                                 var fulladdr = inst.GetGlobalVariable(block);
                                 if (fulladdr != 0)
                                 {

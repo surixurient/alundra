@@ -39,7 +39,11 @@ namespace GraphicsTools.Alundra
             AddFunction(0x2c038, "main", "main loop");
             AddFunction(0x2cf8c, "", "something with map");
             AddFunction(0x2e2c0, "", "calls 3bbf0");
+            AddFunction(0x2e4c8, "writeinputotlocation", "");
+            AddFunction(0x2e61c, "getplayerinput", "");
             AddFunction(0x2f440, "checkportals", "");
+            AddFunction(0x30a3c, "seektozero", "called in unknownplayerupdate");
+            AddFunction(0x30bb0, "unknownplayerupdate", "called inside player update");
             AddFunction(0x317a4, "domapwarp", "");
             AddFunction(0x31b4c, "getportalunderplayer", "");
             AddFunction(0x32098, "moveplayer", "checkportals moveplayer big function");
@@ -79,6 +83,7 @@ namespace GraphicsTools.Alundra
             AddFunction(0x48ed4, "", "overlays ui/dialogs");
             AddFunction(0x4a04c, "playsoundeffect", "");
             AddFunction(0x4c2a4, "playmusic", "");
+            AddFunction(0x4f9e8, "seektozero", "called in unknownplayerupdate");
             AddFunction(0x50054, "", "something with sound.bin");
             AddFunction(0x8cd24, "", "advance frame and sound");
             AddFunction(0x8ce6c, "", "framecounter wait");
@@ -88,8 +93,12 @@ namespace GraphicsTools.Alundra
             AddFunction(0x84ef8, "printdebugerror", "");
             AddFunction(0x84534, "seektopartofstring?", "");
             AddFunction(0x845dc, "seektozero", "");
-
+            AddFunction(0x8cc94, "getcontrollerinput", "");
+            AddFunction(0x8cd04, "controllerhardwareaccess", "");
             //new[] { "outputdebuginfo", "printdebug", "printdebugparams", "printdebugerror" }
+
+
+
 
 
 
@@ -328,6 +337,11 @@ namespace GraphicsTools.Alundra
             AddGlobalVariable(0x1efe10, "gamemap", "gamemapinfo");
             AddGlobalVariable(0x1ac5b8, "playerxtile", "");
             AddGlobalVariable(0x1ac5bc, "playerytile", "");
+
+            AddGlobalVariable(0x1d84e0, "somegravitysetting", "");
+            AddGlobalVariable(0x1efe00, "playercontrolsetting", "");
+            AddGlobalVariable(0x1ac4ac, "playerhealth", "");
+            AddGlobalVariable(0x1dd7e8, "playerinput", "");
 
         }
 

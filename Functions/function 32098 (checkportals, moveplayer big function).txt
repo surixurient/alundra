@@ -1,5 +1,4 @@
-											checkportals, moveplayer?
-00032098: 27bdffd0 addiu r29,r29,0xffd0 
+00032098: 27bdffd0 addiu r29,r29,0xffd0 void moveplayer()//checkportals moveplayer big function
 0003209c: afbf0028 sw r31,0x0028(r29)   
 000320a0: afb30024 sw r19,0x0024(r29)   
 000320a4: afb20020 sw r18,0x0020(r29)   
@@ -11,26 +10,26 @@
 000320bc: 00000000 nop                  
 000320c0: 3c018003 lui r1, 0x8003       
 000320c4: 00220821 addu r1,r1,r2        
-000320c8: 90228bb8 lbu r2,0x8bb8(r1)    
+000320c8: 90228bb8 lbu r2,0x8bb8(r1)    r2 = r1[ffff8bb8]
 000320cc: 3c11801b lui r17, 0x801b      
 000320d0: 8e31c624 lw r17,0xc624(r17)   r17 = *0x1ac624
 000320d4: 3c01801f lui r1, 0x801f       
 000320d8: ac2207b0 sw r2,0x07b0(r1)     *0x1f07b0 = r2
-000320dc: 0c00bd10 jal 0x0002f440       checkportals()//calls thing that calls domapwarp
+000320dc: 0c00bd10 jal 0x0002f440       checkportals()//
 000320e0: 00000000 nop                  
 000320e4: 3c02801b lui r2, 0x801b       
 000320e8: 8c42c4b8 lw r2,0xc4b8(r2)     r2 = *0x1ac4b8
 000320ec: 00000000 nop                  
 000320f0: 10400007 beq r2,r0,0x00032110 
 000320f4: 00000000 nop                  
-                                        if(r2 != 0)
+                                        if(r2 != 0) {
 000320f8: 3c01801c lui r1, 0x801c       
-000320fc: ac204574 sw r0,0x4574(r1)     *0x1c4574 = r0
+000320fc: ac204574 sw r0,0x4574(r1)     	*0x1c4574 = 0
 00032100: 3c01801f lui r1, 0x801f       
-00032104: ac2007b4 sw r0,0x07b4(r1)     *0x1f07b4 = r0
-00032108: 0800cbd4 j 0x00032f50         
-0003210c: 00000000 nop                  
-                                        else
+00032104: ac2007b4 sw r0,0x07b4(r1)     	*0x1f07b4 = 0
+00032108: 0800cbd4 j 0x00032f50         	return *0x1ac4b8
+0003210c: 00000000 nop                  }
+                                        
 
 0x00032110: 3c02801f lui r2, 0x801f     
 00032114: 8c42fe00 lw r2,0xfe00(r2)     r2 = *0x1efe00
@@ -38,34 +37,36 @@
 0003211c: 30420034 andi r2,r2,0x0034    
 00032120: 10400019 beq r2,r0,0x00032188 
 00032124: 00000000 nop                  
-                                        if(r2 != 0)
-00032128: 0c00bfa4 jal 0x0002fe90       2fe90()//
+										if(*0x1efe00 & 0x34 == 0) {//if player doesnt have control?
+00032128: 0c00bfa4 jal 0x0002fe90       	2fe90()//
 0003212c: 24040001 addiu r4,r0,0x0001   
 00032130: 3c01801c lui r1, 0x801c       
-00032134: ac204574 sw r0,0x4574(r1)     *0x1c4574 = r0
+00032134: ac204574 sw r0,0x4574(r1)     	*0x1c4574 = r0
 00032138: 3c01801f lui r1, 0x801f       
-0003213c: ac2007b4 sw r0,0x07b4(r1)     *0x1f07b4 = r0
-00032140: 0c00bef4 jal 0x0002fbd0       2fbd0()//
+0003213c: ac2007b4 sw r0,0x07b4(r1)     	*0x1f07b4 = r0
+00032140: 0c00bef4 jal 0x0002fbd0       	2fbd0()//
 00032144: 24040001 addiu r4,r0,0x0001   
-00032148: 0c00d5dd jal 0x00035774       35774()//
+00032148: 0c00d5dd jal 0x00035774       	35774()//
 0003214c: 00000000 nop                  
 00032150: 3c03801f lui r3, 0x801f       
-00032154: 8c63fe00 lw r3,0xfe00(r3)     r3 = *0x1efe00
+00032154: 8c63fe00 lw r3,0xfe00(r3)     	r3 = *0x1efe00
 00032158: 24020020 addiu r2,r0,0x0020   
-0003215c: 1462037c bne r3,r2,0x00032f50 
+0003215c: 1462037c bne r3,r2,0x00032f50 	return
 00032160: 00000000 nop                  
-                                        if(r3 == r2)
-00032164: 0c00c7e8 jal 0x00031fa0       31fa0()//
+											if(*0x1efe00 != 0x20)
+												return 0x20
+00032164: 0c00c7e8 jal 0x00031fa0       	ret = 31fa0()//
 00032168: 00000000 nop                  
 0003216c: 2403ffff addiu r3,r0,0xffff   
 00032170: 10430377 beq r2,r3,0x00032f50 
 00032174: 24020078 addiu r2,r0,0x0078   
-                                        if(r2 != r3)
+											if(ret == -1)
+												return 0x78
 00032178: 3c01801b lui r1, 0x801b       
-0003217c: ac22c664 sw r2,0xc664(r1)     *0x1ac664 = r2
-00032180: 0800cbd4 j 0x00032f50         
+0003217c: ac22c664 sw r2,0xc664(r1)     	*0x1ac664 = 0x78
+00032180: 0800cbd4 j 0x00032f50         	return 0x78
 00032184: 00000000 nop                  
-                                        else
+                                        }
 
 0x00032188: 3c02801b lui r2, 0x801b     
 0003218c: 8c42c504 lw r2,0xc504(r2)     r2 = *0x1ac504
@@ -73,62 +74,64 @@
 00032194: 34420100 ori r2,r2,0x0100     
 00032198: 3c01801b lui r1, 0x801b       
 0003219c: ac22c504 sw r2,0xc504(r1)     *0x1ac504 = r2
-000321a0: 0c00bfa4 jal 0x0002fe90       2fe90()//
+000321a0: 0c00bfa4 jal 0x0002fe90       2fe90(0)//
 000321a4: 00002021 addu r4,r0,r0        
-000321a8: 0c00c7e8 jal 0x00031fa0       31fa0()//
+000321a8: 0c00c7e8 jal 0x00031fa0       ret = 31fa0(0)//
 000321ac: 2413ffff addiu r19,r0,0xffff  
 000321b0: 00408021 addu r16,r2,r0       
 000321b4: 12130016 beq r16,r19,0x00032210
 000321b8: 00000000 nop                  
-                                        if(r16 != r19)
+                                        if(ret != -1) {
 000321bc: 3c01801c lui r1, 0x801c       
-000321c0: ac204574 sw r0,0x4574(r1)     *0x1c4574 = r0
+000321c0: ac204574 sw r0,0x4574(r1)     	*0x1c4574 = 0
 000321c4: 3c01801f lui r1, 0x801f       
-000321c8: ac2007b4 sw r0,0x07b4(r1)     *0x1f07b4 = r0
-000321cc: 0c00bef4 jal 0x0002fbd0       2fbd0()//
+000321c8: ac2007b4 sw r0,0x07b4(r1)     	*0x1f07b4 = 0
+000321cc: 0c00bef4 jal 0x0002fbd0       	2fbd0()//
 000321d0: 24040002 addiu r4,r0,0x0002   
-000321d4: 0c00dab5 jal 0x00036ad4       36ad4()//
+000321d4: 0c00dab5 jal 0x00036ad4       	36ad4()//
 000321d8: 00000000 nop                  
 000321dc: 24020004 addiu r2,r0,0x0004   
 000321e0: 16220002 bne r17,r2,0x000321ec
-000321e4: 24020031 addiu r2,r0,0x0031   
-                                        if(r17 == r2)
-000321e8: 2402003a addiu r2,r0,0x003a   
+000321e4: 24020031 addiu r2,r0,0x0031   	val  = 0x31
+											if(*0x1ac624 == 4)
+000321e8: 2402003a addiu r2,r0,0x003a   		val = 0x3a;
 
 0x000321ec: 3c01801b lui r1, 0x801b     
-000321f0: ac22c520 sw r2,0xc520(r1)     *0x1ac520 = r2
+000321f0: ac22c520 sw r2,0xc520(r1)     	*0x1ac520 = val
 000321f4: 24020078 addiu r2,r0,0x0078   
 000321f8: 3c01801b lui r1, 0x801b       
-000321fc: ac30c524 sw r16,0xc524(r1)    *0x1ac524 = r16
+000321fc: ac30c524 sw r16,0xc524(r1)    	*0x1ac524 = r16
 00032200: 3c01801b lui r1, 0x801b       
-00032204: ac22c664 sw r2,0xc664(r1)     *0x1ac664 = r2
+00032204: ac22c664 sw r2,0xc664(r1)     	*0x1ac664 = 0x78
 00032208: 0800cbd4 j 0x00032f50         
 0003220c: 00000000 nop                  
-                                        else
-
+											return 0x78
+										}
 0x00032210: 3c02801b lui r2, 0x801b     
-00032214: 8c42c4ac lw r2,0xc4ac(r2)     r2 = *0x1ac4ac
+00032214: 8c42c4ac lw r2,0xc4ac(r2)     playerhealth = *0x1ac4ac
 00032218: 00000000 nop                  
 0003221c: 104002f0 beq r2,r0,0x00032de0 
 00032220: 00000000 nop                  
-                                        if(r2 != 0)
+                                        if(playerhealth == 0)
+											goto playerdeath
 00032224: 3c02801b lui r2, 0x801b       
-00032228: 8c42c620 lw r2,0xc620(r2)     r2 = *0x1ac620
+00032228: 8c42c620 lw r2,0xc620(r2)     
 0003222c: 00000000 nop                  
 00032230: 30420080 andi r2,r2,0x0080    
 00032234: 144002d8 bne r2,r0,0x00032d98 
 00032238: 00000000 nop                  
-                                        if(r2 == 0)
+                                        if(*0x1ac620 & 0x80) //entity[188] is it relaly?
+											goto some_place
 0003223c: 0c00dab5 jal 0x00036ad4       36ad4()//
 00032240: 00000000 nop                  
 00032244: 3c02801e lui r2, 0x801e       
-00032248: 9442d7e8 lhu r2,0xd7e8(r2)    //0x1dd7e8
+00032248: 9442d7e8 lhu r2,0xd7e8(r2)    input = *0x1dd7e8 //playerinput
 0003224c: 00000000 nop                  
-00032250: 00029302 srl r18,r2,12        
+00032250: 00029302 srl r18,r2,12        fixedinput = ((input>>12) <<2)
 00032254: 00121080 sll r2,r18,2         
 00032258: 3c018002 lui r1, 0x8002       
 0003225c: 00220821 addu r1,r1,r2        
-00032260: 8c302c6c lw r16,0x2c6c(r1)    r16 = *0x22c6c
+00032260: 8c302c6c lw r16,0x2c6c(r1)    r16 = r1[2c6c]
 00032264: 00000000 nop                  
 00032268: 16130003 bne r16,r19,0x00032278
 0003226c: 2e220008 sltiu r2,r17,0x0008  
@@ -138,10 +141,11 @@
 
 0x00032278: 10400335 beq r2,r0,0x00032f50
 0003227c: 00111080 sll r2,r17,2         
-                                        if(r2 != 0)
+                                        if(*0x1ac624 >= 8)
+											return *0x1ac624 << 2
 00032280: 3c018002 lui r1, 0x8002       
 00032284: 00220821 addu r1,r1,r2        
-00032288: 8c222d1c lw r2,0x2d1c(r1)     r2 = *0x22d1c
+00032288: 8c222d1c lw r2,0x2d1c(r1)     r2 = r1[2d1c]
 0003228c: 00000000 nop                  
 00032290: 00400008 jr r2                
 00032294: 00000000 nop                  
@@ -187,7 +191,7 @@
                                         if(r2 != 0)
 0003231c: 3c018002 lui r1, 0x8002       
 00032320: 00220821 addu r1,r1,r2        
-00032324: 8c222d3c lw r2,0x2d3c(r1)     r2 = *0x22d3c
+00032324: 8c222d3c lw r2,0x2d3c(r1)     r2 = r1[2d3c]
 00032328: 00000000 nop                  
 0003232c: 00400008 jr r2                
 00032330: 00000000 nop                  
@@ -282,7 +286,7 @@
 00032450: 00000000 nop                    
                                           if(r2 != 0)
 00032454: 3c02801e lui r2, 0x801e         
-00032458: 9442d7ea lhu r2,0xd7ea(r2)      //0x1dd7ea
+00032458: 9442d7ea lhu r2,0xd7ea(r2)      r2 = *0x1dd7ea
 0003245c: 00000000 nop                    
 00032460: 30420040 andi r2,r2,0x0040      
 00032464: 1040000b beq r2,r0,0x00032494   
@@ -303,7 +307,7 @@
                                           else
 
 0x00032494: 3c02801e lui r2, 0x801e       
-00032498: 9442d7e8 lhu r2,0xd7e8(r2)      //0x1dd7e8
+00032498: 9442d7e8 lhu r2,0xd7e8(r2)      r2 = *0x1dd7e8//playerinput
 0003249c: 00000000 nop                    
 000324a0: 30420010 andi r2,r2,0x0010      
 000324a4: 10400007 beq r2,r0,0x000324c4   
@@ -353,7 +357,7 @@
 00032528: 2402002d addiu r2,r0,0x002d   
                                         if(r2 != 0)
 0003252c: 3c02801e lui r2, 0x801e       
-00032530: 9442d7e8 lhu r2,0xd7e8(r2)    //0x1dd7e8
+00032530: 9442d7e8 lhu r2,0xd7e8(r2)    r2 = *0x1dd7e8//playerinput
 00032534: 00000000 nop                  
 00032538: 30420010 andi r2,r2,0x0010    
 0003253c: 1040ffae beq r2,r0,0x000323f8 
@@ -367,7 +371,7 @@
                                         if(r2 != 0)
 00032558: 3c018002 lui r1, 0x8002       
 0003255c: 00220821 addu r1,r1,r2        
-00032560: 8c302cac lw r16,0x2cac(r1)    r16 = *0x22cac
+00032560: 8c302cac lw r16,0x2cac(r1)    r16 = r1[2cac]
 00032564: 2402ffff addiu r2,r0,0xffff   
 00032568: 12020279 beq r16,r2,0x00032f50
 0003256c: 24020003 addiu r2,r0,0x0003   
@@ -426,7 +430,7 @@
                                         else
 
 0x00032620: 3c02801e lui r2, 0x801e     
-00032624: 9442d7e8 lhu r2,0xd7e8(r2)    //0x1dd7e8
+00032624: 9442d7e8 lhu r2,0xd7e8(r2)    r2 = *0x1dd7e8//playerinput
 00032628: 00000000 nop                  
 0003262c: 30420010 andi r2,r2,0x0010    
 00032630: 10400019 beq r2,r0,0x00032698 
@@ -440,21 +444,21 @@
 0003264c: 00031880 sll r3,r3,2          
 00032650: 3c018002 lui r1, 0x8002       
 00032654: 00230821 addu r1,r1,r3        
-00032658: 8c222cec lw r2,0x2cec(r1)     r2 = *0x22cec
+00032658: 8c222cec lw r2,0x2cec(r1)     r2 = r1[2cec]
 0003265c: 00000000 nop                  
 00032660: 12020013 beq r16,r2,0x000326b0
 00032664: 00000000 nop                  
                                         if(r16 != r2)
 00032668: 3c018002 lui r1, 0x8002       
 0003266c: 00230821 addu r1,r1,r3        
-00032670: 8c222cf0 lw r2,0x2cf0(r1)     r2 = *0x22cf0
+00032670: 8c222cf0 lw r2,0x2cf0(r1)     r2 = r1[2cf0]
 00032674: 00000000 nop                  
 00032678: 1202000d beq r16,r2,0x000326b0
 0003267c: 00000000 nop                  
                                         if(r16 != r2)
 00032680: 3c018002 lui r1, 0x8002       
 00032684: 00230821 addu r1,r1,r3        
-00032688: 8c222cf4 lw r2,0x2cf4(r1)     r2 = *0x22cf4
+00032688: 8c222cf4 lw r2,0x2cf4(r1)     r2 = r1[2cf4]
 0003268c: 00000000 nop                  
 00032690: 12020007 beq r16,r2,0x000326b0
 00032694: 2402002a addiu r2,r0,0x002a   
@@ -471,7 +475,7 @@
                                         else
 
 0x000326b0: 3c02801e lui r2, 0x801e     
-000326b4: 9442d7e8 lhu r2,0xd7e8(r2)    //0x1dd7e8
+000326b4: 9442d7e8 lhu r2,0xd7e8(r2)    r2 = *0x1dd7e8
 000326b8: 00000000 nop                  
 000326bc: 304200e0 andi r2,r2,0x00e0    
 000326c0: 10400223 beq r2,r0,0x00032f50 
@@ -509,7 +513,7 @@
 00032728: 00000000 nop                  
                                         }
 0003272c: 3c02801e lui r2, 0x801e       
-00032730: 9442d7e8 lhu r2,0xd7e8(r2)    //0x1dd7e8
+00032730: 9442d7e8 lhu r2,0xd7e8(r2)    r2 = *0x1dd7e8//playerinput
 00032734: 00000000 nop                  
 00032738: 30420010 andi r2,r2,0x0010    
 0003273c: 1040ffd8 beq r2,r0,0x000326a0 
@@ -523,7 +527,7 @@
                                         if(r2 == 0)
 00032758: 3c018002 lui r1, 0x8002       
 0003275c: 00220821 addu r1,r1,r2        
-00032760: 8c302cac lw r16,0x2cac(r1)    r16 = *0x22cac
+00032760: 8c302cac lw r16,0x2cac(r1)    r16 = r1[2cac]
 00032764: 2402ffff addiu r2,r0,0xffff   
 00032768: 120201f9 beq r16,r2,0x00032f50
 0003276c: 24020003 addiu r2,r0,0x0003   
@@ -679,7 +683,7 @@
 00032944: 00000000 nop                  
                                         if(r4 != 0)
 00032948: 3c05801e lui r5, 0x801e       
-0003294c: 94a5d7ea lhu r5,0xd7ea(r5)    //0x1dd7ea
+0003294c: 94a5d7ea lhu r5,0xd7ea(r5)    r5 = *0x1dd7ea
 00032950: 00000000 nop                  
 00032954: 30a20080 andi r2,r5,0x0080    
 00032958: 10400033 beq r2,r0,0x00032a28 
@@ -698,7 +702,7 @@
 00032984: 00021080 sll r2,r2,2          
 00032988: 3c018002 lui r1, 0x8002       
 0003298c: 00220821 addu r1,r1,r2        
-00032990: 8c223644 lw r2,0x3644(r1)     r2 = *0x23644
+00032990: 8c223644 lw r2,0x3644(r1)     r2 = r1[3644]
 00032994: 00000000 nop                  
 00032998: ac82008c sw r2,0x008c(r4)     r4.targetdir = r2
 0003299c: 3c02801b lui r2, 0x801b       
@@ -826,7 +830,7 @@
 00032b0c: 00000000 nop                  
                                         if(r3 == r2)
 00032b10: 3c02801e lui r2, 0x801e       
-00032b14: 9442d7ea lhu r2,0xd7ea(r2)    //0x1dd7ea
+00032b14: 9442d7ea lhu r2,0xd7ea(r2)    r2 = *0x1dd7ea
 00032b18: 00000000 nop                  
 00032b1c: 304200d0 andi r2,r2,0x00d0    
 00032b20: 14400109 bne r2,r0,0x00032f48 
@@ -938,7 +942,7 @@
                                         if(r2 != 0)
 00032c78: 3c018002 lui r1, 0x8002       
 00032c7c: 00220821 addu r1,r1,r2        
-00032c80: 8c222e7c lw r2,0x2e7c(r1)     r2 = *0x22e7c
+00032c80: 8c222e7c lw r2,0x2e7c(r1)     r2 = r1[2e7c]
 00032c84: 00000000 nop                  
 00032c88: 00400008 jr r2                
 00032c8c: 00000000 nop                  
@@ -980,7 +984,7 @@
                                         else
 
 0x00032d04: 3c02801e lui r2, 0x801e     
-00032d08: 9442d7ea lhu r2,0xd7ea(r2)    //0x1dd7ea
+00032d08: 9442d7ea lhu r2,0xd7ea(r2)    r2 = *0x1dd7ea
 00032d0c: 00000000 nop                  
 00032d10: 304200d0 andi r2,r2,0x00d0    
 00032d14: 1440008c bne r2,r0,0x00032f48 
@@ -1028,7 +1032,7 @@
 00032d90: 0800cbd4 j 0x00032f50         
 00032d94: 00000000 nop                  
                                         else
-
+//some_place
 0x00032d98: 3c01801c lui r1, 0x801c     
 00032d9c: ac204574 sw r0,0x4574(r1)     *0x1c4574 = r0
 00032da0: 3c01801f lui r1, 0x801f       
@@ -1049,55 +1053,57 @@
                                         }
 00032dd8: 0800cbd2 j 0x00032f48         
 00032ddc: 00000000 nop                  
-                                        else
-
+                                        
+//player_death							{
 0x00032de0: 3c01801c lui r1, 0x801c     
-00032de4: ac204574 sw r0,0x4574(r1)     *0x1c4574 = r0
+00032de4: ac204574 sw r0,0x4574(r1)     	*0x1c4574 = r0
 00032de8: 3c01801f lui r1, 0x801f       
-00032dec: ac2007b4 sw r0,0x07b4(r1)     *0x1f07b4 = r0
-00032df0: 0c00bef4 jal 0x0002fbd0       2fbd0()//
+00032dec: ac2007b4 sw r0,0x07b4(r1)     	*0x1f07b4 = r0
+00032df0: 0c00bef4 jal 0x0002fbd0       	2fbd0()//
 00032df4: 24040002 addiu r4,r0,0x0002   
-00032df8: 0c00d5dd jal 0x00035774       35774()//
+00032df8: 0c00d5dd jal 0x00035774       	35774()//
 00032dfc: 00000000 nop                  
 00032e00: 3c02801b lui r2, 0x801b       
-00032e04: 8c42c520 lw r2,0xc520(r2)     r2 = *0x1ac520
+00032e04: 8c42c520 lw r2,0xc520(r2)     	r2 = *0x1ac520
 00032e08: 00000000 nop                  
 00032e0c: 2443ffe4 addiu r3,r2,0xffe4   
 00032e10: 2c620034 sltiu r2,r3,0x0034   
 00032e14: 10400048 beq r2,r0,0x00032f38 
 00032e18: 00031080 sll r2,r3,2          
-                                        if(r2 != 0)
+											if(*0x1ac520 - 1c  < 0x34)
+												goto player_death_stage_2 //set death animation
 00032e1c: 3c018002 lui r1, 0x8002       
 00032e20: 00220821 addu r1,r1,r2        
-00032e24: 8c222fbc lw r2,0x2fbc(r1)     r2 = *0x22fbc
+00032e24: 8c222fbc lw r2,0x2fbc(r1)     	r2 = r1[2fbc]
 00032e28: 00000000 nop                  
 00032e2c: 00400008 jr r2                
 00032e30: 00000000 nop                  
 00032e34: 3c02801b lui r2, 0x801b       
-00032e38: 8c42c544 lw r2,0xc544(r2)     r2 = *0x1ac544
+00032e38: 8c42c544 lw r2,0xc544(r2)     	r2 = *0x1ac544
 00032e3c: 00000000 nop                  
 00032e40: 10400043 beq r2,r0,0x00032f50 
 00032e44: 00000000 nop                  
-                                        if(r2 != 0)
-00032e48: 0c013e7a jal 0x0004f9e8       4f9e8()//
+											if(r2 != 0)
+00032e48: 0c013e7a jal 0x0004f9e8       	ret = 4f9e8(0x27)//
 00032e4c: 24040027 addiu r4,r0,0x0027   
 00032e50: 10400008 beq r2,r0,0x00032e74 
 00032e54: 24020001 addiu r2,r0,0x0001   
-                                        if(r2 != 0)
-00032e58: 0c00d3ad jal 0x00034eb4       34eb4()//
+											if(ret == 0)
+												goto player_death_stage_3
+00032e58: 0c00d3ad jal 0x00034eb4       	34eb4(0x27)//
 00032e5c: 24040027 addiu r4,r0,0x0027   
 00032e60: 24020004 addiu r2,r0,0x0004   
 00032e64: 1622fd64 bne r17,r2,0x000323f8
 00032e68: 2402001d addiu r2,r0,0x001d   
-                                        }
+											}
 00032e6c: 0800cbd2 j 0x00032f48         
-00032e70: 00000000 nop                  
-                                        else
-
+00032e70: 00000000 nop                  }
+                                        
+player_death_stage_3
 0x00032e74: 3c03801f lui r3, 0x801f     
 00032e78: 8c63fe00 lw r3,0xfe00(r3)     r3 = *0x1efe00
 00032e7c: 3c01801f lui r1, 0x801f       
-00032e80: ac220f94 sw r2,0x0f94(r1)     *0x1f0f94 = r2
+00032e80: ac220f94 sw r2,0x0f94(r1)     *breakoutgameloop = r2
 00032e84: 24020008 addiu r2,r0,0x0008   
 00032e88: 3c01801f lui r1, 0x801f       
 00032e8c: ac220f98 sw r2,0x0f98(r1)     *0x1f0f98 = r2
@@ -1113,58 +1119,58 @@
 00032eb4: ac23fe00 sw r3,0xfe00(r1)     *0x1efe00 = r3
 00032eb8: 0800cbd4 j 0x00032f50         
 00032ebc: 00000000 nop                  
-                                        else
+//deadcode                     
 00032ec0: 24020004 addiu r2,r0,0x0004   
 00032ec4: 16220022 bne r17,r2,0x00032f50
 00032ec8: 2402003c addiu r2,r0,0x003c   
-                                        if(r17 == r2)
+//deadcode                             if(r17 == r2)
 00032ecc: 0800cbd2 j 0x00032f48         
 00032ed0: 00000000 nop                  
-                                        else
+//deadcode
 00032ed4: 24020004 addiu r2,r0,0x0004   
 00032ed8: 1222001d beq r17,r2,0x00032f50
 00032edc: 24020039 addiu r2,r0,0x0039   
-                                        if(r17 != r2)
+//deadcode                             if(r17 != r2)
 00032ee0: 0800cbd2 j 0x00032f48         
 00032ee4: 00000000 nop                  
-                                        else
+//deadcode                              else
 00032ee8: 24020004 addiu r2,r0,0x0004   
 00032eec: 12220016 beq r17,r2,0x00032f48
 00032ef0: 2402003c addiu r2,r0,0x003c   
-                                        if(r17 != r2)
+//deadcode                              if(r17 != r2)
 00032ef4: 3c02801b lui r2, 0x801b       
 00032ef8: 8c42c544 lw r2,0xc544(r2)     r2 = *0x1ac544
 00032efc: 00000000 nop                  
 00032f00: 10400013 beq r2,r0,0x00032f50 
 00032f04: 24020039 addiu r2,r0,0x0039   
-                                        if(r2 != 0)
+//deadcode                              if(r2 != 0)
 00032f08: 0800cbd2 j 0x00032f48         
 00032f0c: 00000000 nop                  
-                                        else
+//deadcode                               else
 00032f10: 24020004 addiu r2,r0,0x0004   
 00032f14: 1622000c bne r17,r2,0x00032f48
 00032f18: 24020039 addiu r2,r0,0x0039   
-                                        if(r17 == r2)
+//deadcode                              if(r17 == r2)
 00032f1c: 3c02801b lui r2, 0x801b       
 00032f20: 8c42c544 lw r2,0xc544(r2)     r2 = *0x1ac544
 00032f24: 00000000 nop                  
 00032f28: 10400009 beq r2,r0,0x00032f50 
 00032f2c: 2402003c addiu r2,r0,0x003c   
-                                        if(r2 != 0)
+//deadcode                              if(r2 != 0)
 00032f30: 0800cbd2 j 0x00032f48         
 00032f34: 00000000 nop                  
                                         else
-
+player_death_stage_2
 0x00032f38: 24020004 addiu r2,r0,0x0004 
 00032f3c: 16220002 bne r17,r2,0x00032f48
 00032f40: 24020039 addiu r2,r0,0x0039   
-                                        if(r17 == r2)
-00032f44: 2402003c addiu r2,r0,0x003c   
+                                        if(r17 == 4)
+00032f44: 2402003c addiu r2,r0,0x003c   	return 0x39
 
 0x00032f48: 3c01801b lui r1, 0x801b     
 00032f4c: ac22c520 sw r2,0xc520(r1)     *0x1ac520 = r2
 
-0x00032f50: 0c00c2ec jal 0x00030bb0     30bb0()//
+0x00032f50: 0c00c2ec jal 0x00030bb0     30bb0()//unknownplayerupdate
 00032f54: 00000000 nop                  
 00032f58: 3c04801b lui r4, 0x801b       
 00032f5c: 8c84c4b0 lw r4,0xc4b0(r4)     r4 = *0x1ac4b0
@@ -1172,7 +1178,7 @@
 00032f64: 00000000 nop                  
 00032f68: 3c04801b lui r4, 0x801b       
 00032f6c: 8c84c4ac lw r4,0xc4ac(r4)     r4 = *0x1ac4ac
-00032f70: 0c013cb3 jal 0x0004f2cc       4f2cc()//
+00032f70: 0c013cb3 jal 0x0004f2cc       4f2cc(playerhealth)//
 00032f74: 00000000 nop                  
 00032f78: 8fbf0028 lw r31,0x0028(r29)   
 00032f7c: 8fb30024 lw r19,0x0024(r29)   
