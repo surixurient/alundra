@@ -24,7 +24,7 @@
                                         if (ret > 0) {
 0003dd04: 24090001 addiu r9,r0,0x0001   
 0003dd08: 3c038014 lui r3, 0x8014       
-0003dd0c: 2463d224 addiu r3,r3,0xd224   //0x14d224
+0003dd0c: 2463d224 addiu r3,r3,0xd224   //0x13d224
 0003dd10: 00434021 addu r8,r2,r3        
                                         do{
 

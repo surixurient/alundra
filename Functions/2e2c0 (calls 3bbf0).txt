@@ -1,4 +1,4 @@
-0002e2c0: 27bdffe8 addiu r29,r29,0xffe8 
+0002e2c0: 27bdffe8 addiu r29,r29,0xffe8 void ()//calls 3bbf0
 0002e2c4: 3c020003 lui r2, 0x0003       
 0002e2c8: 3c03801e lui r3, 0x801e       
 0002e2cc: 8c63d810 lw r3,0xd810(r3)     

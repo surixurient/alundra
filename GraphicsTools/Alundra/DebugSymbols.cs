@@ -80,14 +80,12 @@ namespace GraphicsTools.Alundra
             AddFunction(0x3d298, "getentityfromrefid", "can also get entities");
             AddFunction(0x3d160, "outputdebuginfo", "");
             AddFunction(0x42adc, "innerdoevents", "");
+            AddFunction(0x432a4, "", "advances frame and sound");
             AddFunction(0x48ed4, "", "overlays ui/dialogs");
             AddFunction(0x4a04c, "playsoundeffect", "");
             AddFunction(0x4c2a4, "playmusic", "");
             AddFunction(0x4f9e8, "seektozero", "called in unknownplayerupdate");
             AddFunction(0x50054, "", "something with sound.bin");
-            AddFunction(0x8cd24, "", "advance frame and sound");
-            AddFunction(0x8ce6c, "", "framecounter wait");
-            AddFunction(0x432a4, "", "advances frame and sound");
             AddFunction(0x83e08, "printdebug","");
             AddFunction(0x83e18, "printdebugparams","");
             AddFunction(0x84ef8, "printdebugerror", "");
@@ -95,6 +93,8 @@ namespace GraphicsTools.Alundra
             AddFunction(0x845dc, "seektozero", "");
             AddFunction(0x8cc94, "getcontrollerinput", "");
             AddFunction(0x8cd04, "controllerhardwareaccess", "");
+            AddFunction(0x8cd24, "", "advance frame and sound");
+            AddFunction(0x8ce6c, "", "framecounter wait");
             //new[] { "outputdebuginfo", "printdebug", "printdebugparams", "printdebugerror" }
 
 
@@ -142,6 +142,7 @@ namespace GraphicsTools.Alundra
 
             EntityVarOffsets[0x0] = "entityid";
             EntityVarOffsets[0x10] = "status";//3 = invisible, 4 = destroyed
+            EntityVarOffsets[0x14] = "health";
             EntityVarOffsets[0x28] = "refentity";//platform entity
             EntityVarOffsets[0x30] = "refxoff";//platformxoff
             EntityVarOffsets[0x34] = "refyoff";//platformyoff
@@ -328,20 +329,23 @@ namespace GraphicsTools.Alundra
             MapNames[392] = "ship int";
 
             GlobalVariableNames.Clear();
+            AddGlobalVariable(0x13d224, "numentities","");
             AddGlobalVariable(0x9b5b4, "eventhandlers","");
-            AddGlobalVariable(0x1e6118, "mapgameflags", "");
-            AddGlobalVariable(0x1ed0d4, "globalgameflags", "");
-            AddGlobalVariable(0x1bc498, "playerentity", "");
+            
+            AddGlobalVariable(0x1ac498, "playerentity", "");
 
-            AddGlobalVariable(0x1f0f94, "breakoutgameloop", "");
-            AddGlobalVariable(0x1efe10, "gamemap", "gamemapinfo");
-            AddGlobalVariable(0x1ac5b8, "playerxtile", "");
-            AddGlobalVariable(0x1ac5bc, "playerytile", "");
-
+            AddGlobalVariable(0x1d6118, "mapgameflags", "");
             AddGlobalVariable(0x1d84e0, "somegravitysetting", "");
-            AddGlobalVariable(0x1efe00, "playercontrolsetting", "");
-            AddGlobalVariable(0x1ac4ac, "playerhealth", "");
+            AddGlobalVariable(0x1dd0d4, "globalgameflags", "");
             AddGlobalVariable(0x1dd7e8, "playerinput", "");
+
+            AddGlobalVariable(0x1efe00, "playercontrolsetting", "");
+            AddGlobalVariable(0x1efe10, "gamemap", "gamemapinfo");
+            AddGlobalVariable(0x1f0f94, "breakoutgameloop", "");
+
+            
+
+            //AddPlayerVariableRange(0x1ac498, "playercharacter")
 
         }
 

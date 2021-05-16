@@ -409,7 +409,19 @@ namespace GraphicsTools
                                         var name2 = "0x" + fulladdr2.ToString("x");
                                         if (globalvars.ContainsKey(fulladdr2))
                                             name2 = globalvars[fulladdr2].name;
-                                        
+
+                                        if (fulladdr2 > 0x1ac498 && fulladdr2 < (0x1ac498 + 0x294))
+                                        {
+                                            name2 = "playercharacter";
+                                            var off = fulladdr2 - 0x1ac498;
+                                            var evarname = evars[off];
+                                            if (!string.IsNullOrEmpty(evarname))
+                                                name2 += "." + evarname;
+                                            else
+                                                name2 += "[" + off.ToString("x") + "]";
+
+                                        }
+
                                         if (inst.cmd == "lw" || inst.cmd == "lh" || inst.cmd == "lhu" || inst.cmd == "lb" || inst.cmd == "lbu")
                                             ccode = MIPS.GetRegister(inst.rt) + " = *" + name2;
                                         else if (inst.cmd == "sw" || inst.cmd == "sh" || inst.cmd == "shu" || inst.cmd == "sb" || inst.cmd == "sbu")
@@ -441,6 +453,17 @@ namespace GraphicsTools
                                 {
                                     if (globalvars.ContainsKey(fulladdr))
                                         ccode = "//" + globalvars[fulladdr].name;
+                                    else if (fulladdr > 0x1ac498 && fulladdr < (0x1ac498 + 0x294))
+                                    {
+                                        var name2 = "playercharacter";
+                                        var off = fulladdr - 0x1ac498;
+                                        var evarname = evars[off];
+                                        if (!string.IsNullOrEmpty(evarname))
+                                            name2 += "." + evarname;
+                                        else
+                                            name2 += "[" + off.ToString("x") + "]";
+                                        ccode = "//" + name2;
+                                    }
                                     else
                                         ccode = "//0x" + fulladdr.ToString("x");
                                 }
@@ -651,6 +674,22 @@ namespace GraphicsTools
                 address = addr;
                 if (globalvars.ContainsKey(address))
                     name = globalvars[address].name;
+
+                if (addr > 0x1ac498 && addr < (0x1ac498 + 0x294))
+                {
+                    //if (name!=null)
+                    //{
+                    //    string s = "testc";
+                    //}
+                    name = "playercharacter";
+                    var off = addr - 0x1ac498;
+                    var evarname = Alundra.DebugSymbols.EntityVarOffsets[off];
+                    if (!string.IsNullOrEmpty(evarname))
+                        name += "." + evarname;
+                    else
+                        name += "[" + off.ToString("x") + "]";
+                    
+                }
             }
             public uint address;
             public string name;
@@ -775,6 +814,7 @@ namespace GraphicsTools
                     hasdebugoutput = true;
             }
             public uint address;
+            public string addressstring { get { return address.ToString("x"); } }
             public int length;
             public string name;
             public string notes;

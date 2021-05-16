@@ -203,9 +203,9 @@ namespace alundramultitool
                             cmd = "addi";
                             display =  string.Format(threevalformat, "addi", srt, srs, simmediate);
                             break;
-                        case 0x9://add immediate unsigned
+                        case 0x9://add immediate unsigned (the immediate is always signed, this is kind of nuts 
                             cmd = "addiu";
-                            display = string.Format(threevalformat, "addiu", srt, srs, simmediateu);
+                            display = string.Format(threevalformat, "addiu", srt, srs, simmediate);
                             break;
                         case 0x23://load word
                             cmd = "lw";
@@ -370,9 +370,9 @@ namespace alundramultitool
                             switch (this.cmd)
                             {
                                 case "ori":
-                                case "addiu":
                                     fulladdr = (uint)((UInt32)(((uint)binst.immediate & 0xff) << 16) | this.immediateu);
                                     break;
+                                case "addiu":
                                 case "addi":
                                     fulladdr = (uint)((UInt32)(((uint)binst.immediate & 0xff) << 16) + this.immediate);
                                     break;
