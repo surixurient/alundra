@@ -538,7 +538,7 @@ namespace alundramultitool
                 {
                     foreach (var edge in OutEdges)
                     {
-                        if (edge.Address <= Address)
+                        if (edge != null && edge.Address <= Address)
                             return true;
                     }
                     return false;

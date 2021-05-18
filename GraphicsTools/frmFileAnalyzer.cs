@@ -521,11 +521,11 @@ namespace GraphicsTools
                     {
                         //output nothing special, this jump is just ending a pretested or infinite loop
                     }
-                    else if (block.OutEdges[0].BlockType == MIPS.BlockType.Return)
+                    else if (block.OutEdges[0] != null && block.OutEdges[0].BlockType == MIPS.BlockType.Return)
                     {
                         ftext += RawIndent(codestart) + Indent(indentlevel) + "return\r\n";
                     }
-                    else if (block.OutEdges[0].EndsLoop)
+                    else if (block.OutEdges[0] != null && block.OutEdges[0].EndsLoop)
                     {
                         ftext += RawIndent(codestart) + Indent(indentlevel) + "continue\r\n";
                     }
@@ -752,7 +752,7 @@ namespace GraphicsTools
                 length = (int)(function.Last().address - address);
                 var blocks = AnalyzeFunction(function);
 
-                
+                var debugnames = new[] { "outputdebuginfo", "printdebug", "printdebugparams", "printdebugerror" };
 
                 foreach (var block in blocks)
                 {
@@ -768,6 +768,45 @@ namespace GraphicsTools
                                 }
                                 if (!calledfunctions.Contains(calledfunc))
                                     calledfunctions.Add(calledfunc);
+
+                                if (debugnames.Contains(calledfunc.name))
+                                {
+                                    var mdex = block.Instructions.IndexOf(inst);
+                                    int seekback = 10;
+                                    for (int dex = mdex + 1; dex >= mdex - (1 + seekback) && dex >= 0; dex--)
+                                    {
+                                        int reg = 4;
+                                        if (calledfunc.name == "printdebugerror")
+                                            reg = 5;
+                                        var tinst = block.Instructions[dex];
+                                        if (tinst.type == MIPS.InstructionType.Itype && tinst.rt == reg)
+                                        {
+                                            var spos = tinst.GetGlobalVariable(block);
+                                            if (spos > 0 && spos < 0x80000)
+                                            {
+                                                var sstream = File.OpenRead(datafile);
+                                                sstream.Position = spos;
+                                                byte[] buff = new byte[1024];
+                                                sstream.Read(buff, 0, 1024);
+                                                StringBuilder sb = new StringBuilder();
+                                                for(int sdex=0;sdex<1024;sdex++)
+                                                {
+                                                    if (buff[sdex] == 0)
+                                                        break;
+                                                    sb.Append((char)buff[sdex]);
+
+                                                }
+                                                debugstrings.Add(sb.ToString());
+                                            }
+                                            else
+                                            {
+                                                string s = "why";
+                                            }
+                                            break;
+                                        }
+                                    }
+                                }
+
                                 break;
                             case "jalr":
                                 callsfunctionpointers = true;
@@ -809,7 +848,7 @@ namespace GraphicsTools
                     }
                 }
 
-                var debugnames = new[] { "outputdebuginfo", "printdebug", "printdebugparams", "printdebugerror" };
+                
                 if (calledfunctions.Any(x => debugnames.Contains(x.name)))
                     hasdebugoutput = true;
             }
@@ -826,6 +865,7 @@ namespace GraphicsTools
             public bool callsfunctionpointers = false;
             public bool hasloop = false;
             public bool hasdebugoutput = false;
+            List<string> debugstrings = new List<string>();
 
             public List<AnalyzedFunction> stack = new List<AnalyzedFunction>();
             public List<AnalyzedFunction> maxstack = new List<AnalyzedFunction>();
@@ -889,7 +929,7 @@ namespace GraphicsTools
             foreach(var func in analyzedfunctions)
             {
                 //set calledby
-                foreach(var testfunc in analyzedfunctions)
+                foreach (var testfunc in analyzedfunctions)
                 {
                     if (func!=testfunc)
                     {
@@ -906,7 +946,23 @@ namespace GraphicsTools
 
             analyzedfunctions = analyzedfunctions.OrderBy(x => x.address).ToList();
 
-            foreach(var gvar in analyzedglobalvariables)
+            lstFunctions.Items.Clear();
+            foreach (var func in analyzedfunctions)
+            {
+                string fname = "";
+                if (!string.IsNullOrEmpty(func.name) || !string.IsNullOrEmpty(func.notes))
+                {
+                    fname += " (";
+                    if (!string.IsNullOrEmpty(func.name))
+                        fname += func.name;
+                    if (!string.IsNullOrEmpty(func.notes))
+                        fname += "//" + func.notes;
+                    fname += ")";
+                }
+                lstFunctions.Items.Add("0x" + func.address.ToString("x") + fname);
+            }
+
+                foreach (var gvar in analyzedglobalvariables)
             {
                 foreach(var testfunc in analyzedfunctions)
                 {

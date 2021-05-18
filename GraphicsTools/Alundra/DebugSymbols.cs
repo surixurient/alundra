@@ -97,8 +97,11 @@ namespace GraphicsTools.Alundra
             AddFunction(0x8ce6c, "", "framecounter wait");
             //new[] { "outputdebuginfo", "printdebug", "printdebugparams", "printdebugerror" }
 
-
-
+            AddFunction(0x2e720, "validateclut", "");
+            AddFunction(0x2e968, "processpalettes", "");
+            AddFunction(0x2c9e0, "checkcamerapans", "");
+            AddFunction(0x2e3a4, "rendersprites", "");
+            AddFunction(0x2ddb8, "rendersprite", "");
 
 
 
@@ -343,7 +346,17 @@ namespace GraphicsTools.Alundra
             AddGlobalVariable(0x1efe10, "gamemap", "gamemapinfo");
             AddGlobalVariable(0x1f0f94, "breakoutgameloop", "");
 
-            
+            AddGlobalVariable(0x1ef1d4, "camxpos", "");
+            AddGlobalVariable(0x1ef1d8, "camypos", "");
+            AddGlobalVariable(0x1530dc, "mapsizetodraw", "");
+            AddGlobalVariable(0x9ad04, "framecounter", "");
+            AddGlobalVariable(0x1ac464, "maptilesptr", "");
+            AddGlobalVariable(0x141db8, "tilexylookuptable ", "//helps with the math to get an x and a y and a sheet from a tile index. tilesheet, x, y. x = x%10 * 24 y = y/10*16");
+            AddGlobalVariable(0x1dd044, "tilepageinfo", "");
+            AddGlobalVariable(0x13a000, "numsprites", "");
+            AddGlobalVariable(0x1c6598, "spriteframecounter", "");
+
+
 
             //AddPlayerVariableRange(0x1ac498, "playercharacter")
 
