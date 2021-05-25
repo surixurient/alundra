@@ -32,13 +32,13 @@ namespace GraphicsTools.Alundra
         public static void Init()
         {
             FunctionNames.Clear();
-            AddFunction(0x2abe8, "", "tons of potential error messages");
+            AddFunction(0x2abe8, "debugcheck", "tons of potential error messages");
             AddFunction(0x2bc18, "update", "main update");
             AddFunction(0x2bdb8, "render", "renders maps and sprites");
             AddFunction(0x2bef0, "", "calls 2e2c0");
             AddFunction(0x2c038, "main", "main loop");
-            AddFunction(0x2cf8c, "", "something with map");
-            AddFunction(0x2e2c0, "", "calls 3bbf0");
+            AddFunction(0x2cf8c, "rendermap", "something with map");
+            AddFunction(0x2e2c0, "update", "calls 3bbf0");
             AddFunction(0x2e4c8, "writeinputotlocation", "");
             AddFunction(0x2e61c, "getplayerinput", "");
             AddFunction(0x2f440, "checkportals", "");
@@ -71,7 +71,7 @@ namespace GraphicsTools.Alundra
             AddFunction(0x39648, "", "called before dophysics");
             AddFunction(0x396ac, "", "called after dophysics");
             AddFunction(0x39b24, "", "after dophysics");
-            AddFunction(0x3bbf0, "", "calls doevents and dophysics");
+            AddFunction(0x3bbf0, "updateentities", "calls doevents and dophysics");
             AddFunction(0x3c390, "", "init thing");
             AddFunction(0x3c46c, "", "something with effect animation");
             AddFunction(0x3c730, "", "after after dophysics, drop something on map?");
@@ -79,9 +79,9 @@ namespace GraphicsTools.Alundra
             AddFunction(0x3cf7c, "", "before calls doevents");
             AddFunction(0x3d298, "getentityfromrefid", "can also get entities");
             AddFunction(0x3d160, "outputdebuginfo", "");
-            AddFunction(0x42adc, "innerdoevents", "");
-            AddFunction(0x432a4, "", "advances frame and sound");
-            AddFunction(0x48ed4, "", "overlays ui/dialogs");
+            AddFunction(0x42adc, "runentityeventscripts", "innerdoevents");
+            AddFunction(0x432a4, "presentframe", "advances frame and sound");
+            AddFunction(0x48ed4, "drawui", "overlays ui/dialogs");
             AddFunction(0x4a04c, "playsoundeffect", "");
             AddFunction(0x4c2a4, "playmusic", "");
             AddFunction(0x4f9e8, "seektozero", "called in unknownplayerupdate");
@@ -94,7 +94,23 @@ namespace GraphicsTools.Alundra
             AddFunction(0x8cc94, "getcontrollerinput", "");
             AddFunction(0x8cd04, "controllerhardwareaccess", "");
             AddFunction(0x8cd24, "", "advance frame and sound");
-            AddFunction(0x8ce6c, "", "framecounter wait");
+            AddFunction(0x8ce6c, "vsync", "framecounter wait");
+            AddFunction(0x8af84, "cdcontrol", "");
+            AddFunction(0x89f08, "", "calls cd");
+            AddFunction(0x8a040, "", "calls cd");
+            AddFunction(0x8a16c, "", "calls cd");
+            AddFunction(0x89e98, "", "calls cd");
+            AddFunction(0x8aa38, "cdsync", "");
+            AddFunction(0x8a4c0, "diskread", "");
+            AddFunction(0x8acb8, "", "calls cd");
+            AddFunction(0x8bbc0, "iowithdebugger", "?");
+            AddFunction(0x5c800, "opencdfile", "");
+            AddFunction(0x8bc10, "cdsearchfile", "");
+            AddFunction(0x8bf14, "cdnewmedia", "");
+            AddFunction(0x8c880, "cdread", "");
+            AddFunction(0x8794c, "putdrawenv", "");
+            AddFunction(0x87b24, "putdispenv", "");
+            AddFunction(0x42fec, "somedrawcommands", "");
             //new[] { "outputdebuginfo", "printdebug", "printdebugparams", "printdebugerror" }
 
             AddFunction(0x2e720, "validateclut", "");
@@ -103,9 +119,20 @@ namespace GraphicsTools.Alundra
             AddFunction(0x2e3a4, "rendersprites", "");
             AddFunction(0x2ddb8, "rendersprite", "");
 
+            AddFunction(0x869bc, "setcmdto4pointtexturedpoly", "");
+            AddFunction(0x86a20, "setcmdtosomething1", "");
+            AddFunction(0x86908, "setcmdtosomething2", "");
+            AddFunction(0x86930, "setcmdtosomething3", "");
+            AddFunction(0x84598, "copystring", "src, dest");
+            AddFunction(0x873e0, "imagecommand", "commandtext, rect  //clear, load, store");
+            AddFunction(0x87508, "clearimage", "");
+            AddFunction(0x8759c, "loadimage", "");
+            AddFunction(0x87600, "storeimage", "");
+            AddFunction(0x87374, "drawsync", "");
 
+            AddFunction(0x4c378, "playmusic", "");
 
-
+            AddFunction(0x83e00, "emptyfunc", "");
 
 
 
@@ -355,6 +382,19 @@ namespace GraphicsTools.Alundra
             AddGlobalVariable(0x1dd044, "tilepageinfo", "");
             AddGlobalVariable(0x13a000, "numsprites", "");
             AddGlobalVariable(0x1c6598, "spriteframecounter", "");
+
+            AddGlobalVariable(0x1f2bb0, "spritesheets", "");
+            AddGlobalVariable(0x12e040, "palettes", "");
+            AddGlobalVariable(0x1ef124, "dialogcmdlist", "");
+            AddGlobalVariable(0x1ef120, "dialogstatus", "");
+            AddGlobalVariable(0x1ef132, "dialogpalette", "");
+            AddGlobalVariable(0x1ef13a, "dialogsheet", "");
+            AddGlobalVariable(0x1efbf0, "dialogname", "");
+
+            AddGlobalVariable(0x1068a0, "dialogtextbuffer", "");
+            AddGlobalVariable(0x10722c, "dialogtextcmdbuffer", "");
+            AddGlobalVariable(0x1f3df0, "mapstrings", "");
+            AddGlobalVariable(0x1f2ef0, "globalstrings", "");
 
 
 

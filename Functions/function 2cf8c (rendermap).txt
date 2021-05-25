@@ -1,4 +1,4 @@
-0002cf8c: 27bdffa0 addiu r29,r29,0xffa0 void rendermap(param1)
+0002cf8c: 27bdffa0 addiu r29,r29,0xffa0 void rendermap(sortingcmdtable)
 0002cf90: afbe0058 sw r30,0x0058(r29)   
 0002cf94: 0080f021 addu r30,r4,r0       
 0002cf98: afb00038 sw r16,0x0038(r29)   
@@ -177,7 +177,7 @@
 0002d1f8: 24632ee0 addiu r3,r3,0x2ee0   
 0002d1fc: 00438821 addu r17,r2,r3       //cmdbufferpages = 0x1d0d98 + 0x3520 + 0x2ee0
                                         
-										//no idea what this does, loops 6 times moving around bytes in the 7byte records
+										//this probably sets up texture page info table, loops 6 times moving around bytes in the 7byte records
 										tptr = 0x1dd040
 										do{
 
@@ -375,7 +375,7 @@
 0002d49c: 8e030000 lw r3,0x0000(r16)        	r3 = cmdbuffertiles[0]
 0002d4a0: 02823021 addu r6,r20,r2           	//camytile*16 + page
 0002d4a4: 00062080 sll r4,r6,2              
-0002d4a8: 009e2021 addu r4,r4,r30           	//param1
+0002d4a8: 009e2021 addu r4,r4,r30           	//sortingcmdtable
 0002d4ac: 8c820000 lw r2,0x0000(r4)         	
 0002d4b0: 00791824 and r3,r3,r25            
 0002d4b4: 004d1024 and r2,r2,r13            
@@ -475,7 +475,7 @@
 0002d608: 02821021 addu r2,r20,r2             		
 0002d60c: 24460007 addiu r6,r2,0x0007         		//(camytile*16 + somethingptr[0]+7)
 0002d610: 00062080 sll r4,r6,2                
-0002d614: 009e2021 addu r4,r4,r30             		addr = param1 + (camytile*16 + somethingptr[0]+7)*4
+0002d614: 009e2021 addu r4,r4,r30             		addr = sortingcmdtable + (camytile*16 + somethingptr[0]+7)*4
 0002d618: 8c820000 lw r2,0x0000(r4)           		paramval = addr[0]
 0002d61c: 00791824 and r3,r3,r25              
 0002d620: 004d1024 and r2,r2,r13              
@@ -551,7 +551,7 @@
 0002d708: ae230004 sw r3,0x0004(r17)        	cmdbufferpages[4] = r3
 0002d70c: 26b50001 addiu r21,r21,0x0001     	pagecount++
 0002d710: 00062080 sll r4,r6,2              
-0002d714: 009e2021 addu r4,r4,r30           	addr = param1 + offset*4
+0002d714: 009e2021 addu r4,r4,r30           	addr = sortingcmdtable + offset*4
 0002d718: 8e230000 lw r3,0x0000(r17)        	wierdvar = cmdbufferpages[0]
 0002d71c: 8c820000 lw r2,0x0000(r4)         	paramvar = addr[0]
 0002d720: 006a1824 and r3,r3,r10            	
@@ -579,7 +579,7 @@
 0002d770: ae230004 sw r3,0x0004(r17)        	cmdbufferpages[4] = r3
 0002d774: 26b50001 addiu r21,r21,0x0001     	pagecount++
 0002d778: 00062080 sll r4,r6,2              
-0002d77c: 009e2021 addu r4,r4,r30           	addr = param1 + offset*4
+0002d77c: 009e2021 addu r4,r4,r30           	addr = sortingcmdtable + offset*4
 0002d780: 8e230000 lw r3,0x0000(r17)        	r3 = cmdbufferpages[0]
 0002d784: 8c820000 lw r2,0x0000(r4)         	r2 = addr[0]
 0002d788: 006a1824 and r3,r3,r10            

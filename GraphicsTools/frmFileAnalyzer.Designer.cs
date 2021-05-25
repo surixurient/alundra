@@ -72,6 +72,15 @@
             this.btnJumpFunctionList = new System.Windows.Forms.Button();
             this.btnAlundraEventFuncs = new System.Windows.Forms.Button();
             this.btnFunctionTracer = new System.Windows.Forms.Button();
+            this.lblFloat16 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.canvas = new System.Windows.Forms.Panel();
+            this.btnDraw = new System.Windows.Forms.Button();
+            this.txtNumVerts = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.lblFloat = new System.Windows.Forms.Label();
+            this.tvFuncs = new System.Windows.Forms.TreeView();
             this.SuspendLayout();
             // 
             // rtfText
@@ -128,7 +137,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(649, 97);
+            this.label5.Location = new System.Drawing.Point(649, 87);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(35, 17);
@@ -138,7 +147,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(649, 113);
+            this.label6.Location = new System.Drawing.Point(649, 103);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(43, 17);
@@ -148,7 +157,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(649, 129);
+            this.label7.Location = new System.Drawing.Point(649, 119);
             this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(43, 17);
@@ -158,7 +167,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(649, 145);
+            this.label8.Location = new System.Drawing.Point(649, 135);
             this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(35, 17);
@@ -168,7 +177,7 @@
             // lbl8bit
             // 
             this.lbl8bit.AutoSize = true;
-            this.lbl8bit.Location = new System.Drawing.Point(751, 97);
+            this.lbl8bit.Location = new System.Drawing.Point(751, 87);
             this.lbl8bit.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lbl8bit.Name = "lbl8bit";
             this.lbl8bit.Size = new System.Drawing.Size(16, 17);
@@ -178,7 +187,7 @@
             // lbl16bit
             // 
             this.lbl16bit.AutoSize = true;
-            this.lbl16bit.Location = new System.Drawing.Point(751, 113);
+            this.lbl16bit.Location = new System.Drawing.Point(751, 103);
             this.lbl16bit.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lbl16bit.Name = "lbl16bit";
             this.lbl16bit.Size = new System.Drawing.Size(16, 17);
@@ -188,7 +197,7 @@
             // lbl32bit
             // 
             this.lbl32bit.AutoSize = true;
-            this.lbl32bit.Location = new System.Drawing.Point(751, 129);
+            this.lbl32bit.Location = new System.Drawing.Point(751, 119);
             this.lbl32bit.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lbl32bit.Name = "lbl32bit";
             this.lbl32bit.Size = new System.Drawing.Size(16, 17);
@@ -198,7 +207,7 @@
             // lbl4bita
             // 
             this.lbl4bita.AutoSize = true;
-            this.lbl4bita.Location = new System.Drawing.Point(751, 145);
+            this.lbl4bita.Location = new System.Drawing.Point(751, 135);
             this.lbl4bita.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lbl4bita.Name = "lbl4bita";
             this.lbl4bita.Size = new System.Drawing.Size(16, 17);
@@ -238,7 +247,7 @@
             // lbl4bitb
             // 
             this.lbl4bitb.AutoSize = true;
-            this.lbl4bitb.Location = new System.Drawing.Point(795, 145);
+            this.lbl4bitb.Location = new System.Drawing.Point(795, 135);
             this.lbl4bitb.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lbl4bitb.Name = "lbl4bitb";
             this.lbl4bitb.Size = new System.Drawing.Size(16, 17);
@@ -471,7 +480,7 @@
             this.txtFunction.Multiline = true;
             this.txtFunction.Name = "txtFunction";
             this.txtFunction.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtFunction.Size = new System.Drawing.Size(492, 420);
+            this.txtFunction.Size = new System.Drawing.Size(492, 410);
             this.txtFunction.TabIndex = 42;
             this.txtFunction.WordWrap = false;
             // 
@@ -488,7 +497,7 @@
             // 
             // btnJumpFunctionList
             // 
-            this.btnJumpFunctionList.Location = new System.Drawing.Point(862, 3);
+            this.btnJumpFunctionList.Location = new System.Drawing.Point(869, -48);
             this.btnJumpFunctionList.Margin = new System.Windows.Forms.Padding(4);
             this.btnJumpFunctionList.Name = "btnJumpFunctionList";
             this.btnJumpFunctionList.Size = new System.Drawing.Size(47, 85);
@@ -499,7 +508,7 @@
             // 
             // btnAlundraEventFuncs
             // 
-            this.btnAlundraEventFuncs.Location = new System.Drawing.Point(862, 89);
+            this.btnAlundraEventFuncs.Location = new System.Drawing.Point(611, -54);
             this.btnAlundraEventFuncs.Margin = new System.Windows.Forms.Padding(4);
             this.btnAlundraEventFuncs.Name = "btnAlundraEventFuncs";
             this.btnAlundraEventFuncs.Size = new System.Drawing.Size(47, 97);
@@ -519,11 +528,103 @@
             this.btnFunctionTracer.UseVisualStyleBackColor = true;
             this.btnFunctionTracer.Click += new System.EventHandler(this.btnFunctionTracer_Click);
             // 
+            // lblFloat16
+            // 
+            this.lblFloat16.AutoSize = true;
+            this.lblFloat16.Location = new System.Drawing.Point(751, 152);
+            this.lblFloat16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblFloat16.Name = "lblFloat16";
+            this.lblFloat16.Size = new System.Drawing.Size(16, 17);
+            this.lblFloat16.TabIndex = 47;
+            this.lblFloat16.Text = "0";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(649, 152);
+            this.label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(55, 17);
+            this.label14.TabIndex = 48;
+            this.label14.Text = "float 16";
+            // 
+            // canvas
+            // 
+            this.canvas.Location = new System.Drawing.Point(22, 451);
+            this.canvas.Name = "canvas";
+            this.canvas.Size = new System.Drawing.Size(608, 386);
+            this.canvas.TabIndex = 49;
+            this.canvas.Paint += new System.Windows.Forms.PaintEventHandler(this.canvas_Paint);
+            // 
+            // btnDraw
+            // 
+            this.btnDraw.Location = new System.Drawing.Point(669, 451);
+            this.btnDraw.Name = "btnDraw";
+            this.btnDraw.Size = new System.Drawing.Size(76, 29);
+            this.btnDraw.TabIndex = 50;
+            this.btnDraw.Text = "draw";
+            this.btnDraw.UseVisualStyleBackColor = true;
+            this.btnDraw.Click += new System.EventHandler(this.btnDraw_Click);
+            // 
+            // txtNumVerts
+            // 
+            this.txtNumVerts.Location = new System.Drawing.Point(671, 486);
+            this.txtNumVerts.Name = "txtNumVerts";
+            this.txtNumVerts.Size = new System.Drawing.Size(90, 22);
+            this.txtNumVerts.TabIndex = 51;
+            this.txtNumVerts.Text = "100";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(767, 491);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(70, 17);
+            this.label15.TabIndex = 52;
+            this.label15.Text = "num verts";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(649, 166);
+            this.label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(55, 17);
+            this.label16.TabIndex = 53;
+            this.label16.Text = "float 32";
+            // 
+            // lblFloat
+            // 
+            this.lblFloat.AutoSize = true;
+            this.lblFloat.Location = new System.Drawing.Point(751, 166);
+            this.lblFloat.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblFloat.Name = "lblFloat";
+            this.lblFloat.Size = new System.Drawing.Size(16, 17);
+            this.lblFloat.TabIndex = 54;
+            this.lblFloat.Text = "0";
+            // 
+            // tvFuncs
+            // 
+            this.tvFuncs.Location = new System.Drawing.Point(917, 431);
+            this.tvFuncs.Name = "tvFuncs";
+            this.tvFuncs.Size = new System.Drawing.Size(621, 419);
+            this.tvFuncs.TabIndex = 56;
+            this.tvFuncs.DoubleClick += new System.EventHandler(this.tvFuncs_DoubleClick);
+            // 
             // frmFileAnalyzer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(2057, 456);
+            this.ClientSize = new System.Drawing.Size(2057, 862);
+            this.Controls.Add(this.tvFuncs);
+            this.Controls.Add(this.lblFloat);
+            this.Controls.Add(this.label16);
+            this.Controls.Add(this.label15);
+            this.Controls.Add(this.txtNumVerts);
+            this.Controls.Add(this.btnDraw);
+            this.Controls.Add(this.canvas);
+            this.Controls.Add(this.label14);
+            this.Controls.Add(this.lblFloat16);
             this.Controls.Add(this.btnFunctionTracer);
             this.Controls.Add(this.btnAlundraEventFuncs);
             this.Controls.Add(this.btnJumpFunctionList);
@@ -625,5 +726,14 @@
         private System.Windows.Forms.Button btnJumpFunctionList;
         private System.Windows.Forms.Button btnAlundraEventFuncs;
         private System.Windows.Forms.Button btnFunctionTracer;
+        private System.Windows.Forms.Label lblFloat16;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Panel canvas;
+        private System.Windows.Forms.Button btnDraw;
+        private System.Windows.Forms.TextBox txtNumVerts;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label lblFloat;
+        private System.Windows.Forms.TreeView tvFuncs;
     }
 }

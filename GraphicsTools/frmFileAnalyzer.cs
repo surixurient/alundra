@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Runtime.InteropServices;
 using alundramultitool;
+using System.Numerics;
 
 namespace GraphicsTools
 {
@@ -19,7 +20,41 @@ namespace GraphicsTools
         {
             InitializeComponent();
             Alundra.DebugSymbols.Init();
+            canvas.MouseWheel += Canvas_MouseWheel;
+
+            canvas.MouseDown += Canvas_MouseDown;
+
+            canvas.MouseMove += Canvas_MouseMove;
         }
+
+        private void Canvas_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                int moved = e.Location.Y - lastpos.Y;
+                rot += 0.1f * moved;
+                lastpos = e.Location;
+                canvas.Refresh();
+            }
+        }
+
+        Point lastpos;
+
+        private void Canvas_MouseDown(object sender, MouseEventArgs e)
+        {
+            lastpos = e.Location;
+        }
+
+        float camzoom = 1;
+        private void Canvas_MouseWheel(object sender, MouseEventArgs e)
+        {
+            camzoom += 0.5f * (e.Delta > 0 ? 1 : -1);
+            canvas.Refresh();
+        }
+
+        Vector3 camerapos = new Vector3(0, -100, 0);
+        Vector3 cameratarget = new Vector3(0, 0, 0);
+        Matrix4x4 camera; //= Matrix4x4.CreateLookAt(camerapos, cameratarget, new Vector3(0, 1, 0));
 
         public string datafile;
 
@@ -50,7 +85,7 @@ namespace GraphicsTools
         }
 
         int instOffset = 0;
-        List<MIPS.Instruction> instructions = new List<MIPS.Instruction>();
+        List<ISInstruction> instructions = new List<ISInstruction>();
         List<uint> functions = new List<uint>();
         void loadchunk(int offset, bool alundraeventlist = false)
         {
@@ -78,14 +113,14 @@ namespace GraphicsTools
                     functions.Add(0xFFFFFFF & addr);
                 }
 
-                for (int fdex=0;fdex<functions.Count;fdex++)
+                for (int fdex = 0; fdex < functions.Count; fdex++)
                 {
                     var functaddr = functions[fdex];
                     var sicode = Alundra.SpriteInfoEventCodes.GetCode((byte)fdex);
 
                     string fname = $"({sicode.code.ToString("x2")}_{sicode.name}_handler)";
 
-                    lstFunctions.Items.Add("0x"+functaddr.ToString("x") + fname);
+                    lstFunctions.Items.Add("0x" + functaddr.ToString("x") + fname);
                 }
             }
             else
@@ -117,6 +152,7 @@ namespace GraphicsTools
             }
         }
 
+        bool flip = true;
         void DisplayData(int pos)
         {
             int addrOffset = 0;
@@ -128,10 +164,21 @@ namespace GraphicsTools
 
             lbl8bit.Text = data[pos].ToString() + " (" + data[pos].ToString("x2") + ")"; ;
             long l = data[pos] | data[pos + 1] << 8;
+            if (flip)
+                l = data[pos + 1] | data[pos] << 8;
             lbl16bit.Text = l.ToString() + " (" + l.ToString("x4") + ")";
             l = data[pos] | data[pos + 1] << 8 | data[pos + 2] << 16 | (long)data[pos + 3] << 24;
+            if (flip)
+                l = data[pos + 3] | data[pos + 2] << 8 | data[pos + 1] << 16 | (long)data[pos + 0] << 24;
             lbl32bit.Text = l.ToString() + " (" + l.ToString("x8") + ")";
 
+            short s = (short)l;
+            float f = s * 360f / 65536f;
+            lblFloat16.Text = f.ToString();
+            short s1 = (short)(data[pos + 1] | data[pos] << 8);
+            ushort s2 = (ushort)(data[pos + 3] | data[pos + 2] << 8);
+            f = s1 + s2 / 65536.0f;
+            lblFloat.Text = f.ToString();
             lbl4bita.Text = ((data[pos] & 0xf0) >> 4).ToString();
             lbl4bitb.Text = (data[pos] & 0xf).ToString();
         }
@@ -208,7 +255,7 @@ namespace GraphicsTools
             }
             viewer = new frmViewer();
             viewer.Show();
-            viewer.init(imagedata,16,4, width, height, palettes);
+            viewer.init(imagedata, 16, 4, width, height, palettes);
         }
 
         private void btnJump_Click(object sender, EventArgs e)
@@ -217,7 +264,7 @@ namespace GraphicsTools
             loadchunk(offset);
         }
 
-        
+
 
         private void btnViewPal_Click(object sender, EventArgs e)
         {
@@ -237,7 +284,7 @@ namespace GraphicsTools
             }
             var frm = new frmViewer();
             frm.Show();
-            frm.initpalette(viewer, imagedata,16,4, width, height);
+            frm.initpalette(viewer, imagedata, 16, 4, width, height);
         }
 
         private void rtfText_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -258,6 +305,8 @@ namespace GraphicsTools
             for (int dex = rtfText.SelectionStart + 1; dex < data.Length - 3; dex++)
             {
                 long num = data[dex] | data[dex + 1] << 8 | data[dex + 2] << 16 | data[dex + 3] << 24;
+                if (flip)
+                    num = data[dex + 3] | data[dex + 2] << 8 | data[dex + 1] << 16 | data[dex + 0] << 24;
                 if (num >= search && num <= search + range)
                 {
                     rtfText.Focus();
@@ -281,6 +330,10 @@ namespace GraphicsTools
             for (int dex = rtfText.SelectionStart + 1; dex < data.Length - 3; dex++)
             {
                 long num = data[dex] | data[dex + 1] << 8;// | data[dex + 2] << 16 | data[dex + 3] << 24;
+                if (flip)
+                {
+                    num = data[dex+1] | data[dex + 0] << 8;
+                }
                 if (num >= search && num <= search + range)
                 {
                     rtfText.Focus();
@@ -290,7 +343,7 @@ namespace GraphicsTools
                 }
             }
         }
-        List<MIPS.Instruction> selectedFunction = null;
+        List<ISInstruction> selectedFunction = null;
         private void lstFunctions_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (lstFunctions.SelectedIndex >= 0)
@@ -304,7 +357,7 @@ namespace GraphicsTools
 
                 bool exit = false;
 
-                selectedFunction = new List<MIPS.Instruction>();
+                selectedFunction = new List<ISInstruction>();
 
                 for (int dex = 0; dex < 10000; dex += 4)
                 {
@@ -321,7 +374,7 @@ namespace GraphicsTools
             }
         }
 
-        string PrintFunction(List<MIPS.CodeBlock> blocks)
+        public static string PrintFunction(List<CodeBlock<ISInstruction>> blocks)
         {
             string ftext = "";
 
@@ -387,11 +440,11 @@ namespace GraphicsTools
                                         inst.immediate += 0x134;
                                     //assume entity struct
                                     if (inst.immediate > 0xc && inst.immediate < evars.Length)
-                                    { 
-                                        
+                                    {
+
                                         if (!string.IsNullOrEmpty(evars[inst.immediate]))
                                         {
-                                           
+
                                             if (inst.cmd == "lw" || inst.cmd == "lh" || inst.cmd == "lhu" || inst.cmd == "lb" || inst.cmd == "lbu")
                                                 ccode = MIPS.GetRegister(inst.rt) + " = " + MIPS.GetRegister(inst.rs) + "." + evars[inst.immediate];
                                             else if (inst.cmd == "sw" || inst.cmd == "sh" || inst.cmd == "shu" || inst.cmd == "sb" || inst.cmd == "sbu")
@@ -400,7 +453,7 @@ namespace GraphicsTools
                                                 inst.immediate -= 0x134;
                                             break;
                                         }
-                                        
+
                                     }
 
                                     var fulladdr2 = inst.GetGlobalVariable(block);
@@ -432,7 +485,7 @@ namespace GraphicsTools
                                         if (inst.cmd == "lw" || inst.cmd == "lh" || inst.cmd == "lhu" || inst.cmd == "lb" || inst.cmd == "lbu")
                                             ccode = MIPS.GetRegister(inst.rt) + " = " + MIPS.GetRegister(inst.rs) + "[" + inst.immediate.ToString("x") + "]";
                                         else if (inst.cmd == "sw" || inst.cmd == "sh" || inst.cmd == "shu" || inst.cmd == "sb" || inst.cmd == "sbu")
-                                            ccode = MIPS.GetRegister(inst.rs) + "[" + inst.immediate.ToString("x") + "]" + " = " + MIPS.GetRegister(inst.rt);    
+                                            ccode = MIPS.GetRegister(inst.rs) + "[" + inst.immediate.ToString("x") + "]" + " = " + MIPS.GetRegister(inst.rt);
                                     }
                                     if (nudgewierdness)
                                         inst.immediate -= 0x134;
@@ -442,12 +495,12 @@ namespace GraphicsTools
                             case "addiu":
                             case "addi":
                             case "ori":
-                            //case "lw":
-                            //case "sw":
-                            //case "lhu":
-                            //case "lh":
-                            //case "shu":
-                            //case "sh":
+                                //case "lw":
+                                //case "sw":
+                                //case "lhu":
+                                //case "lh":
+                                //case "shu":
+                                //case "sh":
                                 var fulladdr = inst.GetGlobalVariable(block);
                                 if (fulladdr != 0)
                                 {
@@ -468,28 +521,28 @@ namespace GraphicsTools
                                         ccode = "//0x" + fulladdr.ToString("x");
                                 }
                                 break;
-                            /*case "addiu":
-                                //get prev lui
-                                var mdex = block.Instructions.IndexOf(inst);
-                                uint addr = inst.immediateu;
-                                var reg = inst.rs;
-                                for (int dex = mdex-1;mdex>=dex-3 && dex >=0;dex--)
-                                {
-                                    var binst = block.Instructions[dex];
-                                    if (binst.cmd == "lui" && binst.rt == reg)
+                                /*case "addiu":
+                                    //get prev lui
+                                    var mdex = block.Instructions.IndexOf(inst);
+                                    uint addr = inst.immediateu;
+                                    var reg = inst.rs;
+                                    for (int dex = mdex-1;mdex>=dex-3 && dex >=0;dex--)
                                     {
-                                        uint fulladdr = (uint)((UInt32)(((uint)binst.immediate & 0xff) << 16) | addr);
+                                        var binst = block.Instructions[dex];
+                                        if (binst.cmd == "lui" && binst.rt == reg)
+                                        {
+                                            uint fulladdr = (uint)((UInt32)(((uint)binst.immediate & 0xff) << 16) | addr);
 
-                                        if (globalvars.ContainsKey(fulladdr))
-                                            ccode = "//" + globalvars[fulladdr];
-                                        else
-                                            ccode = "//0x" + fulladdr.ToString("x");
-                                        break;
+                                            if (globalvars.ContainsKey(fulladdr))
+                                                ccode = "//" + globalvars[fulladdr];
+                                            else
+                                                ccode = "//0x" + fulladdr.ToString("x");
+                                            break;
+                                        }
                                     }
-                                }
-                                
-                                //get prev
-                                break;*/
+
+                                    //get prev
+                                    break;*/
                         }
                     }
                     string asm = string.Format("{0}: {1} {2}", ((block.Instructions.IndexOf(inst) == 0 && block.IsJumpTarget) ? "0x" : "") + inst.address.ToString("x8"), inst.instruction.ToString("x8"), inst.display);
@@ -500,7 +553,7 @@ namespace GraphicsTools
                     indentlevel--;
                     ftext += RawIndent(codestart) + Indent(indentlevel) + "}\r\n";
                 }
-                if (block.BlockType == MIPS.BlockType.TwoWay)
+                if (block.BlockType == BlockType.TwoWay)
                 {
                     if (block.EndsLoop)
                     {
@@ -508,20 +561,20 @@ namespace GraphicsTools
                     }
                     else if (block.BranchOperation != null)
                     {
-                        ftext += RawIndent(codestart) + Indent(indentlevel) + block.BranchOperation.Print()  + "\r\n";
+                        ftext += RawIndent(codestart) + Indent(indentlevel) + block.BranchOperation.Print() + "\r\n";
                     }
                     else
                     {
                         ftext += RawIndent(codestart) + Indent(indentlevel) + "if\r\n";
                     }
                 }
-                if (block.BlockType == MIPS.BlockType.OneWay)
+                if (block.BlockType == BlockType.OneWay)
                 {
                     if (block.EndsLoop)
                     {
                         //output nothing special, this jump is just ending a pretested or infinite loop
                     }
-                    else if (block.OutEdges[0] != null && block.OutEdges[0].BlockType == MIPS.BlockType.Return)
+                    else if (block.OutEdges[0] != null && block.OutEdges[0].BlockType == BlockType.Return)
                     {
                         ftext += RawIndent(codestart) + Indent(indentlevel) + "return\r\n";
                     }
@@ -541,7 +594,7 @@ namespace GraphicsTools
             return ftext;
         }
 
-        string Indent(int indentlevel)
+        static string Indent(int indentlevel)
         {
             string indent = "";
             for (int dex = 0; dex < indentlevel; dex++)
@@ -551,7 +604,7 @@ namespace GraphicsTools
             return indent;
         }
 
-        string RawIndent(int indentlevel)
+        static string RawIndent(int indentlevel)
         {
             string indent = "";
             for (int dex = 0; dex < indentlevel; dex++)
@@ -561,14 +614,14 @@ namespace GraphicsTools
             return indent;
         }
 
-        static List<MIPS.CodeBlock> AnalyzeFunction(List<MIPS.Instruction> function)
+        public static List<CodeBlock<ISInstruction>> AnalyzeFunction(List<ISInstruction> function)
         {
             List<uint> refs = function.Select(x => x.referencedAddress).Where(x => x != 0).ToList();
 
 
-            List<MIPS.CodeBlock> blocks = new List<MIPS.CodeBlock>();
+            List<CodeBlock<ISInstruction>> blocks = new List<CodeBlock<ISInstruction>>();
 
-            var block = new MIPS.CodeBlock();
+            var block = new CodeBlock<ISInstruction>();
 
             for (int dex = 0; dex < function.Count; dex++)
             {
@@ -577,26 +630,26 @@ namespace GraphicsTools
                 {
                     if (block.Instructions.Count > 0)
                     {
-                        block.BlockType = MIPS.BlockType.FallThrough;
+                        block.BlockType = BlockType.FallThrough;
                         block.OutAddresses.Add(inst.address);
                         blocks.Add(block);
-                        block = new MIPS.CodeBlock();
+                        block = new CodeBlock<ISInstruction>();
                     }
                 }
                 if (inst.IsCall)
                 {
-                    block.BlockType = MIPS.BlockType.Call;
+                    block.BlockType = BlockType.Call;
                     block.OutAddresses.Add(inst.address + 8);
                     block.Instructions.Add(inst);
                     dex++;
                     inst = function[dex];
                     block.Instructions.Add(inst);
                     blocks.Add(block);
-                    block = new MIPS.CodeBlock();
+                    block = new CodeBlock<ISInstruction>();
                 }
                 else if (inst.IsReturn)
                 {
-                    block.BlockType = MIPS.BlockType.Return;
+                    block.BlockType = BlockType.Return;
                     block.Instructions.Add(inst);
                     dex++;
                     if (dex < function.Count)
@@ -609,7 +662,7 @@ namespace GraphicsTools
                 }
                 else if (inst.IsBranch)
                 {
-                    block.BlockType = MIPS.BlockType.TwoWay;
+                    block.BlockType = BlockType.TwoWay;
                     block.OutAddresses.Add(inst.referencedAddress);
                     block.OutAddresses.Add(inst.address + 8);
                     block.Instructions.Add(inst);
@@ -617,18 +670,18 @@ namespace GraphicsTools
                     inst = function[dex];
                     block.Instructions.Add(inst);
                     blocks.Add(block);
-                    block = new MIPS.CodeBlock();
+                    block = new CodeBlock<ISInstruction>();
                 }
                 else if (inst.IsJump)
                 {
-                    block.BlockType = MIPS.BlockType.OneWay;
+                    block.BlockType = BlockType.OneWay;
                     block.OutAddresses.Add(inst.referencedAddress);
                     block.Instructions.Add(inst);
                     dex++;
                     inst = function[dex];
                     block.Instructions.Add(inst);
                     blocks.Add(block);
-                    block = new MIPS.CodeBlock();
+                    block = new CodeBlock<ISInstruction>();
                 }
                 else
                 {
@@ -667,7 +720,7 @@ namespace GraphicsTools
 
         public class AnalyzedGlobalVariable
         {
-            public AnalyzedGlobalVariable (uint addr, List<AnalyzedGlobalVariable> varlist)
+            public AnalyzedGlobalVariable(uint addr, List<AnalyzedGlobalVariable> varlist)
             {
                 varlist.Add(this);
                 var globalvars = Alundra.DebugSymbols.GlobalVariableNames;
@@ -688,7 +741,7 @@ namespace GraphicsTools
                         name += "." + evarname;
                     else
                         name += "[" + off.ToString("x") + "]";
-                    
+
                 }
             }
             public uint address;
@@ -713,7 +766,7 @@ namespace GraphicsTools
         }
         public class AnalyzedFunction
         {
-            public AnalyzedFunction(uint addr, List<AnalyzedFunction> funclist, List<AnalyzedGlobalVariable> varlist, string datafile, Func<List<MIPS.Instruction>,List<MIPS.CodeBlock>> AnalyzeFunction, uint endaddr = 0)
+            public AnalyzedFunction(uint addr, List<AnalyzedFunction> funclist, List<AnalyzedGlobalVariable> varlist, string datafile, Func<List<ISInstruction>, List<CodeBlock<ISInstruction>>> AnalyzeFunction, uint endaddr = 0)
             {
                 var fnames = Alundra.DebugSymbols.FunctionNames;
                 var evars = Alundra.DebugSymbols.EntityVarOffsets;
@@ -728,7 +781,7 @@ namespace GraphicsTools
                     notes = fnames[address].comment;
                 }
 
-                
+
 
                 var fdat = new byte[chunklength];
                 var stream = File.OpenRead(datafile);
@@ -738,7 +791,7 @@ namespace GraphicsTools
 
                 bool exit = false;
 
-                var function = new List<MIPS.Instruction>();
+                var function = new List<ISInstruction>();
 
                 for (int dex = 0; dex < 10000; dex += 4)
                 {
@@ -746,7 +799,7 @@ namespace GraphicsTools
                     function.Add(inst);
                     if (exit)
                         break;
-                    if (inst.IsReturn || ( endaddr != 0 && inst.address == endaddr))
+                    if (inst.IsReturn || (endaddr != 0 && inst.address == endaddr))
                         exit = true;
                 }
                 length = (int)(function.Last().address - address);
@@ -778,7 +831,7 @@ namespace GraphicsTools
                                         int reg = 4;
                                         if (calledfunc.name == "printdebugerror")
                                             reg = 5;
-                                        var tinst = block.Instructions[dex];
+                                        var tinst = (MIPS.Instruction)block.Instructions[dex];
                                         if (tinst.type == MIPS.InstructionType.Itype && tinst.rt == reg)
                                         {
                                             var spos = tinst.GetGlobalVariable(block);
@@ -789,7 +842,7 @@ namespace GraphicsTools
                                                 byte[] buff = new byte[1024];
                                                 sstream.Read(buff, 0, 1024);
                                                 StringBuilder sb = new StringBuilder();
-                                                for(int sdex=0;sdex<1024;sdex++)
+                                                for (int sdex = 0; sdex < 1024; sdex++)
                                                 {
                                                     if (buff[sdex] == 0)
                                                         break;
@@ -837,10 +890,10 @@ namespace GraphicsTools
                                         globalvariables.Add(gvar);
                                 }
                                 break;
-                            
+
 
                         }
-       
+
                     }
                     if (block.EndsLoop)
                     {
@@ -848,7 +901,30 @@ namespace GraphicsTools
                     }
                 }
 
-                
+                foreach(var gvar in globalvariables)
+                {
+                    if (gvar.address >= 0x29f30 && gvar.address <= 0x2aaba)
+                    {
+                        //its in the range of some string variables
+                        var sstream = File.OpenRead(datafile);
+                        sstream.Position = gvar.address;
+                        byte[] buff = new byte[1024];
+                        sstream.Read(buff, 0, 1024);
+                        StringBuilder sb = new StringBuilder();
+                        for (int sdex = 0; sdex < 1024; sdex++)
+                        {
+                            if (buff[sdex] == 0)
+                                break;
+                            sb.Append((char)buff[sdex]);
+
+                        }
+                        var toadd = sb.ToString();
+                        if (!debugstrings.Contains(toadd))
+                            debugstrings.Add(toadd);
+                        hasdebugoutput = true;
+                    }
+                }
+
                 if (calledfunctions.Any(x => debugnames.Contains(x.name)))
                     hasdebugoutput = true;
             }
@@ -865,7 +941,7 @@ namespace GraphicsTools
             public bool callsfunctionpointers = false;
             public bool hasloop = false;
             public bool hasdebugoutput = false;
-            List<string> debugstrings = new List<string>();
+            public List<string> debugstrings = new List<string>();
 
             public List<AnalyzedFunction> stack = new List<AnalyzedFunction>();
             public List<AnalyzedFunction> maxstack = new List<AnalyzedFunction>();
@@ -906,7 +982,7 @@ namespace GraphicsTools
                 return DisplayName + "()" + (!string.IsNullOrEmpty(notes) ? $"//{notes}" : "") +
                     " funcs:" + calledfunctions.Count +
                     " calledby:" + calledby.Count +
-                    " depth:" + maxstack.Count + 
+                    " depth:" + maxstack.Count +
                     (hasdebugoutput ? "hasdebug" : "");
             }
         }
@@ -914,6 +990,29 @@ namespace GraphicsTools
         List<AnalyzedFunction> analyzedfunctions = new List<AnalyzedFunction>();
         List<AnalyzedGlobalVariable> analyzedglobalvariables = new List<AnalyzedGlobalVariable>();
         AnalyzedFunction root = null;
+
+
+        TreeNode GetNode(AnalyzedFunction func, bool recursive = false)
+        {
+            var displayname = func.ToString();
+            var node = new TreeNode(displayname);
+            if (!recursive)
+            {
+                foreach (var child in func.calledfunctions)
+                {
+                    bool isrecursive = func.stack.Contains(child);
+                    node.Nodes.Add(GetNode(child, isrecursive));
+                }
+            }
+            else
+            {
+                //its a recursively called function
+                //indicate it somehow?
+            }
+            
+
+            return node;
+        }
         
         private void btnFunctionTracer_Click(object sender, EventArgs e)
         {
@@ -924,14 +1023,15 @@ namespace GraphicsTools
             var endaddress = (uint)0x0002c518;
             analyzedfunctions = new List<AnalyzedFunction>();
             analyzedglobalvariables = new List<AnalyzedGlobalVariable>();
+            
             root = new AnalyzedFunction(address, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction, endaddress);
 
-            foreach(var func in analyzedfunctions)
+            foreach (var func in analyzedfunctions)
             {
                 //set calledby
                 foreach (var testfunc in analyzedfunctions)
                 {
-                    if (func!=testfunc)
+                    if (func != testfunc)
                     {
                         if (testfunc.calledfunctions.Contains(func))
                         {
@@ -962,9 +1062,9 @@ namespace GraphicsTools
                 lstFunctions.Items.Add("0x" + func.address.ToString("x") + fname);
             }
 
-                foreach (var gvar in analyzedglobalvariables)
+            foreach (var gvar in analyzedglobalvariables)
             {
-                foreach(var testfunc in analyzedfunctions)
+                foreach (var testfunc in analyzedfunctions)
                 {
                     if (testfunc.globalvariables.Contains(gvar))
                     {
@@ -975,6 +1075,73 @@ namespace GraphicsTools
 
             analyzedglobalvariables = analyzedglobalvariables.OrderByDescending(x => x.functions.Count).ToList();
 
+            tvFuncs.Nodes.Clear();
+
+            tvFuncs.Nodes.Add(GetNode(root));
+        }
+
+        float rot = 0f;
+        List<Vector3> points = new List<Vector3> {new Vector3(-10,10,0), new Vector3(10,10,0), new Vector3(10,-10,0), new Vector3(-10,-10,0)  };
+        private void canvas_Paint(object sender, PaintEventArgs e)
+        {
+            var g = e.Graphics;
+            //camera = Matrix4x4.CreateLookAt(camerapos, camerapos + new Vector3(0,0,1), new Vector3(0, 1, 0));
+            //var proj = Matrix4x4.CreatePerspectiveFieldOfView((float)Math.PI / 4f * 1.4f, 9.0f / 6.0f, 1, 30000.0f);
+            var rotmat = Matrix4x4.CreateRotationX(rot);
+            camera = Matrix4x4.CreateScale(new Vector3(camzoom, camzoom, camzoom));
+            camera.Translation = new Vector3(canvas.Width / 2, canvas.Height / 2, 0);
+
+            camera = camera * rotmat;
+
+
+            float width = canvas.Width/2;
+            float height = canvas.Height/2;
+
+            if (points != null)
+            {
+                foreach(var pnt in points)
+                {
+                    var p1 = Vector3.Transform(pnt, camera);
+                    g.DrawLine(Pens.Red, p1.X, p1.Y, p1.X + 1, p1.Y + 1);
+                }
+            }
+
+        }
+
+        int drawpos=0;
+        float GetSaturnFixedFloat()
+        {
+            short s = (short)(data[drawpos+0] << 8 | data[drawpos+1]);
+            drawpos += 2;
+            short s2 = (short)(data[drawpos+0] << 8 | data[drawpos+1]);
+            drawpos += 2;
+            return s + (s2 / 65536.0f);
+        }
+
+        private void btnDraw_Click(object sender, EventArgs e)
+        {
+            points = new List<Vector3>();
+            var numverts = ParseNum(txtNumVerts.Text);
+            drawpos = rtfText.SelectionStart;
+            for(var vert = 0;vert<numverts;vert++)
+            {
+                Vector3 v;
+                v.X = GetSaturnFixedFloat();
+                v.Y = GetSaturnFixedFloat();
+                v.Z = GetSaturnFixedFloat();
+                points.Add(v);
+            }
+            canvas.Refresh();
+        }
+
+        private void tvFuncs_DoubleClick(object sender, EventArgs e)
+        {
+            if (tvFuncs.SelectedNode != null)
+            {
+                var func = analyzedfunctions.FirstOrDefault(x => x.ToString() == tvFuncs.SelectedNode.Text);
+                var frm = new frmAnalyzedFunction(func, datafile);
+                frm.Show();
+            }
         }
     }
 }

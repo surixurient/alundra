@@ -27,13 +27,13 @@
 0003df74: 90c60007 lbu r6,0x0007(r6)    	r6 = set.images[0].sheight
 0003df78: 3c01801f lui r1, 0x801f       	
 0003df7c: 00270821 addu r1,r1,r7        	
-0003df80: 94272bb0 lhu r7,0x2bb0(r1)    	spritesheet = *(uint16*)(0x801f2bb0 + ((entity[1b0]+(set.images[0].spritesheet & 7))<<1))
+0003df80: 94272bb0 lhu r7,0x2bb0(r1)    	spritesheet = *(uint16*)(0x801f2bb0 + ((entity.addedtosheet + (set.images[0].spritesheet & 7))<<1))
 0003df84: 3042003f andi r2,r2,0x003f    
 0003df88: 00621821 addu r3,r3,r2        
 0003df8c: 00031840 sll r3,r3,1          	
 0003df90: 3c018013 lui r1, 0x8013       
 0003df94: 00230821 addu r1,r1,r3        
-0003df98: 9423e040 lhu r3,0xe040(r1)    	palette = *(uint16*)(0x8013e040 + ((entity[1b4] + (set.images[0].palette & 0x3f))<<1))
+0003df98: 9423e040 lhu r3,0xe040(r1)    	palette = *(uint16*)(0x8013e040 + ((entity.addedtopalette + (set.images[0].palette & 0x3f))<<1))
 0003df9c: 3c02801f lui r2, 0x801f       
 0003dfa0: 2442f1d8 addiu r2,r2,0xf1d8   	//0x1ff1d8
 0003dfa4: afa60020 sw r6,0x0020(r29)    
@@ -45,7 +45,7 @@
 0003dfbc: afa80014 sw r8,0x0014(r29)    
 0003dfc0: afa90018 sw r9,0x0018(r29)    
 0003dfc4: afaa001c sw r10,0x001c(r29)   	//this function draws the character portrait sprite
-0003dfc8: 0c016682 jal 0x00059a08       	59a08(&xpos,&ypos,&zpos,0x1ff1d4,0x1ff1d8(10), sx(14), sy(18),width(1c),height(20), palette(24),spritesheet(28))
+0003dfc8: 0c016682 jal 0x00059a08       	wrapsdialogsetupportrait(&xpos,&ypos,&zpos,camxpos,camypos, sx(14), sy(18),width(1c),height(20), palette(24),spritesheet(28))
 0003dfcc: afa30024 sw r3,0x0024(r29)    
 										}
 0x0003dfd0: 8e040068 lw r4,0x0068(r16)  

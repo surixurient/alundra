@@ -5,7 +5,7 @@ using System.Text;
 
 namespace alundramultitool
 {
-    public class MIPS
+    public class InstructionSet
     {
         public static int ValAtOffset(uint instruction, int width, int bitoffset)
         {
@@ -21,6 +21,219 @@ namespace alundramultitool
         }
 
 
+
+        
+
+        
+
+        
+
+    }
+
+    public class BranchOperation<T> where T : ISInstruction
+    {
+        public BranchOperation(T instruction, CodeBlock<T> block)
+        {
+            this.Instruction = instruction;
+            this.Block = block;
+            if (instruction.cmd == "beq" || instruction.cmd == "bne")
+            {
+                Comp1 = MIPS.GetRegister(instruction.rs);
+                Comp2 = MIPS.GetRegister(instruction.rt);
+                if (Comp1 == "r0")
+                    Comp1 = "0";
+                if (Comp2 == "r0")
+                    Comp2 = "0";
+            }
+            else
+            {
+                Comp1 = MIPS.GetRegister(instruction.rs);
+                Comp2 = "0";
+            }
+        }
+        public T Instruction;
+        public CodeBlock<T> Block;
+        public string Comp1;
+        public string Comp2;
+
+        //todo make this generic and implimented for each instruction set
+        public string Print()
+        {
+            string text = "if";
+
+            T previnst = null;
+            var prevdex = Block.Instructions.IndexOf(Instruction) - 1;
+            if (prevdex >= 0)
+                previnst = Block.Instructions[prevdex];
+            //"beq", "bgezal", "bgez", "bltz", "bltzal", "bgtz", "blez", "bne"
+            switch (Instruction.cmd)
+            {
+                case "beq":
+                    if (Comp2 == "0" && previnst != null && previnst.rd == Instruction.rs && (previnst.cmd == "slt" || previnst.cmd == "sltu"))
+                    {
+                        Comp1 = MIPS.GetRegister(previnst.rs);
+                        Comp2 = MIPS.GetRegister(previnst.rt);
+                        if (Comp1 == "r0")
+                            Comp1 = "0";
+                        if (Comp2 == "r0")
+                            Comp2 = "0";
+                        text += string.Format("({0} < {1})", Comp1, Comp2);
+                    }
+                    else
+                    {
+                        text += string.Format("({0} != {1})", Comp1, Comp2);
+                    }
+
+                    break;
+                case "bne":
+                    text += string.Format("({0} == {1})", Comp1, Comp2);
+                    break;
+                case "bgez":
+                    text += string.Format("({0} < {1})", Comp1, Comp2);
+                    break;
+                case "bltz":
+                    text += string.Format("({0} >= {1})", Comp1, Comp2);
+                    break;
+                case "bgtz":
+                    text += string.Format("({0} <= {1})", Comp1, Comp2);
+                    break;
+                case "blez":
+                    text += string.Format("({0} > {1})", Comp1, Comp2);
+                    break;
+            }
+
+            return text;
+        }
+    }
+
+    public class CodeBlock<T> where T : ISInstruction
+    {
+        public List<T> Instructions = new List<T>();
+
+        public BlockType BlockType;
+        public List<CodeBlock<T>> InEdges = new List<CodeBlock<T>>();
+        public List<CodeBlock<T>> OutEdges = new List<CodeBlock<T>>();
+        public List<uint> OutAddresses = new List<uint>();
+
+
+        public uint Address
+        {
+            get
+            {
+                return Instructions.FirstOrDefault().address;
+            }
+        }
+
+        public uint EndAddress
+        {
+            get
+            {
+                return Instructions.LastOrDefault().address + 4;
+            }
+        }
+
+        public bool IsJumpTarget
+        {
+            get
+            {
+                foreach (var edge in InEdges)
+                {
+                    if (edge.EndAddress != Address)
+                        return true;
+                }
+                return false;
+            }
+        }
+
+        public bool BeginsLoop
+        {
+            get
+            {
+                foreach (var edge in InEdges)
+                {
+                    if (edge.Address >= Address)
+                        return true;
+                }
+                return false;
+            }
+        }
+
+        public bool EndsLoop
+        {
+            get
+            {
+                foreach (var edge in OutEdges)
+                {
+                    if (edge != null && edge.Address <= Address)
+                        return true;
+                }
+                return false;
+            }
+        }
+
+        public BranchOperation<T> BranchOperation
+        {
+            get
+            {
+                if (BlockType == BlockType.TwoWay && Instructions[Instructions.Count - 2].IsBranch)
+                {
+                    return new BranchOperation<T>(Instructions[Instructions.Count - 2], this);
+                }
+                return null;
+            }
+        }
+
+
+
+    }
+
+    public abstract class ISInstruction
+    {
+        public string cmd;
+        public uint referencedAddress;
+        public string display;
+
+        public uint instruction;
+        public int opcode;
+        public int funct;
+        public int rs;
+        public int rt;
+        public int rd;//displacement register
+        public int shamt;//shift amount
+        public uint address;
+        public int immediate;
+        public uint immediateu;
+
+        public int rn;//destination register
+        public int rm;//source register
+        public int disp;//displacement immediate
+
+        public abstract bool IsBranch { get; }
+        public abstract bool IsCall { get; }
+        public abstract bool IsJump { get; }
+        public abstract bool IsReturn { get; }
+
+        public abstract uint GetGlobalVariable(CodeBlock<ISInstruction> block);
+
+    }
+
+
+
+    public enum BlockType
+    {
+        OneWay,
+        TwoWay,
+        NWay,
+        Call,
+        Return,
+        FallThrough
+    }
+
+    
+
+
+    public class MIPS: InstructionSet
+    {
         public static string GetRegister(int num)
         {
             return "r" + num;
@@ -33,7 +246,7 @@ namespace alundramultitool
             Itype
         }
         
-        public class Instruction
+        public class Instruction : ISInstruction
         {
             public Instruction(uint address, uint instruction)
             {
@@ -303,23 +516,11 @@ namespace alundramultitool
                     }
                 }
             }
-            public string cmd;
-            public uint referencedAddress;
-            public string display;
 
             public InstructionType type;
-            public uint instruction;
-            public int opcode;
-            public int funct;
-            public int rs;
-            public int rt;
-            public int rd;
-            public int shamt;
-            public uint address;
-            public int immediate;
-            public uint immediateu;
 
-            public bool IsCall
+
+            public override bool IsCall
             {
                 get
                 {
@@ -327,7 +528,7 @@ namespace alundramultitool
                 }
             }
 
-            public bool IsBranch
+            public override bool IsBranch
             {
                 get
                 {
@@ -335,7 +536,7 @@ namespace alundramultitool
                 }
             }
 
-            public bool IsJump
+            public override bool IsJump
             {
                 get
                 {
@@ -343,7 +544,7 @@ namespace alundramultitool
                 }
             }
 
-            public bool IsReturn
+            public override bool IsReturn
             {
                 get
                 {
@@ -351,7 +552,7 @@ namespace alundramultitool
                 }
             }
 
-            public uint GetGlobalVariable(CodeBlock block)
+            public override uint GetGlobalVariable(CodeBlock<ISInstruction> block)
             {
                 //var varlist = GraphicsTools.Alundra.DebugSymbols.GlobalVariableNames;
                 //if its a global variable then return the address
@@ -363,7 +564,7 @@ namespace alundramultitool
                     int seekback = 2;
                     for (int dex = mdex - 1; dex >= mdex - (1 + seekback) && dex >= 0; dex--)
                     {
-                        var binst = block.Instructions[dex];
+                        var binst = (Instruction)block.Instructions[dex];
                         if (binst.cmd == "lui" && binst.rt == this.rs)
                         {
                             uint fulladdr = 0;
@@ -405,170 +606,8 @@ namespace alundramultitool
             }
         }
 
-        public class BranchOperation
-        {
-            public BranchOperation(Instruction instruction, CodeBlock block)
-            {
-                this.Instruction = instruction;
-                this.Block = block;
-                if (instruction.cmd == "beq" || instruction.cmd == "bne")
-                {
-                    Comp1 = GetRegister(instruction.rs);
-                    Comp2 = GetRegister(instruction.rt);
-                    if (Comp1 == "r0")
-                        Comp1 = "0";
-                    if (Comp2 == "r0")
-                        Comp2 = "0";
-                }
-                else
-                {
-                    Comp1 = GetRegister(instruction.rs);
-                    Comp2 = "0";
-                }
-            }
-            public Instruction Instruction;
-            public CodeBlock Block;
-            public string Comp1;
-            public string Comp2;
+        
 
-            public string Print()
-            {
-                string text = "if";
-
-                Instruction previnst = null;
-                var prevdex = Block.Instructions.IndexOf(Instruction) - 1;
-                if (prevdex >=  0)
-                previnst = Block.Instructions[prevdex];
-                //"beq", "bgezal", "bgez", "bltz", "bltzal", "bgtz", "blez", "bne"
-                switch (Instruction.cmd)
-                {
-                    case "beq":
-                        if (Comp2 == "0" && previnst != null && previnst.rd == Instruction.rs && (previnst.cmd == "slt" || previnst.cmd == "sltu"))
-                        {
-                            Comp1 = GetRegister(previnst.rs);
-                            Comp2 = GetRegister(previnst.rt);
-                            if (Comp1 == "r0")
-                                Comp1 = "0";
-                            if (Comp2 == "r0")
-                                Comp2 = "0";
-                            text += string.Format("({0} < {1})", Comp1, Comp2);
-                        }
-                        else
-                        {
-                            text += string.Format("({0} != {1})", Comp1, Comp2);
-                        }
-                        
-                        break;
-                    case "bne":
-                        text += string.Format("({0} == {1})", Comp1, Comp2);
-                        break;
-                    case "bgez":
-                        text += string.Format("({0} < {1})", Comp1, Comp2);
-                        break;
-                    case "bltz":
-                        text += string.Format("({0} >= {1})", Comp1, Comp2);
-                        break;
-                    case "bgtz":
-                        text += string.Format("({0} <= {1})", Comp1, Comp2);
-                        break;
-                    case "blez":
-                        text += string.Format("({0} > {1})", Comp1, Comp2);
-                        break;
-                }
-
-                return text;
-            }
-        }
-
-        public class CodeBlock
-        {
-            public List<Instruction> Instructions = new List<Instruction>();
-
-            public BlockType BlockType;
-            public List<CodeBlock> InEdges = new List<CodeBlock>();
-            public List<CodeBlock> OutEdges = new List<CodeBlock>();
-            public List<uint> OutAddresses = new List<uint>();
-
-
-            public uint Address
-            {
-                get
-                {
-                    return Instructions.FirstOrDefault().address;
-                }
-            }
-
-            public uint EndAddress
-            {
-                get
-                {
-                    return Instructions.LastOrDefault().address + 4;
-                }
-            }
-
-            public bool IsJumpTarget
-            {
-                get
-                {
-                    foreach (var edge in InEdges)
-                    {
-                        if (edge.EndAddress != Address)
-                            return true;
-                    }
-                    return false;
-                }
-            }
-
-            public bool BeginsLoop
-            {
-                get
-                {
-                    foreach (var edge in InEdges)
-                    {
-                        if (edge.Address >= Address)
-                            return true;
-                    }
-                    return false;
-                }
-            }
-
-            public bool EndsLoop
-            {
-                get
-                {
-                    foreach (var edge in OutEdges)
-                    {
-                        if (edge != null && edge.Address <= Address)
-                            return true;
-                    }
-                    return false;
-                }
-            }
-
-            public BranchOperation BranchOperation
-            {
-                get
-                {
-                    if (BlockType == BlockType.TwoWay && Instructions[Instructions.Count - 2].IsBranch)
-                    {
-                        return new BranchOperation(Instructions[Instructions.Count - 2], this);
-                    }
-                    return null;
-                }
-            }
-
-            
-            
-        }
-
-        public enum BlockType
-        {
-            OneWay,
-            TwoWay,
-            NWay,
-            Call,
-            Return,
-            FallThrough
-        }
+        
     }
 }

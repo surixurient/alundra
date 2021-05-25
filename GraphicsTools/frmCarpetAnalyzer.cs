@@ -50,7 +50,7 @@ namespace GraphicsTools
         }
 
         int instOffset = 0;
-        List<MIPS.Instruction> instructions = new List<MIPS.Instruction>();
+        List<ISInstruction> instructions = new List<ISInstruction>();
         List<uint> functions = new List<uint>();
         void loadchunk(int offset)
         {
@@ -261,7 +261,7 @@ namespace GraphicsTools
                 }
             }
         }
-        List<MIPS.Instruction> selectedFunction = null;
+        List<ISInstruction> selectedFunction = null;
         private void lstFunctions_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (lstFunctions.SelectedIndex >= 0)
@@ -275,7 +275,7 @@ namespace GraphicsTools
 
                 bool exit = false;
                 
-                selectedFunction = new List<MIPS.Instruction>();
+                selectedFunction = new List<ISInstruction>();
 
                 for (int dex = 0; dex < 10000; dex += 4)
                 {
@@ -298,9 +298,9 @@ namespace GraphicsTools
             var fnames = Alundra.DebugSymbols.FunctionNames;
             var evars = Alundra.DebugSymbols.EntityVarOffsets;
 
-            List<MIPS.CodeBlock> blocks = new List<MIPS.CodeBlock>();
+            List<CodeBlock<ISInstruction>> blocks = new List<CodeBlock<ISInstruction>>();
 
-            var block = new MIPS.CodeBlock();
+            var block = new CodeBlock<ISInstruction>();
 
             for (int dex = 0; dex < selectedFunction.Count; dex++)
             {
@@ -309,27 +309,27 @@ namespace GraphicsTools
                 {
                     if (block.Instructions.Count > 0)
                     {
-                        block.BlockType = MIPS.BlockType.FallThrough;
+                        block.BlockType = BlockType.FallThrough;
                         block.OutAddresses.Add(inst.address);
                         blocks.Add(block);
-                        block = new MIPS.CodeBlock();
+                        block = new CodeBlock<ISInstruction>();
                     }
                     //ftext += "\r\n0x";
                 }
                 if (inst.IsCall)
                 {
-                    block.BlockType = MIPS.BlockType.Call;
+                    block.BlockType = BlockType.Call;
                     block.OutAddresses.Add(inst.address + 8);
                     block.Instructions.Add(inst);
                     dex++;
                     inst = selectedFunction[dex];
                     block.Instructions.Add(inst);
                     blocks.Add(block);
-                    block = new MIPS.CodeBlock();
+                    block = new CodeBlock<ISInstruction>();
                 }
                 else if (inst.IsReturn)
                 {
-                    block.BlockType = MIPS.BlockType.Return;
+                    block.BlockType = BlockType.Return;
                     block.Instructions.Add(inst);
                     dex++;
                     if (dex < selectedFunction.Count)
@@ -342,7 +342,7 @@ namespace GraphicsTools
                 }
                 else if (inst.IsBranch)
                 {
-                    block.BlockType = MIPS.BlockType.TwoWay;
+                    block.BlockType = BlockType.TwoWay;
                     block.OutAddresses.Add(inst.referencedAddress);
                     block.OutAddresses.Add(inst.address + 8);
                     block.Instructions.Add(inst);
@@ -350,18 +350,18 @@ namespace GraphicsTools
                     inst = selectedFunction[dex];
                     block.Instructions.Add(inst);
                     blocks.Add(block);
-                    block = new MIPS.CodeBlock();
+                    block = new CodeBlock<ISInstruction>();
                 }
                 else if (inst.IsJump)
                 {
-                    block.BlockType = MIPS.BlockType.OneWay;
+                    block.BlockType = BlockType.OneWay;
                     block.OutAddresses.Add(inst.referencedAddress);
                     block.Instructions.Add(inst);
                     dex++;
                     inst = selectedFunction[dex];
                     block.Instructions.Add(inst);
                     blocks.Add(block);
-                    block = new MIPS.CodeBlock();
+                    block = new CodeBlock<ISInstruction>();
                 }
                 else
                 {
@@ -392,16 +392,16 @@ namespace GraphicsTools
                                     if (!string.IsNullOrEmpty(evars[inst.immediate]))
                                     {
                                         if (inst.cmd == "lw")
-                                            ccode = MIPS.GetRegister(inst.rt) + " = " + MIPS.GetRegister(inst.rs) + "." + evars[inst.immediate];
+                                            ccode = GetRegister(inst.rt) + " = " + GetRegister(inst.rs) + "." + evars[inst.immediate];
                                         else if (inst.cmd == "sw")
-                                            ccode = MIPS.GetRegister(inst.rs) + "." + evars[inst.immediate] + " = " + MIPS.GetRegister(inst.rt);
+                                            ccode = GetRegister(inst.rs) + "." + evars[inst.immediate] + " = " + GetRegister(inst.rt);
                                         break;
                                     }
                                 }
                                 if (inst.cmd == "lw")
-                                    ccode = MIPS.GetRegister(inst.rt) + " = " + MIPS.GetRegister(inst.rs) + "[" + inst.immediate.ToString("x") + "]";
+                                    ccode = GetRegister(inst.rt) + " = " + GetRegister(inst.rs) + "[" + inst.immediate.ToString("x") + "]";
                                 else if (inst.cmd == "sw")
-                                    ccode = MIPS.GetRegister(inst.rs) + "[" + inst.immediate.ToString("x") + "]" + " = " + MIPS.GetRegister(inst.rt);
+                                    ccode = GetRegister(inst.rs) + "[" + inst.immediate.ToString("x") + "]" + " = " + GetRegister(inst.rt);
                             }
                             break;
                     }
