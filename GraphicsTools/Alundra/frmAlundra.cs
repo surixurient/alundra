@@ -207,7 +207,7 @@ namespace GraphicsTools.Alundra
                             entity.eventcodese_unknown_index.ToString("x2"),
                             entity.eventcodesf_interact_index.ToString("x2")
                         });
-                    lvi.ToolTipText = DispByte(entity.u7) + DispByte(entity.u8) + DispByte(entity.u9) + DispByte(entity.u10) + DispByte(entity.u11) + DispByte(entity.u12);
+                    lvi.ToolTipText = DispByte(entity.u7) + DispByte(entity.u8) + DispByte(entity.u9) + DispByte(entity.u10) + DispByte(entity.minx) + DispByte(entity.miny);
                     lsvEntities.Items.Add(lvi);
                 }
             }
@@ -788,7 +788,7 @@ namespace GraphicsTools.Alundra
                 {
                     selectedMapEvent = null;
                     selectedEntity = selectedGame.spriteinfo.entities.entities[lsvEntities.SelectedIndices[0]];
-                    lblEntityInfo.Text = "si addr:" + GameMap.EventObjectAddr(lsvEntities.SelectedIndices[0]).ToString("x6") + " entity addr:" + selectedEntity.memaddr.ToString("x6") + " u123: " + DispByte(selectedEntity.u1) + DispByte(selectedEntity.u2) + DispByte(selectedEntity.u3) + " u789ab:" + lsvEntities.Items[lsvEntities.SelectedIndices[0]].ToolTipText;
+                    lblEntityInfo.Text = "si addr:" + GameMap.EventObjectAddr(lsvEntities.SelectedIndices[0]).ToString("x6") + " entity addr:" + selectedEntity.memaddr.ToString("x6") + " u123: " + DispByte(selectedEntity.maxx) + DispByte(selectedEntity.maxy) + DispByte(selectedEntity.u3) + " u789ab:" + lsvEntities.Items[lsvEntities.SelectedIndices[0]].ToolTipText;
                     var sector1 = selectedGame.spriteinfo.eventcodes;
                     lblSector1a.Text = GetSector1ByteCodes(br, selectedEntity.eventcodesa_load_index, sector1.eventcodesatable);
                     lblSector1b.Text = GetSector1ByteCodes(br, selectedEntity.eventcodesb_unknown_index, sector1.eventcodesbtable);

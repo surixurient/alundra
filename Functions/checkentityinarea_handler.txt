@@ -16,12 +16,12 @@
 0003dce4: 90520006 lbu r18,0x0006(r2)   z1 = tickprogexp[6]
 0003dce8: 90450001 lbu r5,0x0001(r2)    
 0003dcec: 90510007 lbu r17,0x0007(r2)   z2 = tickprogexp[7]
-0003dcf0: 0c00f4a6 jal 0x0003d298       ret = getentityfromrefid(entity,tickprogexp[1])//getcharacter
+0003dcf0: 0c00f4a6 jal 0x0003d298       numentities = getentityfromrefid(entity,tickprogexp[1])//getcharacter
 0003dcf4: 00e08021 addu r16,r7,r0       
 0003dcf8: 00403821 addu r7,r2,r0        
 0003dcfc: 18e0001c blez r7, 0x0003dd70  
 0003dd00: 00071080 sll r2,r7,2          
-                                        if (ret > 0) {
+                                        if (numentities > 0) {
 0003dd04: 24090001 addiu r9,r0,0x0001   
 0003dd08: 3c038014 lui r3, 0x8014       
 0003dd0c: 2463d224 addiu r3,r3,0xd224   //0x13d224
@@ -56,7 +56,7 @@
 0003dd60: ae09002c sw r9,0x002c(r16)      	eventdata.logicresult = 1
 											return
 										  }
-0x0003dd64: 24e7ffff addiu r7,r7,0xffff   
+0x0003dd64: 24e7ffff addiu r7,r7,0xffff   numentities--
 0003dd68: 1ce0ffea bgtz r7, 0x0003dd14    
 0003dd6c: 2508fffc addiu r8,r8,0xfffc     
                                         }

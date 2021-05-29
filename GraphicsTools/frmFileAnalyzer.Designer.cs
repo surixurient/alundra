@@ -81,6 +81,16 @@
             this.label16 = new System.Windows.Forms.Label();
             this.lblFloat = new System.Windows.Forms.Label();
             this.tvFuncs = new System.Windows.Forms.TreeView();
+            this.lstDebugs = new System.Windows.Forms.ListBox();
+            this.lstDebugIncludeds = new System.Windows.Forms.ListBox();
+            this.lstGlobalIncludeds = new System.Windows.Forms.ListBox();
+            this.lstGlobals = new System.Windows.Forms.ListBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.label20 = new System.Windows.Forms.Label();
+            this.chkSortGlobal = new System.Windows.Forms.CheckBox();
+            this.btnUtility = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // rtfText
@@ -611,11 +621,117 @@
             this.tvFuncs.TabIndex = 56;
             this.tvFuncs.DoubleClick += new System.EventHandler(this.tvFuncs_DoubleClick);
             // 
+            // lstDebugs
+            // 
+            this.lstDebugs.FormattingEnabled = true;
+            this.lstDebugs.ItemHeight = 16;
+            this.lstDebugs.Location = new System.Drawing.Point(1548, 451);
+            this.lstDebugs.Name = "lstDebugs";
+            this.lstDebugs.Size = new System.Drawing.Size(203, 196);
+            this.lstDebugs.TabIndex = 57;
+            this.lstDebugs.SelectedIndexChanged += new System.EventHandler(this.lstDebugs_SelectedIndexChanged);
+            // 
+            // lstDebugIncludeds
+            // 
+            this.lstDebugIncludeds.FormattingEnabled = true;
+            this.lstDebugIncludeds.ItemHeight = 16;
+            this.lstDebugIncludeds.Location = new System.Drawing.Point(1757, 451);
+            this.lstDebugIncludeds.Name = "lstDebugIncludeds";
+            this.lstDebugIncludeds.Size = new System.Drawing.Size(288, 196);
+            this.lstDebugIncludeds.TabIndex = 58;
+            this.lstDebugIncludeds.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lstDebugIncludeds_MouseDoubleClick);
+            // 
+            // lstGlobalIncludeds
+            // 
+            this.lstGlobalIncludeds.FormattingEnabled = true;
+            this.lstGlobalIncludeds.ItemHeight = 16;
+            this.lstGlobalIncludeds.Location = new System.Drawing.Point(1757, 670);
+            this.lstGlobalIncludeds.Name = "lstGlobalIncludeds";
+            this.lstGlobalIncludeds.Size = new System.Drawing.Size(288, 180);
+            this.lstGlobalIncludeds.TabIndex = 60;
+            this.lstGlobalIncludeds.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lstGlobalIncludeds_MouseDoubleClick);
+            // 
+            // lstGlobals
+            // 
+            this.lstGlobals.FormattingEnabled = true;
+            this.lstGlobals.ItemHeight = 16;
+            this.lstGlobals.Location = new System.Drawing.Point(1548, 670);
+            this.lstGlobals.Name = "lstGlobals";
+            this.lstGlobals.Size = new System.Drawing.Size(203, 180);
+            this.lstGlobals.TabIndex = 59;
+            this.lstGlobals.SelectedIndexChanged += new System.EventHandler(this.lstGlobals_SelectedIndexChanged);
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(1545, 431);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(94, 17);
+            this.label17.TabIndex = 61;
+            this.label17.Text = "debug strings";
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(1757, 431);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(114, 17);
+            this.label18.TabIndex = 62;
+            this.label18.Text = "included in funcs";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(1545, 650);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(107, 17);
+            this.label19.TabIndex = 63;
+            this.label19.Text = "global variables";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(1757, 650);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(114, 17);
+            this.label20.TabIndex = 64;
+            this.label20.Text = "included in funcs";
+            // 
+            // chkSortGlobal
+            // 
+            this.chkSortGlobal.AutoSize = true;
+            this.chkSortGlobal.Location = new System.Drawing.Point(1658, 650);
+            this.chkSortGlobal.Name = "chkSortGlobal";
+            this.chkSortGlobal.Size = new System.Drawing.Size(85, 21);
+            this.chkSortGlobal.TabIndex = 65;
+            this.chkSortGlobal.Text = "sort alph";
+            this.chkSortGlobal.UseVisualStyleBackColor = true;
+            this.chkSortGlobal.CheckedChanged += new System.EventHandler(this.chkSortGlobal_CheckedChanged);
+            // 
+            // btnUtility
+            // 
+            this.btnUtility.Location = new System.Drawing.Point(669, 534);
+            this.btnUtility.Name = "btnUtility";
+            this.btnUtility.Size = new System.Drawing.Size(124, 23);
+            this.btnUtility.TabIndex = 66;
+            this.btnUtility.Text = "utilitytoclipboard";
+            this.btnUtility.UseVisualStyleBackColor = true;
+            this.btnUtility.Click += new System.EventHandler(this.btnUtility_Click);
+            // 
             // frmFileAnalyzer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(2057, 862);
+            this.Controls.Add(this.btnUtility);
+            this.Controls.Add(this.label20);
+            this.Controls.Add(this.label19);
+            this.Controls.Add(this.label18);
+            this.Controls.Add(this.label17);
+            this.Controls.Add(this.lstGlobalIncludeds);
+            this.Controls.Add(this.lstGlobals);
+            this.Controls.Add(this.lstDebugIncludeds);
+            this.Controls.Add(this.lstDebugs);
             this.Controls.Add(this.tvFuncs);
             this.Controls.Add(this.lblFloat);
             this.Controls.Add(this.label16);
@@ -669,6 +785,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.rtfText);
+            this.Controls.Add(this.chkSortGlobal);
             this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "frmFileAnalyzer";
@@ -735,5 +852,15 @@
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Label lblFloat;
         private System.Windows.Forms.TreeView tvFuncs;
+        private System.Windows.Forms.ListBox lstDebugs;
+        private System.Windows.Forms.ListBox lstDebugIncludeds;
+        private System.Windows.Forms.ListBox lstGlobalIncludeds;
+        private System.Windows.Forms.ListBox lstGlobals;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.CheckBox chkSortGlobal;
+        private System.Windows.Forms.Button btnUtility;
     }
 }

@@ -26,7 +26,7 @@ namespace alundramultitool
 
         private void frmAnalyzedFunction_Load(object sender, EventArgs e)
         {
-            lblName.Text = func.ToString();
+            lblName.Text = func.ToString() + string.Join(">",func.stack.Select(x=>x.DisplayName));
             txtNotes.Text = func.notes;
 
             foreach(var cfunc in func.calledfunctions)

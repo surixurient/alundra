@@ -13,7 +13,7 @@
 0003d2c4: 14400022 bne r2,r0,0x0003d350 
 0003d2c8: afbf0020 sw r31,0x0020(r29)   
                                         if (entityid & 0x80 == 0) {
-0003d2cc: 0c00f495 jal 0x0003d254       	3d254(entityid)
+0003d2cc: 0c00f495 jal 0x0003d254       	3d254(entityid)//get initrecord, doesnt do anything with it though?
 0003d2d0: 02402021 addu r4,r18,r0       
 0003d2d4: 3c02801e lui r2, 0x801e       
 0003d2d8: 8c42918c lw r2,0x918c(r2)     	r2 = *0x1d918c
@@ -31,7 +31,7 @@
 0003d2fc: 2c420002 sltiu r2,r2,0x0002     
 0003d300: 14400003 bne r2,r0,0x0003d310   
 0003d304: 00000000 nop                    
-											if (ownerentity.status-1 > 2
+											if (ownerentity.status-1 < 2
 0003d308: 14860008 bne r4,r6,0x0003d32c   
 0003d30c: 00000000 nop                    
 											|| ownerentity.status == 3
@@ -57,27 +57,28 @@
 0003d34c: 02201021 addu r2,r17,r0       
 											return dex
 										}
-0x0003d350: 3244007f andi r4,r18,0x007f 
+0x0003d350: 3244007f andi r4,r18,0x007f id = refid & 0x7f
 0003d354: 2c82000c sltiu r2,r4,0x000c   
 0003d358: 10400151 beq r2,r0,0x0003d8a0 
 0003d35c: 00041080 sll r2,r4,2          
-                                        if(r2 != 0)
-0003d360: 3c018002 lui r1, 0x8002       
+                                        if(id < 12)
+0003d360: 3c018002 lui r1, 0x8002       //23c30 a jump table?
 0003d364: 00220821 addu r1,r1,r2        
 0003d368: 8c223c30 lw r2,0x3c30(r1)     r2 = r1[3c30]
 0003d36c: 00000000 nop                  
-0003d370: 00400008 jr r2                
+0003d370: 00400008 jr r2                switch(id)
 0003d374: 00000000 nop                  
+										case 0//get owner
 0003d378: ae130000 sw r19,0x0000(r16)   r16[0] = r19
 0003d37c: 0800f62c j 0x0003d8b0         
-0003d380: 26310001 addiu r17,r17,0x0001 
-                                        else
+0003d380: 26310001 addiu r17,r17,0x0001 return numgot+1
+                                        case 1//get player
 0003d384: 3c02801b lui r2, 0x801b       
 0003d388: 2442c498 addiu r2,r2,0xc498   //playerentity
 0003d38c: ae020000 sw r2,0x0000(r16)    r16[0] = r2
 0003d390: 0800f62c j 0x0003d8b0         
 0003d394: 26310001 addiu r17,r17,0x0001 
-                                        else
+                                        case 2//get all entities
 0003d398: 3c02801e lui r2, 0x801e       
 0003d39c: 8c42918c lw r2,0x918c(r2)     r2 = *0x1d918c
 0003d3a0: 3c03801b lui r3, 0x801b       
@@ -113,7 +114,7 @@
                                         }
 0003d3fc: 0800f62d j 0x0003d8b4         
 0003d400: 02201021 addu r2,r17,r0       
-                                        return
+                                        case 3//get all entities except player
 0003d404: 3c02801e lui r2, 0x801e       
 0003d408: 8c42918c lw r2,0x918c(r2)     r2 = *0x1d918c
 0003d40c: 3c03801b lui r3, 0x801b       
@@ -149,7 +150,7 @@
                                         }
 0003d468: 0800f62d j 0x0003d8b4         
 0003d46c: 02201021 addu r2,r17,r0       
-                                        return
+                                        case 4//all entities on the ground
 0003d470: 3c02801e lui r2, 0x801e       
 0003d474: 8c42918c lw r2,0x918c(r2)     r2 = *0x1d918c
 0003d478: 3c03801b lui r3, 0x801b       
@@ -172,19 +173,19 @@
 0003d4ac: 00000000 nop                    
                                           if(r4 == r7)
 
-0x0003d4b0: 8cc20044 lw r2,0x0044(r6)     r2 = r6.datasbinrecord
+0x0003d4b0: 8cc20044 lw r2,0x0044(r6)     r2 = entity.gravityflags
 0003d4b4: 00000000 nop                    
 0003d4b8: 30420080 andi r2,r2,0x0080      
 0003d4bc: 1040000d beq r2,r0,0x0003d4f4   
 0003d4c0: 00000000 nop                    
                                           if(r2 != 0)
-0003d4c4: 8cc2008c lw r2,0x008c(r6)       r2 = r6.targetdir
+0003d4c4: 8cc2008c lw r2,0x008c(r6)       r2 = entity[b4]//before fall rise speed
 0003d4c8: 00000000 nop                    
 0003d4cc: 30420080 andi r2,r2,0x0080      
 0003d4d0: 14400008 bne r2,r0,0x0003d4f4   
 0003d4d4: 00000000 nop                    
                                           if(r2 == 0)
-0003d4d8: 8cc20000 lw r2,0x0000(r6)       r2 = r6[0]
+0003d4d8: 8cc20000 lw r2,0x0000(r6)       r2 = entity.platformentity
 0003d4dc: 00000000 nop                    
 0003d4e0: 14400004 bne r2,r0,0x0003d4f4   
 0003d4e4: 00000000 nop                    
@@ -204,7 +205,7 @@
                                         }
 0003d514: 0800f62d j 0x0003d8b4         
 0003d518: 02201021 addu r2,r17,r0       
-                                        return
+                                        case 5//all entities besides player that the ownerentity is riding on
 0003d51c: 3c02801e lui r2, 0x801e       
 0003d520: 8c42918c lw r2,0x918c(r2)     r2 = *0x1d918c
 0003d524: 3c03801b lui r3, 0x801b       
@@ -245,7 +246,7 @@
                                         }
 0003d590: 0800f62d j 0x0003d8b4         
 0003d594: 02201021 addu r2,r17,r0       
-                                        return
+                                        case 6//all entities besides player that are riding on the ownerentity
 0003d598: 3c02801e lui r2, 0x801e       
 0003d59c: 8c42918c lw r2,0x918c(r2)     r2 = *0x1d918c
 0003d5a0: 3c03801b lui r3, 0x801b       
@@ -257,7 +258,7 @@
 0003d5b4: 2466012c addiu r6,r3,0x012c   
                                         do{
 
-0x0003d5b8: 8cc4fee4 lw r4,0xfee4(r6)     r4 = r6[fffffee4]
+0x0003d5b8: 8cc4fee4 lw r4,0xfee4(r6)     r4 = entity.status
 0003d5bc: 00000000 nop                    
 0003d5c0: 2482ffff addiu r2,r4,0xffff     
 0003d5c4: 2c420002 sltiu r2,r2,0x0002     
@@ -268,7 +269,7 @@
 0003d5d4: 00000000 nop                    
                                           if(r4 == r7)
 
-0x0003d5d8: 8cc20000 lw r2,0x0000(r6)     r2 = r6[0]
+0x0003d5d8: 8cc20000 lw r2,0x0000(r6)     r2 = entity.ridingentity
 0003d5dc: 00000000 nop                    
 0003d5e0: 14530004 bne r2,r19,0x0003d5f4  
 0003d5e4: 00000000 nop                    
@@ -288,7 +289,7 @@
                                         }
 0003d614: 0800f62d j 0x0003d8b4         
 0003d618: 02201021 addu r2,r17,r0       
-                                        return
+                                        case 7//all entities besides player where ownerentity.xcollision? == entity
 0003d61c: 3c02801e lui r2, 0x801e       
 0003d620: 8c42918c lw r2,0x918c(r2)     r2 = *0x1d918c
 0003d624: 3c03801b lui r3, 0x801b       
@@ -329,7 +330,7 @@
                                         }
 0003d690: 0800f62d j 0x0003d8b4         
 0003d694: 02201021 addu r2,r17,r0       
-                                        return
+                                        case 8
 0003d698: 3c02801e lui r2, 0x801e       
 0003d69c: 8c42918c lw r2,0x918c(r2)     r2 = *0x1d918c
 0003d6a0: 3c03801b lui r3, 0x801b       
@@ -372,7 +373,7 @@
                                         }
 0003d714: 0800f62d j 0x0003d8b4         
 0003d718: 02201021 addu r2,r17,r0       
-                                        return
+                                        case 9//all entities besides player where entity.unknownbeforestatus [c] == ownerentity
 0003d71c: 3c02801e lui r2, 0x801e       
 0003d720: 8c42918c lw r2,0x918c(r2)     r2 = *0x1d918c
 0003d724: 3c03801b lui r3, 0x801b       
@@ -415,7 +416,7 @@
                                         }
 0003d798: 0800f62d j 0x0003d8b4         
 0003d79c: 02201021 addu r2,r17,r0       
-                                        return
+                                        case 10//all entities besides player where ownerentity.unknownbeforestatus [c] == entity
 0003d7a0: 3c02801e lui r2, 0x801e       
 0003d7a4: 8c42918c lw r2,0x918c(r2)     r2 = *0x1d918c
 0003d7a8: 3c03801b lui r3, 0x801b       
@@ -456,7 +457,7 @@
                                         }
 0003d814: 0800f62d j 0x0003d8b4         
 0003d818: 02201021 addu r2,r17,r0       
-                                        return
+                                        case 11
 0003d81c: 3c02801e lui r2, 0x801e       
 0003d820: 8c42918c lw r2,0x918c(r2)     r2 = *0x1d918c
 0003d824: 3c03801b lui r3, 0x801b       
@@ -479,7 +480,7 @@
 0003d858: 00000000 nop                    
                                           if(r4 == r7)
 
-0x0003d85c: 8cc20000 lw r2,0x0000(r6)     r2 = r6[0]
+0x0003d85c: 8cc20000 lw r2,0x0000(r6)     r2 = r6[0]//platformentity
 0003d860: 00000000 nop                    
 0003d864: 10400004 beq r2,r0,0x0003d878   
 0003d868: 00000000 nop                    

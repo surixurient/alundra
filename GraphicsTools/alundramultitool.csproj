@@ -73,6 +73,8 @@
       <DependentUpon>FrmEventProgram.cs</DependentUpon>
     </Compile>
     <Compile Include="Alundra\GameEngine.cs" />
+    <Compile Include="Alundra\GameEngine\EventHandlers.cs" />
+    <Compile Include="Alundra\GameEngine\GameState.cs" />
     <Compile Include="Alundra\SpriteInstance.cs" />
     <Compile Include="bmp.cs" />
     <Compile Include="carpet\DataDir.cs" />

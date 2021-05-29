@@ -29,6 +29,14 @@ namespace GraphicsTools.Alundra
         {
             GlobalVariableNames.Add(addr, new NameComment { name = name, comment = comment });
         }
+
+        static void AddGlobalVariableRange(uint addr_start,uint addr_end, string name, string comment)
+        {
+            for (uint addr = addr_start; addr <= addr_end; addr++)
+            {
+                GlobalVariableNames.Add(addr, new NameComment { name = name, comment = comment });
+            }
+        }
         public static void Init()
         {
             FunctionNames.Clear();
@@ -135,10 +143,26 @@ namespace GraphicsTools.Alundra
             AddFunction(0x83e00, "emptyfunc", "");
 
 
+            AddFunction(0x59a08, "wrapssetupdialogportrait", "");
+            AddFunction(0x59a74, "setupdialogportrait", "");
+            AddFunction(0x5bfcc, "setname", "");
+            AddFunction(0x48de0, "setnameinnercallhardware", "");
+            AddFunction(0x42e98, "settext", "");
+            AddFunction(0x45fb0, "setupdialogdrawcmds", "");
+            AddFunction(0x8438c, "zerooutmemory", "ptr, length");
+            AddFunction(0x83e98, "emptyfunction", "");
 
+            AddFunction(0x4d218, "importantdialogfunc", "");//these 3 functions cycle when in a dialog
+            AddFunction(0x5c4ac, "importantdialogfunc2", "");
+            AddFunction(0x47de4, "importantdialogfunc2", "");
 
+            AddFunction(0x3a3e4, "getinitdata", "");//20 byte long records
 
-
+            AddFunction(0x3aa0c, "activateentity", "");
+            AddFunction(0x3a348, "getspritefromspritetable", "(ismapsprite, tableindex, outvar1, outvar2)");
+            AddFunction(0x3a2ec, "getnextavailableentity", "");
+            AddFunction(0x3a51c, "initentity", "(entity,ownerentity,sprite,initdata,spritetableindex,entityid,x,y,z,0,dir,outvar1,outvar2)");
+            AddFunction(0x2eaac, "dirfromvector", "");
 
 
 
@@ -359,10 +383,13 @@ namespace GraphicsTools.Alundra
             MapNames[392] = "ship int";
 
             GlobalVariableNames.Clear();
-            AddGlobalVariable(0x13d224, "numentities","");
+            AddGlobalVariable(0x13d224, "getentitieslist","");
+            AddGlobalVariable(0x13d228, "getentitiesliststart", "");
+            AddGlobalVariable(0x1d918c, "numentities", "");
             AddGlobalVariable(0x9b5b4, "eventhandlers","");
             
             AddGlobalVariable(0x1ac498, "playerentity", "");
+            AddGlobalVariable(0x1ac72c, "entitiesafterplayer", "");
 
             AddGlobalVariable(0x1d6118, "mapgameflags", "");
             AddGlobalVariable(0x1d84e0, "somegravitysetting", "");
@@ -390,11 +417,51 @@ namespace GraphicsTools.Alundra
             AddGlobalVariable(0x1ef132, "dialogpalette", "");
             AddGlobalVariable(0x1ef13a, "dialogsheet", "");
             AddGlobalVariable(0x1efbf0, "dialogname", "");
-
+            AddGlobalVariable(0x10689c, "dialogstate", "");//0 no dialog, 5 swooshing open/closed, 4 running text,3 waiting, 14 next one, 6 user advanced
+            AddGlobalVariable(0x107310, "hasdialogfunctionptr", "");
             AddGlobalVariable(0x1068a0, "dialogtextbuffer", "");
             AddGlobalVariable(0x10722c, "dialogtextcmdbuffer", "");
             AddGlobalVariable(0x1f3df0, "mapstrings", "");
             AddGlobalVariable(0x1f2ef0, "globalstrings", "");
+            AddGlobalVariable(0x1f2c68, "SIEntityRecords","initdata");
+            AddGlobalVariable(0x1f2c74, "numSIEntityRecords", "initdatas");
+
+            AddGlobalVariable(0x1f2c60, "mapspritetable", "");
+            AddGlobalVariable(0x1f36f8, "globalspritetable", "");
+
+            AddGlobalVariable(0x1F801040, "portjoydata", "controller port");
+            AddGlobalVariable(0x1F801044, "portjoystat", "controller port");
+            AddGlobalVariable(0x1F801048, "portjoymode", "controller port");
+            AddGlobalVariable(0x1F80104A, "portjoyctrl", "controller port");
+            AddGlobalVariable(0x1F80104E, "portjoybaud", "controller port");
+            AddGlobalVariable(0x1F801050, "portsiodata", "serial port");
+            AddGlobalVariable(0x1F801054, "portsiostat", "serial port");
+            AddGlobalVariable(0x1F801058, "portsiomode", "serial port");
+            AddGlobalVariable(0x1F80105A, "portsictrlo", "serial port");
+            AddGlobalVariable(0x1F80105C, "portsiomisc", "serial port");
+            AddGlobalVariable(0x1F80105E, "portsiobaud", "serial port");
+
+            AddGlobalVariable(0x1F801070, "portintstat", "interrupt status");
+            AddGlobalVariable(0x1F801074, "portintmask", "interrupt mask");
+
+            AddGlobalVariable(0x1F801800, "portcd1", "");
+            AddGlobalVariable(0x1F801801, "portcd2", "");
+            AddGlobalVariable(0x1F801802, "portcd3", "");
+            AddGlobalVariable(0x1F801803, "portcd4", "");
+
+            AddGlobalVariableRange(0x1F801C00, 0x1F801E80, "portspu", "audio");
+            AddGlobalVariableRange(0x1f8020, 0x1f802f, "portexpdebug", "debugger io");
+            AddGlobalVariableRange(0x1F801080, 0x1F8010FC, "portdma", "dma");
+
+            AddGlobalVariableRange(0x1F800000, 0x1F800400, "scratchpad", "data cache");
+
+            AddGlobalVariableRange(0x1F801000, 0x1F801020, "memorycontrol", "");
+
+            AddGlobalVariable(0x1F801810, "portgpu1", "graphics card");
+            AddGlobalVariable(0x1F801814, "portgpu2", "graphics card");
+
+            AddGlobalVariable(0x1F801820, "portmdec", "");
+            AddGlobalVariable(0x1F801824, "portmdec", "");
 
 
 

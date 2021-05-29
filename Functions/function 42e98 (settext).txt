@@ -29,7 +29,7 @@
 00042eec: 94500000 lhu r16,0x0000(r2)    = r2[0]
 00042ef0: 02202021 addu r4,r17,r0       
 00042ef4: 00708021 addu r16,r3,r16      
-00042ef8: 0c020fa6 jal 0x00083e98       83e98(textid, text)//
+00042ef8: 0c020fa6 jal 0x00083e98       83e98(textid, text)//doesnt do anything
 00042efc: 02002821 addu r5,r16,r0       
 00042f00: 02002021 addu r4,r16,r0       
 00042f04: 0c0117ec jal 0x00045fb0       45fb0(text ,param1)//

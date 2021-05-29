@@ -106,6 +106,7 @@ namespace GraphicsTools
             var mips = new MIPS();
             if (alundraeventlist)
             {
+                //offset = 0x9b5b4;
                 functions.Clear();
                 for (int dex = 0; dex <= 0x3FC; dex += 4)
                 {
@@ -766,7 +767,7 @@ namespace GraphicsTools
         }
         public class AnalyzedFunction
         {
-            public AnalyzedFunction(uint addr, List<AnalyzedFunction> funclist, List<AnalyzedGlobalVariable> varlist, string datafile, Func<List<ISInstruction>, List<CodeBlock<ISInstruction>>> AnalyzeFunction, uint endaddr = 0)
+            public AnalyzedFunction(uint addr, List<AnalyzedFunction> funclist, List<AnalyzedGlobalVariable> varlist, string datafile, Func<List<ISInstruction>, List<CodeBlock<ISInstruction>>> AnalyzeFunction, uint endaddr = 0, string fname = null)
             {
                 var fnames = Alundra.DebugSymbols.FunctionNames;
                 var evars = Alundra.DebugSymbols.EntityVarOffsets;
@@ -775,7 +776,11 @@ namespace GraphicsTools
 
                 funclist.Add(this);
                 address = addr;
-                if (fnames.ContainsKey(address))
+                if(fname != null)
+                {
+                    name = fname;
+                }
+                else if (fnames.ContainsKey(address))
                 {
                     name = fnames[address].name;
                     notes = fnames[address].comment;
@@ -1013,7 +1018,9 @@ namespace GraphicsTools
 
             return node;
         }
-        
+        Dictionary<string, List<AnalyzedFunction>> debugStrings = new Dictionary<string, List<AnalyzedFunction>>();
+        List<AnalyzedFunction> eventFuncs = new List<AnalyzedFunction>();
+        List<AnalyzedFunction> importantFuncs = new List<AnalyzedFunction>();
         private void btnFunctionTracer_Click(object sender, EventArgs e)
         {
             this.Height = 1000;
@@ -1026,6 +1033,38 @@ namespace GraphicsTools
             
             root = new AnalyzedFunction(address, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction, endaddress);
 
+            //do the alundra event funcs too
+            //offset = 0x9b5b4;
+            eventFuncs = new List<AnalyzedFunction>();
+            List<uint> addresses = new List<uint>();
+            var fdata = new byte[chunklength];
+            var stream = File.OpenRead(datafile);
+            stream.Position = 0x9b5b4;
+            int numread = stream.Read(fdata, 0, chunklength);
+            stream.Close();
+            for (int dex = 0; dex <= 0x3FC; dex += 4)
+            {
+                uint addr = (uint)(fdata[dex] | fdata[dex + 1] << 8 | fdata[dex + 2] << 16 | (uint)fdata[dex + 3] << 24);
+                addresses.Add(0xFFFFFFF & addr);
+            }
+
+            for (int fdex = 0; fdex < addresses.Count; fdex++)
+            {
+                var functaddr = addresses[fdex];
+                var sicode = Alundra.SpriteInfoEventCodes.GetCode((byte)fdex);
+
+                string fname = $"({sicode.code.ToString("x2")}_{sicode.name}_handler)";
+
+                var efunc = new AnalyzedFunction(functaddr, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction, 0, fname);
+                eventFuncs.Add(efunc);
+            }
+
+            importantFuncs = new List<AnalyzedFunction>();
+            //add the 3 dialog processing functions, they are called by register/function pointer so not found  with the function crawler
+            importantFuncs.Add(new AnalyzedFunction(0x4d218, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
+            importantFuncs.Add(new AnalyzedFunction(0x5c4ac, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
+            importantFuncs.Add(new AnalyzedFunction(0x47de4, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
+            
             foreach (var func in analyzedfunctions)
             {
                 //set calledby
@@ -1043,10 +1082,20 @@ namespace GraphicsTools
             }
 
             var maxstack = root.GetDepth(new List<AnalyzedFunction>());
+            foreach(var efunc in eventFuncs)
+            {
+                efunc.GetDepth(new List<AnalyzedFunction>());
+            }
+
+            foreach(var ifunc in importantFuncs)
+            {
+                ifunc.GetDepth(new List<AnalyzedFunction>());
+            }
 
             analyzedfunctions = analyzedfunctions.OrderBy(x => x.address).ToList();
 
             lstFunctions.Items.Clear();
+            debugStrings = new Dictionary<string, List<AnalyzedFunction>>();
             foreach (var func in analyzedfunctions)
             {
                 string fname = "";
@@ -1058,6 +1107,19 @@ namespace GraphicsTools
                     if (!string.IsNullOrEmpty(func.notes))
                         fname += "//" + func.notes;
                     fname += ")";
+                }
+                foreach(var dbs in func.debugstrings)
+                {
+                    List<AnalyzedFunction> dbfuncs;
+                    if (!debugStrings.ContainsKey(dbs))
+                    {
+                        dbfuncs = new List<AnalyzedFunction>();
+                        debugStrings.Add(dbs, dbfuncs);
+                    }
+                    else
+                        dbfuncs = debugStrings[dbs];
+                    if (!dbfuncs.Contains(func))
+                        dbfuncs.Add(func);
                 }
                 lstFunctions.Items.Add("0x" + func.address.ToString("x") + fname);
             }
@@ -1078,6 +1140,26 @@ namespace GraphicsTools
             tvFuncs.Nodes.Clear();
 
             tvFuncs.Nodes.Add(GetNode(root));
+            foreach(var efunc in eventFuncs)
+            {
+                tvFuncs.Nodes.Add(GetNode(efunc));
+            }
+            foreach(var ifunc in importantFuncs)
+            {
+                tvFuncs.Nodes.Add(GetNode(ifunc));
+            }
+
+            lstDebugs.Items.Clear();
+            foreach(var item in debugStrings.OrderByDescending(x => x.Value.Count))
+            {
+                lstDebugs.Items.Add(item.Key);
+            }
+
+            lstGlobals.Items.Clear();
+            foreach (var item in analyzedglobalvariables.OrderByDescending(x => x.functions.Count))
+            {
+                lstGlobals.Items.Add(item.DisplayName);
+            }
         }
 
         float rot = 0f;
@@ -1142,6 +1224,99 @@ namespace GraphicsTools
                 var frm = new frmAnalyzedFunction(func, datafile);
                 frm.Show();
             }
+        }
+
+        private void lstDebugs_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            lstDebugIncludeds.Items.Clear();
+            if (lstDebugs.SelectedItem != null)
+            {
+                var funcs = debugStrings[(string)lstDebugs.SelectedItem];
+                foreach(var func in funcs)
+                {
+                    lstDebugIncludeds.Items.Add(func.ToString());
+                }
+            }
+        }
+
+        private void lstDebugIncludeds_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (lstDebugIncludeds.SelectedItem != null)
+            {
+                var func = analyzedfunctions.FirstOrDefault(x => x.ToString() == (string)lstDebugIncludeds.SelectedItem);
+                var frm = new frmAnalyzedFunction(func, datafile);
+                frm.Show();
+            }
+        }
+
+        private void lstGlobals_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            lstGlobalIncludeds.Items.Clear();
+            if (lstGlobals.SelectedItem != null)
+            {
+                var funcs = analyzedglobalvariables.FirstOrDefault(x=>x.DisplayName == (string)lstGlobals.SelectedItem).functions;
+                foreach (var func in funcs)
+                {
+                    lstGlobalIncludeds.Items.Add(func.ToString());
+                }
+            }
+        }
+
+        private void lstGlobalIncludeds_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (lstGlobalIncludeds.SelectedItem != null)
+            {
+                var func = analyzedfunctions.FirstOrDefault(x => x.ToString() == (string)lstGlobalIncludeds.SelectedItem);
+                var frm = new frmAnalyzedFunction(func, datafile);
+                frm.Show();
+            }
+        }
+
+        private void chkSortGlobal_CheckedChanged(object sender, EventArgs e)
+        {
+            lstGlobals.Items.Clear();
+            var list = analyzedglobalvariables.OrderByDescending(x => x.functions.Count);
+            if (chkSortGlobal.Checked)
+                list = analyzedglobalvariables.OrderBy(x => x.address);
+            foreach (var item in list)
+            {
+                lstGlobals.Items.Add(item.DisplayName);
+            }
+        }
+
+        private void btnUtility_Click(object sender, EventArgs e)
+        {
+
+
+            string s = "short[] DirectionTable = new short[]{\r\n";
+            int dex = 0;
+            
+            for (int y = 0;y<16; y++)
+            {
+                string line = "";
+                for (int x = 0;x<16;x++)
+                {
+                    line += "0x" + (data[dex + 0] + (data[dex + 1] << 8)).ToString("x1") + ",";
+                    dex += 2;
+                }
+                s += line + "\r\n";
+            }
+
+            s += "};";
+            Clipboard.SetText(s);
+
+            s = "uint[] DivTable = new uint[]{\r\n";
+            dex = 0;
+
+            for (int i = 0; i < 29; i++)
+            {
+                    string line = "0x" + (data[dex + 0] + (data[dex + 1] << 8) + (data[dex+2]<<16)+(data[dex+3]<<24)).ToString("x8") + ",";
+                    dex += 4;
+                s += line + "\r\n";
+            }
+
+            s += "};";
+            Clipboard.SetText(s);
         }
     }
 }

@@ -179,7 +179,7 @@ namespace GraphicsTools.Alundra
             //loaded = true;
         }
 
-        public Bitmap GenerateSpriteBitmap(SIImage img, Color[] pal)
+        public Bitmap GenerateSpriteBitmap(SIImage img, Color[] pal, int sheetmod = 0)
         {
             bool shiftleft = img.sx % 2 == 1;
             int swidth = img.swidth;
@@ -199,7 +199,7 @@ namespace GraphicsTools.Alundra
 
             for (int y = 0; y < img.sheight; y++)
             {
-                Buffer.BlockCopy(spritesheetimagedata, ((img.spritesheet&0x7)*256 + img.sy + y) * 256 / 2 + img.sx / 2, readbuff, 0, readwidth / 2);
+                Buffer.BlockCopy(spritesheetimagedata, (((img.spritesheet&0x7)+sheetmod)*256 + img.sy + y) * 256 / 2 + img.sx / 2, readbuff, 0, readwidth / 2);
 
                 if (shiftleft)
                 {
@@ -976,6 +976,10 @@ namespace GraphicsTools.Alundra
                     name = "playsound1";//only 1 byte sound index
                     size = 2;
                     break;
+                case 0x15:
+                    name = "resetzpos";
+                    size = 1;
+                    break;
                 case 0x16:
                     name = "highgravity";//fall as normal  //bit 0x100
                     size = 1;
@@ -1003,12 +1007,16 @@ namespace GraphicsTools.Alundra
                     name = "waitanim?";
                     size = 2;
                     break;
+                case 0x1d:
+                    name = "waitanim2";
+                    size = 2;
+                    break;
                 case 0x1e:
-                    name = "walk2";//collision blocks/pauses the walk
+                    name = "walk";//collision blocks/pauses the walk
                     size = 3;
                     break;
                 case 0x1f:
-                    name = "walk";//collision ends the walk
+                    name = "walk2";//collision ends the walk
                     size = 3;
                     break;
                 case 0x24:
@@ -1147,6 +1155,10 @@ namespace GraphicsTools.Alundra
                     name = "turn";//also has other flags related to on ground or climbing, etc
                     size = 4;
                     break;
+                case 0x5c:
+                    name = "dialogwithentity";
+                    size = 4;
+                    break;
 
                 case 0x62:
                     name = "setentitysomething?";
@@ -1193,6 +1205,10 @@ namespace GraphicsTools.Alundra
                     size = 3;
                     break;
 
+                case 0xc4:
+                    name = "dialogwithentityandname";
+                    size = 6;
+                    break;
 
                 //non-operations
                 case 0x00:
@@ -1332,7 +1348,7 @@ namespace GraphicsTools.Alundra
 
         public override string PrintParameters(List<SICommand> commands)
         {
-            return (parameters[0] | parameters[1] << 8).ToString("x4");
+            return (parameters[0] | (parameters[1] << 8)).ToString("x4");
         }
     }
 
@@ -1345,7 +1361,7 @@ namespace GraphicsTools.Alundra
 
         public override string PrintParameters(List<SICommand> commands)
         {
-            return (parameters[0] | parameters[1] << 8).ToString("x4");
+            return (parameters[0] | (parameters[1] << 8)).ToString("x4");
         }
     }
 
@@ -1361,9 +1377,9 @@ namespace GraphicsTools.Alundra
             var parms = new List<string>();
 
             parms.Add(parameters[0].ToString("x2"));
-            parms.Add((parameters[1] | parameters[2] << 8).ToString("x4"));
-            parms.Add((parameters[3] | parameters[4] << 8).ToString("x4"));
-            parms.Add((parameters[5] | parameters[6] << 8).ToString("x4"));
+            parms.Add((parameters[1] | (parameters[2] << 8)).ToString("x4"));
+            parms.Add((parameters[3] | (parameters[4] << 8)).ToString("x4"));
+            parms.Add((parameters[5] | (parameters[6] << 8)).ToString("x4"));
 
             return string.Join(", ", parms);
         }
@@ -1374,7 +1390,7 @@ namespace GraphicsTools.Alundra
         public BranchCommand(byte command, int size, byte[] parameters, string name, int memaddr)
             : base(command, size, parameters, name, memaddr)
         {
-            base.refoffset = (Int16)(parameters[size-3] | parameters[size-2] << 8);
+            base.refoffset = (Int16)(parameters[size-3] | (parameters[size-2] << 8));
         }
 
         public override string PrintParameters(List<SICommand> commands)
@@ -1382,7 +1398,7 @@ namespace GraphicsTools.Alundra
             var parms = new List<string>();
             if (size == 5)
             {
-                parms.Add((parameters[size - 5] | parameters[size - 4] << 8).ToString("x4"));
+                parms.Add((parameters[size - 5] | (parameters[size - 4] << 8)).ToString("x4"));
             }
             else
             {
@@ -1404,10 +1420,10 @@ namespace GraphicsTools.Alundra
             : base(command, 9, parameters, name, memaddr)
         {
 
-            offsets[0] = (Int16)(parameters[size - 9] | parameters[size - 8] << 8);
-            offsets[1] = (Int16)(parameters[size - 7] | parameters[size - 6] << 8);
-            offsets[2] = (Int16)(parameters[size - 5] | parameters[size - 4] << 8);
-            offsets[3] = (Int16)(parameters[size - 3] | parameters[size - 2] << 8);
+            offsets[0] = (Int16)(parameters[size - 9] | (parameters[size - 8] << 8));
+            offsets[1] = (Int16)(parameters[size - 7] | (parameters[size - 6] << 8));
+            offsets[2] = (Int16)(parameters[size - 5] | (parameters[size - 4] << 8));
+            offsets[3] = (Int16)(parameters[size - 3] | (parameters[size - 2] << 8));
         }
 
         int[] offsets = new int[4];
@@ -1436,7 +1452,7 @@ namespace GraphicsTools.Alundra
         public JumpCommand(byte command, byte[] parameters, string name, int memaddr)
             : base(command, 3, parameters, name, memaddr)
         {
-            base.refoffset = (Int16)(parameters[0] | parameters[1] << 8);
+            base.refoffset = (Int16)(parameters[0] | (parameters[1] << 8));
         }
 
         public override string PrintParameters(List<SICommand> commands)
@@ -1502,16 +1518,17 @@ namespace GraphicsTools.Alundra
     {
         public SpriteInfoEntities(BinaryReader br, int memaddr)
         {
-            br.BaseStream.Position += 2;
+            //br.BaseStream.Position += 2;//this is wrong, dont nudge it like this
 
             entities = new SIEntityRecord[128];
             for (int dex = 0; dex < entities.Length; dex++)
             {
                 //read two test bytes to check for the end of the list
                 short test = br.ReadInt16();
+                test = br.ReadInt16();
                 if (test == 0)
                     break;
-                br.BaseStream.Position -= 2;
+                br.BaseStream.Position -= 4;
 
                 //read the record
                 entities[dex] = new SIEntityRecord(br, memaddr + dex * 20);
@@ -1525,14 +1542,18 @@ namespace GraphicsTools.Alundra
         public SIEntityRecord(BinaryReader br, int memaddr)
         {
             this.memaddr = memaddr;
-            u1 = br.ReadByte();
-            u2 = br.ReadByte();
-            u3 = br.ReadByte();
-            spritedir = br.ReadByte();
-            spritetableindex = br.ReadByte();
-            xpos = br.ReadByte();
-            ypos = br.ReadByte();
-            height = br.ReadByte();
+            //i used to think these were the last of the previous entry, but its the first of this one
+            minx = br.ReadByte();//0
+            miny = br.ReadByte();//1
+
+            maxx = br.ReadByte();//2
+            maxy = br.ReadByte();//3
+            u3 = br.ReadByte();//4
+            spritedir = br.ReadByte();//5
+            spritetableindex = br.ReadByte();//6
+            xpos = br.ReadByte();//7
+            ypos = br.ReadByte();//8
+            height = br.ReadByte();//9
             eventcodesa_load_index = br.ReadByte();
             eventcodesb_unknown_index = br.ReadByte();
             eventcodesc_tick_index = br.ReadByte();
@@ -1543,8 +1564,7 @@ namespace GraphicsTools.Alundra
             u8 = br.ReadByte();
             u9 = br.ReadByte();
             u10 = br.ReadByte();
-            u11 = br.ReadByte();
-            u12 = br.ReadByte();
+            
         }
 
         public SIAnimation GetSprite(BinaryReader br, SpriteInfo si)
@@ -1572,8 +1592,10 @@ namespace GraphicsTools.Alundra
             return null;
         }
         public int memaddr;
-        public byte u1;//33
-        public byte u2;//3b
+        public byte minx;//if character isnt within this bounding box, dont activate the entity
+        public byte miny;
+        public byte maxx;//33
+        public byte maxy;//3b
         public byte u3;//1
         public byte spritedir;//0,c0,c1,c2,c3,80
         public byte spritetableindex;
@@ -1590,8 +1612,7 @@ namespace GraphicsTools.Alundra
         public byte u8;
         public byte u9;
         public byte u10;
-        public byte u11;
-        public byte u12;
+        
     }
 
     public class SpriteInfoSector3
