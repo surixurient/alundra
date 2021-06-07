@@ -27,7 +27,7 @@ call
 000388c4: 00021040 sll r2,r2,0x01
 000388c8: 3c018013 lui r1,0x8013
 000388cc: 00220821 addu r1,r1,r2
-000388d0: 84247730 lh r4,0x7730(r1)
+000388d0: 84247730 lh r4,0x7730(r1)				//137730
 000388d4: 8e020118 lw r2,0x0118(r16)	
 000388d8: 00031d03 sra r3,r3,0x14
 000388dc: ae030128 sw r3,0x0128(r16)			entity.ztile = entity.zpos >> 20
@@ -35,16 +35,17 @@ call
 000388e4: ae040120 sw r4,0x0120(r16)			entity.xtile = division table lookup with entity.xpos  & 0xffff
 000388e8: 02002021 addu r4,r16,r0
 000388ec: 0c00e1c9 jal 0x00038724
-000388f0: ae020124 sw r2,0x0124(r16)			entity.ytile = 38724(entity)
-fallthrough
-000388f4: 8e03011c lw r3,0x011c(r16)	
-000388f8: ae020134 sw r2,0x0134(r16)			entity[134] = entity.ytile
+000388f0: ae020124 sw r2,0x0124(r16)			entity.ytile = entity.ypos >> 20
+fallthrough										var hity = calcytile(entity)
+000388f4: 8e03011c lw r3,0x011c(r16)			//zpos
+000388f8: ae020134 sw r2,0x0134(r16)			entity.ycollision? = hity
 000388fc: 0043102a slt r2,r2,r3			
 00038900: 8e03006c lw r3,0x006c(r16)	
 00038904: 38420001 xori r2,r2,0x0001	
 00038908: 30630100 andi r3,r3,0x0100	
-0003890c: 1060005a beq r3,r0,0x00038a78			if (entity.gravityflags && 0x0100 != 0) {
-00038910: ae020144 sw r2,0x0144(r16)				entity[144] = entity.ytile < entity.zpos ? 0 : 1
+0003890c: 1060005a beq r3,r0,0x00038a78			
+00038910: ae020144 sw r2,0x0144(r16)			entity[144] = hity < entity.zpos ? 0 : 1
+												if (entity.gravityflags & 0x0100 != 0) {
 00038914: 24090e00 addiu r9,r0,0x0e00				tohit = 0x0e00
 00038918: 00004021 addu r8,r0,r0					
 0003891c: 27a70010 addiu r7,r29,0x0010				//somevariable
@@ -61,10 +62,10 @@ twoway												for (int dex = 0;dex<4;dex++) {
 00038940: 30a30e00 andi r3,r5,0x0e00						
 oneway
 00038944: 0069102a slt r2,r3,r9
-00038948: 10400005 beq r2,r0,0x00038960						if (entity.maptile[dex].firstval && 0x0e00 < tohit) {
+00038948: 10400005 beq r2,r0,0x00038960						if (entity.maptile[dex].firstval & 0x0e00 < tohit) {
 0003894c: ace50000 sw r5,0x0000(r7)								somevariable = entity.maptile[dex].firstval
 00038950: 0800e258 j 0x00038960								
-00038954: 00604821 addu r9,r3,r0								tohit = entity.maptile[dex].firstval && 0x0e00
+00038954: 00604821 addu r9,r3,r0								tohit = entity.maptile[dex].firstval & 0x0e00
 															}
 														}
 fallthrough												else {

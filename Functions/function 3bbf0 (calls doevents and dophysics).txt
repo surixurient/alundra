@@ -85,7 +85,7 @@
 0003bd10: 25290001 addiu r9,r9,0x0001     
 0003bd14: 3c04801f lui r4, 0x801f         
 0003bd18: 8c84f1d0 lw r4,0xf1d0(r4)       something = *0xief1d0
-0003bd1c: 8c6601bc lw r6,0x01bc(r3)       r6 = entity[1bc]
+0003bd1c: 8c6601bc lw r6,0x01bc(r3)       r6 = entity[1bc]//depthsortval
 0003bd20: 8c670114 lw r7,0x0114(r3)       r7 = entity.xpos
 0003bd24: 8c680118 lw r8,0x0118(r3)       r8 = entity.ypos
 0003bd28: 8c65011c lw r5,0x011c(r3)       r5 = entity.zpos

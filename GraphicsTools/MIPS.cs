@@ -215,6 +215,9 @@ namespace alundramultitool
 
         public abstract uint GetGlobalVariable(CodeBlock<ISInstruction> block);
 
+        public abstract bool IsAssignment { get;}
+
+        public abstract void GetAssignmentGlobals(out uint left, out string right, CodeBlock<ISInstruction> block);
     }
 
 
@@ -549,6 +552,68 @@ namespace alundramultitool
                 get
                 {
                     return cmd == "jr" && rs == 31;
+                }
+            }
+
+            public override bool IsAssignment
+            {
+                get
+                {
+                    return type == InstructionType.Itype && cmd[0] == 's';
+                }
+            }
+            public override void GetAssignmentGlobals(out uint left, out string right, CodeBlock<ISInstruction> block)
+            {
+                left = 0;
+                right = "?";
+                //assumed itype
+                if (this.type == InstructionType.Itype)
+                {
+                    var fulladdr = GetGlobalVariable(block);
+                    if (fulladdr != 0)
+                    {
+                        left = fulladdr;
+                        var reg = rt;
+
+                        right = "r" + reg;
+
+                        var mdex = block.Instructions.IndexOf(this);
+                        int seekback = 2;
+                        for (int dex = mdex - 1; dex >= mdex - (1 + seekback) && dex >= 0; dex--)
+                        {
+                            var binst = (Instruction)block.Instructions[dex];
+                            if (binst.type == InstructionType.Rtype && binst.rd == reg)
+                            {
+                                right = "r" + reg + "(" + binst.disp + ")";
+
+                                break;
+                            }
+                            else if (binst.type == InstructionType.Itype)
+                            {
+                                if (binst.IsAssignment)
+                                {
+                                    if (binst.rs == reg)
+                                    {
+                                        right = "r" + reg + "(" + binst.disp + ")";
+
+                                        break;
+                                    }
+                                }
+                                else
+                                {
+                                    if (binst.rt == reg)
+                                    {
+                                        right = "r" + reg + "(" + binst.disp + ")";
+
+                                        break;
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+
+
                 }
             }
 

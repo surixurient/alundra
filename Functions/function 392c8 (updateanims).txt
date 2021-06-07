@@ -50,8 +50,8 @@
 00039374: 00000000 nop                    
 00039378: ae0200f8 sw r2,0x00f8(r16)      entity.appliedzforce = entity.animset.speed
 0003937c: 9082000d lbu r2,0x000d(r4)      
-00039380: ae0000ac sw r0,0x00ac(r16)      entity[ac] = 0
-00039384: ae0200b4 sw r2,0x00b4(r16)      entity[b4] = entity.animset.u4
+00039380: ae0000ac sw r0,0x00ac(r16)      entity.wierdnextframedelayflag = 0
+00039384: ae0200b4 sw r2,0x00b4(r16)      entity.animflags = entity.animset.u4
 00039388: 90a3000e lbu r3,0x000e(r5)      r3 = *entity[1c4]
 0003938c: 00000000 nop                    
 00039390: 10600009 beq r3,r0,0x000393b8   
@@ -81,7 +81,7 @@
                                           if
 000393d4: 24840100 addiu r4,r4,0x0100     
 
-0x000393d8: 0c012813 jal 0x0004a04c       4a04c()
+0x000393d8: 0c012813 jal 0x0004a04c       	playsoundeffect()
 000393dc: 00000000 nop                    
 000393e0: 0800e500 j 0x00039400           
 000393e4: 00000000 nop                    }
@@ -205,7 +205,7 @@
 00039554: ae0200a8 sw r2,0x00a8(r16)        	entity.nextframedelay = 0x7fffffff//what will this mean?
 00039558: 24020001 addiu r2,r0,0x0001       
 0003955c: 0800e58a j 0x00039628             
-00039560: ae0200ac sw r2,0x00ac(r16)        	entity[ac] = 1
+00039560: ae0200ac sw r2,0x00ac(r16)        	entity.wierdnextframedelayflag = 1
 												return
 											}
 0x00039564: 8e050098 lw r5,0x0098(r16)      fdex = entity.framedex
@@ -213,17 +213,17 @@
 0003956c: 00803021 addu r6,r4,r0            
 00039570: ae060088 sw r6,0x0088(r16)        entity.targetanim = somebyte
 00039574: 24420001 addiu r2,r2,0x0001       
-00039578: 0800e4cb j 0x0003932c             
+00039578: 0800e4cb j 0x0003932c             //this may actually be a goto
 0003957c: ae0200b0 sw r2,0x00b0(r16)        entity[b0]++//we get here when the animation is nonrepeating and is finished, so it switches back to some other animation
 											}
                                           }
 
 0x00039580: 8e0200b0 lw r2,0x00b0(r16)    
-00039584: 8e1100a0 lw r17,0x00a0(r16)     
+00039584: 8e1100a0 lw r17,0x00a0(r16)     frame = entity.curframe;
 00039588: 24420001 addiu r2,r2,0x0001     
 0003958c: ae0200b0 sw r2,0x00b0(r16)      entity[b0]++
 00039590: 0800e500 j 0x00039400           
-00039594: ae1100a4 sw r17,0x00a4(r16)     entity.nextframe = entity.curframe
+00039594: ae1100a4 sw r17,0x00a4(r16)     entity.nextframe = frame;
                                         }
 
 outputdebuginfo:
@@ -272,3 +272,38 @@ outputdebuginfo:
 0003963c: 27bd0028 addiu r29,r29,0x0028 
 00039640: 03e00008 jr r31               
 00039644: 00000000 nop                  
+
+int[] FrameDexTable = new int[]{
+0x00000000,
+0x00000000,
+0x00000002,
+0x00000001,
+0x00000001,
+0x00000001,
+0x00000003,
+0x00000000,
+0x00000000,
+0x00000000,
+0x00000002,
+0x00000001,
+0x00000001,
+0x00000001,
+0x00000003,
+0x00000000,
+0x00000000,
+0x00000002,
+0x00000002,
+0x00000002,
+0x00000001,
+0x00000003,
+0x00000003,
+0x00000003,
+0x00000000,
+0x00000002,
+0x00000002,
+0x00000002,
+0x00000001,
+0x00000003,
+0x00000003,
+0x00000003,
+};

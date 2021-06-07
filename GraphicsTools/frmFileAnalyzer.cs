@@ -153,7 +153,7 @@ namespace GraphicsTools
             }
         }
 
-        bool flip = true;
+        bool flip = false;
         void DisplayData(int pos)
         {
             int addrOffset = 0;
@@ -749,6 +749,7 @@ namespace GraphicsTools
             public string name;
             public string notes;
             public List<AnalyzedFunction> functions = new List<AnalyzedFunction>();
+            public List<VariableAssignment> assignments = new List<VariableAssignment>();
 
             public string DisplayName
             {
@@ -764,6 +765,14 @@ namespace GraphicsTools
             {
                 return DisplayName + "[" + functions.Count + "]";
             }
+        }
+
+        public class VariableAssignment
+        {
+            public AnalyzedFunction func;
+            public AnalyzedGlobalVariable left;
+            public AnalyzedGlobalVariable right;
+            public string rightstring;
         }
         public class AnalyzedFunction
         {
@@ -893,6 +902,24 @@ namespace GraphicsTools
                                     }
                                     if (!globalvariables.Contains(gvar))
                                         globalvariables.Add(gvar);
+                                }
+
+
+                                //if its an assignment, get the left and right operands
+                                if (inst.IsAssignment)
+                                {
+                                    uint fulladr;
+                                    string right;
+                                    inst.GetAssignmentGlobals(out fulladr, out right, block);
+                                    if (fulladr != 0)
+                                    {
+                                        var gvar = varlist.FirstOrDefault(x => x.address == fulladr);
+                                        if (gvar != null)
+                                        {
+                                            var assn = new VariableAssignment { func = this, left = gvar, rightstring = right };
+                                            gvar.assignments.Add(assn);
+                                        }
+                                    }
                                 }
                                 break;
 
@@ -1026,7 +1053,8 @@ namespace GraphicsTools
             this.Height = 1000;
             var address = (uint)ParseNum(txtOffset.Text);
 
-            address = 0x0002c4a4;
+            address = 0x002c038;
+            //address = 0x0002c4a4;
             var endaddress = (uint)0x0002c518;
             analyzedfunctions = new List<AnalyzedFunction>();
             analyzedglobalvariables = new List<AnalyzedGlobalVariable>();
@@ -1065,6 +1093,7 @@ namespace GraphicsTools
             importantFuncs.Add(new AnalyzedFunction(0x5c4ac, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
             importantFuncs.Add(new AnalyzedFunction(0x47de4, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
             
+            //importantFuncs.Add(new AnalyzedFunction(0x2c038))
             foreach (var func in analyzedfunctions)
             {
                 //set calledby
@@ -1254,10 +1283,15 @@ namespace GraphicsTools
             lstGlobalIncludeds.Items.Clear();
             if (lstGlobals.SelectedItem != null)
             {
-                var funcs = analyzedglobalvariables.FirstOrDefault(x=>x.DisplayName == (string)lstGlobals.SelectedItem).functions;
-                foreach (var func in funcs)
+                var gvar = analyzedglobalvariables.FirstOrDefault(x => x.DisplayName == (string)lstGlobals.SelectedItem);
+                
+                foreach (var func in gvar.functions)
                 {
                     lstGlobalIncludeds.Items.Add(func.ToString());
+                }
+                foreach (var asn in gvar.assignments)
+                {
+                    lstGlobalIncludeds.Items.Add(asn.func.ToString() + " * = " + asn.rightstring);
                 }
             }
         }
@@ -1266,7 +1300,10 @@ namespace GraphicsTools
         {
             if (lstGlobalIncludeds.SelectedItem != null)
             {
-                var func = analyzedfunctions.FirstOrDefault(x => x.ToString() == (string)lstGlobalIncludeds.SelectedItem);
+                var functext = (string)lstGlobalIncludeds.SelectedItem;
+                if (functext.Contains(" * ="))
+                    functext = functext.Substring(0, functext.IndexOf(" * ="));
+                var func = analyzedfunctions.FirstOrDefault(x => x.ToString() == functext);
                 var frm = new frmAnalyzedFunction(func, datafile);
                 frm.Show();
             }
@@ -1317,6 +1354,45 @@ namespace GraphicsTools
 
             s += "};";
             Clipboard.SetText(s);
+
+
+            s = "int[] FrameDexTable = new int[]{\r\n";
+            dex = 0;
+
+            for (int i = 0; i < 32; i++)
+            {
+                string line = "0x" + (data[dex + 0] + (data[dex + 1] << 8) + (data[dex + 2] << 16) + (data[dex + 3] << 24)).ToString("x8") + ",";
+                dex += 4;
+                s += line + "\r\n";
+            }
+
+            s += "};";
+            Clipboard.SetText(s);
+
+            s = "int[] FrameDexTable = new int[]{\r\n";
+            dex = 0;
+            for (int i = 0; i < 0x50; i++)
+            {
+                string line = "0x" + (data[dex + 0] + (data[dex + 1] << 8) + (data[dex + 2] << 16) + (data[dex + 3] << 24)).ToString("x8") + ",//0x" + i.ToString("x2");
+                dex += 4;
+                s += line + "\r\n";
+            }
+            s += "};";
+            Clipboard.SetText(s);
+        }
+
+        private void btnFuncContainsAddr_Click(object sender, EventArgs e)
+        {
+            var addr = ParseNum(txtOffset.Text);
+            foreach (var func in analyzedfunctions)
+            {
+                if (func.address < addr && (func.address + func.length) > addr)
+                {
+                    var frm = new frmAnalyzedFunction(func, datafile);
+                    frm.Show();
+                    break;
+                }
+            }
         }
     }
 }

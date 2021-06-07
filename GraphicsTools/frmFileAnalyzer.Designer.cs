@@ -91,6 +91,7 @@
             this.label20 = new System.Windows.Forms.Label();
             this.chkSortGlobal = new System.Windows.Forms.CheckBox();
             this.btnUtility = new System.Windows.Forms.Button();
+            this.btnFuncContainsAddr = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // rtfText
@@ -718,11 +719,23 @@
             this.btnUtility.UseVisualStyleBackColor = true;
             this.btnUtility.Click += new System.EventHandler(this.btnUtility_Click);
             // 
+            // btnFuncContainsAddr
+            // 
+            this.btnFuncContainsAddr.Location = new System.Drawing.Point(671, 564);
+            this.btnFuncContainsAddr.Margin = new System.Windows.Forms.Padding(4);
+            this.btnFuncContainsAddr.Name = "btnFuncContainsAddr";
+            this.btnFuncContainsAddr.Size = new System.Drawing.Size(166, 26);
+            this.btnFuncContainsAddr.TabIndex = 67;
+            this.btnFuncContainsAddr.Text = "func that contains addr";
+            this.btnFuncContainsAddr.UseVisualStyleBackColor = true;
+            this.btnFuncContainsAddr.Click += new System.EventHandler(this.btnFuncContainsAddr_Click);
+            // 
             // frmFileAnalyzer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(2057, 862);
+            this.Controls.Add(this.btnFuncContainsAddr);
             this.Controls.Add(this.btnUtility);
             this.Controls.Add(this.label20);
             this.Controls.Add(this.label19);
@@ -862,5 +875,6 @@
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.CheckBox chkSortGlobal;
         private System.Windows.Forms.Button btnUtility;
+        private System.Windows.Forms.Button btnFuncContainsAddr;
     }
 }

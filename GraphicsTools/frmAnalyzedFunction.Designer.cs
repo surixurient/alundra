@@ -93,6 +93,7 @@ namespace alundramultitool
             this.lstCalledBy.Name = "lstCalledBy";
             this.lstCalledBy.Size = new System.Drawing.Size(335, 84);
             this.lstCalledBy.TabIndex = 47;
+            this.lstCalledBy.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lstCalledBy_MouseDoubleClick);
             // 
             // txtNotes
             // 

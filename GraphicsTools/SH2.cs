@@ -1055,7 +1055,14 @@ namespace alundramultitool
             public override bool IsJump => throw new NotImplementedException();
             public override bool IsReturn => throw new NotImplementedException();
 
+            public override bool IsAssignment => throw new NotImplementedException();
+
             public override uint GetGlobalVariable(CodeBlock<ISInstruction> block)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void GetAssignmentGlobals(out uint left, out string right, CodeBlock<ISInstruction> block)
             {
                 throw new NotImplementedException();
             }

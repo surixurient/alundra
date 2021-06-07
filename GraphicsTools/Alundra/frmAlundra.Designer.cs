@@ -1197,27 +1197,27 @@
             // 
             // columnHeader14
             // 
-            this.columnHeader14.Text = "?";
+            this.columnHeader14.Text = "x1";
             this.columnHeader14.Width = 38;
             // 
             // columnHeader15
             // 
-            this.columnHeader15.Text = "?";
+            this.columnHeader15.Text = "y1";
             this.columnHeader15.Width = 37;
             // 
             // columnHeader16
             // 
-            this.columnHeader16.Text = "evt";
+            this.columnHeader16.Text = "x2";
             this.columnHeader16.Width = 38;
             // 
             // columnHeader17
             // 
-            this.columnHeader17.Text = "?";
+            this.columnHeader17.Text = "y2";
             this.columnHeader17.Width = 37;
             // 
             // columnHeader18
             // 
-            this.columnHeader18.Text = "?";
+            this.columnHeader18.Text = "evt";
             this.columnHeader18.Width = 36;
             // 
             // columnHeader19

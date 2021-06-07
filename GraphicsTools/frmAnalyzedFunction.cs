@@ -124,5 +124,18 @@ namespace alundramultitool
                 txtFunction.Focus();
             }
         }
+
+        private void lstCalledBy_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            foreach (var cfunc in func.calledby)
+            {
+                if (cfunc.ToString() == (string)lstCalledBy.SelectedItem)
+                {
+                    var frm = new frmAnalyzedFunction(cfunc, datafile);
+                    frm.Show();
+                    break;
+                }
+            }
+        }
     }
 }

@@ -13,9 +13,9 @@
 0002e3d4: 28620002 slti r2,r3,0x0002    
 0002e3d8: 14400004 bne r2,r0,0x0002e3ec 
 0002e3dc: 00809821 addu r19,r4,r0       
-                                        if(numsprites < 2)
+                                        if(numsprites >= 2)
 0002e3e0: 00002021 addu r4,r0,r0
-0002e3e4: 0c00b71d jal 0x0002dc74       	2dc74(0)//
+0002e3e4: 0c00b71d jal 0x0002dc74       	2dc74(0, numsprites-1)//
 0002e3e8: 2465ffff addiu r5,r3,0xffff   
 
 0x0002e3ec: 00009021 addu r18,r0,r0     

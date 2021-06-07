@@ -11,7 +11,7 @@
 0003c3b4: 252944e0 addiu r9,r9,0x44e0   copythings = 0x1c44e0
 0003c3b8: afb00000 sw r16,0x0000(r29)   
 0003c3bc: 8fb00028 lw r16,0x0028(r29)   
-0003c3c0: 252d0080 addiu r13,r9,0x0080  num_things = 0x1c0080 
+0003c3c0: 252d0080 addiu r13,r9,0x0080  
 0003c3c4: afb10004 sw r17,0x0004(r29)   
 0003c3c8: 8fb1002c lw r17,0x002c(r29)   
 0003c3cc: 8d0b0000 lw r11,0x0000(r8)    r11 = thing[0]
@@ -43,7 +43,7 @@
 0x0003c418: 000f182b slt r3,r0,r15      //paramprev1
 0003c41c: 38640001 xori r4,r3,0x0001    
 0003c420: 24020002 addiu r2,r0,0x0002   
-0003c424: ad020068 sw r2,0x0068(r8)     thing[68] = 2
+0003c424: ad020068 sw r2,0x0068(r8)     thing[68] = 2//means its active
 0003c428: 000e1027 nor r2,r0,r14        //paramprev2
 0003c42c: a102006f sb r2,0x006f(r8)     thing[6f] = 0 ~ paramprev2
 0003c430: 00181027 nor r2,r0,r24        

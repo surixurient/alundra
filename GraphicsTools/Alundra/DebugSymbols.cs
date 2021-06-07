@@ -68,7 +68,7 @@ namespace GraphicsTools.Alundra
             AddFunction(0x37ddc, "movez", "");
             AddFunction(0x37f2c, "movexy", "");
             AddFunction(0x3862c, "moveentity", "");
-            AddFunction(0x38724, "calcytile", "");
+            AddFunction(0x38724, "colideentitiesz", "");
             AddFunction(0x3886c, "updatetile", "");
             AddFunction(0x38b68, "dophysics", "");
             AddFunction(0x38cf0, "addtolists", "");
@@ -80,13 +80,21 @@ namespace GraphicsTools.Alundra
             AddFunction(0x396ac, "", "called after dophysics");
             AddFunction(0x39b24, "", "after dophysics");
             AddFunction(0x3bbf0, "updateentities", "calls doevents and dophysics");
-            AddFunction(0x3c390, "", "init thing");
-            AddFunction(0x3c46c, "", "something with effect animation");
-            AddFunction(0x3c730, "", "after after dophysics, drop something on map?");
-            AddFunction(0x3cd18, "", "after calls doevents");
-            AddFunction(0x3cf7c, "", "before calls doevents");
+            AddFunction(0x3c240, "getnexteffectrecord", "sprite related thing record, 0x80 long, gets empty one");
+            AddFunction(0x3c278, "geteffectspritetablerecord", "(ismapsprite, tableindex, out addtosheet, out addtopal)");
+            AddFunction(0x3c390, "initeffect", "initeffect(effectrecord, param1, param2, param3, prev1, prev2, prev3, x, y, z)");
+            AddFunction(0x3c46c, "updateeffectanims", "loads in animsets, advances animations/etc");
+            AddFunction(0x3cb88, "updateeffectbytype", "update effect positions based on type");
+            AddFunction(0x3c684, "createeffect_type0", "(ismapsprite,effectid,animid,x,y,z)");
+            AddFunction(0x3c730, "createeffect_type1", "(ismapsprite,effectid,animid,entity,unknown,xoff,yoff,zoff)");
+            AddFunction(0x3c8d0, "createeffect_type3", "(ismapsprite, effectid, animid, entity, unknown, x, y, z)");
+            AddFunction(0x3c99c, "createeffect_4", "this is used by events and loads in an unknown record");
+            AddFunction(0x3cd18, "updateeffects", "after calls doevents, creates spriterefs from the effects");
+            AddFunction(0x3cf7c, "updatemapevents", "before calls doevents");
             AddFunction(0x3d298, "getentityfromrefid", "can also get entities");
             AddFunction(0x3d160, "outputdebuginfo", "");
+            AddFunction(0x2cba0, "outputpatchdebuginfo", "patch data error");
+            AddFunction(0x42964, "initeventdata", "(entity,eventprogramtype,eventdata)");
             AddFunction(0x42adc, "runentityeventscripts", "innerdoevents");
             AddFunction(0x432a4, "presentframe", "advances frame and sound");
             AddFunction(0x48ed4, "drawui", "overlays ui/dialogs");
@@ -163,8 +171,13 @@ namespace GraphicsTools.Alundra
             AddFunction(0x3a2ec, "getnextavailableentity", "");
             AddFunction(0x3a51c, "initentity", "(entity,ownerentity,sprite,initdata,spritetableindex,entityid,x,y,z,0,dir,outvar1,outvar2)");
             AddFunction(0x2eaac, "dirfromvector", "");
-
-
+            AddFunction(0x453b4, "getunknownthingfromspriteindex", "");
+            AddFunction(0x42a9c, "initcodeprograms", "");
+            AddFunction(0x3a458, "initentitydimensions", "");
+            AddFunction(0x33078, "maybegetcontents", "");
+            AddFunction(0x03afec, "hideentity", "(entity)");
+            AddFunction(0x3d97c, "turnentity", "(entity,turncode)");
+            AddFunction(0x3d8d4, "getcardinaldirtoplayer", "(entity)");
 
             /*FunctionNames.Add(0x36d30, "setridingentities");
             FunctionNames.Add(0x36e80, "setxyforces");
@@ -194,9 +207,11 @@ namespace GraphicsTools.Alundra
 
             //FunctionNames.Add(0x, "");
 
-            EntityVarOffsets[0x0] = "entityid";
+            EntityVarOffsets[0x0] = "indexentityid";
+            EntityVarOffsets[0xc] = "ownerentity";
             EntityVarOffsets[0x10] = "status";//3 = invisible, 4 = destroyed
             EntityVarOffsets[0x14] = "health";
+            EntityVarOffsets[0x18] = "maxhealth";
             EntityVarOffsets[0x28] = "refentity";//platform entity
             EntityVarOffsets[0x30] = "refxoff";//platformxoff
             EntityVarOffsets[0x34] = "refyoff";//platformyoff
@@ -204,9 +219,20 @@ namespace GraphicsTools.Alundra
 
             EntityVarOffsets[0x44] = "datasbinrecord";
             EntityVarOffsets[0x48] = "entityrefid";
-            EntityVarOffsets[0x64] = "portraitsprite";
-            EntityVarOffsets[0x68] = "name";
+            EntityVarOffsets[0x4c] = "codesa_load";
+            EntityVarOffsets[0x50] = "codesb_unknown";
+            EntityVarOffsets[0x54] = "codesc_tick";
+            EntityVarOffsets[0x58] = "codesd_touch";
+            EntityVarOffsets[0x5c] = "codese_unknown";
+            EntityVarOffsets[0x60] = "codesf_interact";
+            EntityVarOffsets[0x64] = "sprite";
+            EntityVarOffsets[0x68] = "spritetableindex";
             EntityVarOffsets[0x6c] = "gravityflags";
+            EntityVarOffsets[0x70] = "spriteu4";
+            EntityVarOffsets[0x78] = "throwtype";
+            EntityVarOffsets[0x7c] = "spriteu6";
+            EntityVarOffsets[0x80] = "breaksound";
+            EntityVarOffsets[0x84] = "spriteu8";
             EntityVarOffsets[0x88] = "targetanim";
             EntityVarOffsets[0x8c] = "targetdir";
             EntityVarOffsets[0x90] = "curanim";
@@ -217,7 +243,9 @@ namespace GraphicsTools.Alundra
             EntityVarOffsets[0xa0] = "curframe";
             EntityVarOffsets[0xa4] = "nextframe";
             EntityVarOffsets[0xa8] = "nextframedelay";
-
+            EntityVarOffsets[0xac] = "wierdnextframedelayflag";
+            EntityVarOffsets[0xb0] = "animcompletecounter";
+            EntityVarOffsets[0xb0] = "animflags";
             EntityVarOffsets[0xb8] = "zforce";//risefall speed
             EntityVarOffsets[0xbc] = "targetxforce";
             EntityVarOffsets[0xc0] = "targetyforce";
@@ -236,10 +264,11 @@ namespace GraphicsTools.Alundra
             EntityVarOffsets[0xf0] = "acceleration";
             EntityVarOffsets[0xf4] = "speed";
             EntityVarOffsets[0xf8] = "appliedzforce";
-            EntityVarOffsets[0xfc] = "aboveabovexpos";
-            EntityVarOffsets[0x100] = "aboveaboveypos";
-            EntityVarOffsets[0x108] = "abovexpos";
-            EntityVarOffsets[0x10c] = "aboveypos";
+            EntityVarOffsets[0xfc] = "screenclipx";
+            EntityVarOffsets[0x100] = "screenclipy";
+            EntityVarOffsets[0x104] = "screenclipz";
+            EntityVarOffsets[0x108] = "negxmod";
+            EntityVarOffsets[0x10c] = "negymod";
 
             EntityVarOffsets[0x114] = "xpos";
             EntityVarOffsets[0x118] = "ypos";
@@ -250,8 +279,8 @@ namespace GraphicsTools.Alundra
             EntityVarOffsets[0x12c] = "ridingentity";
 
             EntityVarOffsets[0x130] = "?xcollision?";
-            EntityVarOffsets[0x134] = "?ycollision?";
-            EntityVarOffsets[0x138] = "zcollision";
+            EntityVarOffsets[0x134] = "entityzcollision";
+            EntityVarOffsets[0x138] = "mapzcollision";
             EntityVarOffsets[0x13c] = "forceadjusted";
             EntityVarOffsets[0x140] = "entitycollision";
             EntityVarOffsets[0x144] = "";
@@ -270,14 +299,17 @@ namespace GraphicsTools.Alundra
             EntityVarOffsets[0x188] = "";
             EntityVarOffsets[0x18c] = "";
             EntityVarOffsets[0x190] = "";
-            EntityVarOffsets[0x194] = "imageset";
-            EntityVarOffsets[0x198] = "xpos2?";
-            EntityVarOffsets[0x19c] = "ypos2?";
-            EntityVarOffsets[0x1a0] = "zpos2?";
+            EntityVarOffsets[0x194] = "imageref.images";
+            EntityVarOffsets[0x198] = "imageref.x";
+            EntityVarOffsets[0x19c] = "imageref.y";
+            EntityVarOffsets[0x1a0] = "imageref.z";
+            EntityVarOffsets[0x1a4] = "imageref.sort";
+            EntityVarOffsets[0x1a8] = "imageref.numimages";
 
             EntityVarOffsets[0x1b0] = "addedtossheet?";
             EntityVarOffsets[0x1b4] = "addedtopallete?";
-
+            EntityVarOffsets[0x1bc] = "depthsortval";
+            //1c4 something fetched with spritetableindex, and this thing has health on it
             EntityVarOffsets[0x1d4] = "";
             EntityVarOffsets[0x1d8] = "adjustedxpos";
             EntityVarOffsets[0x1dc] = "adjustedypos";
@@ -387,11 +419,14 @@ namespace GraphicsTools.Alundra
             AddGlobalVariable(0x13d228, "getentitiesliststart", "");
             AddGlobalVariable(0x1d918c, "numentities", "");
             AddGlobalVariable(0x9b5b4, "eventhandlers","");
-            
+
+            AddGlobalVariable(0x139f00, "alist1", "");
+            AddGlobalVariable(0x140e10, "alist1count", "");
+
             AddGlobalVariable(0x1ac498, "playerentity", "");
             AddGlobalVariable(0x1ac72c, "entitiesafterplayer", "");
 
-            AddGlobalVariable(0x1d6118, "mapgameflags", "");
+            AddGlobalVariable(0x1e6118, "mapgameflags", "");
             AddGlobalVariable(0x1d84e0, "somegravitysetting", "");
             AddGlobalVariable(0x1dd0d4, "globalgameflags", "");
             AddGlobalVariable(0x1dd7e8, "playerinput", "");
@@ -410,6 +445,8 @@ namespace GraphicsTools.Alundra
             AddGlobalVariable(0x13a000, "numsprites", "");
             AddGlobalVariable(0x1c6598, "spriteframecounter", "");
 
+            AddGlobalVariable(0x1e5ce0, "eventprogsset", "a prog was set by a script, main event handler will respond");
+
             AddGlobalVariable(0x1f2bb0, "spritesheets", "");
             AddGlobalVariable(0x12e040, "palettes", "");
             AddGlobalVariable(0x1ef124, "dialogcmdlist", "");
@@ -425,9 +462,30 @@ namespace GraphicsTools.Alundra
             AddGlobalVariable(0x1f2ef0, "globalstrings", "");
             AddGlobalVariable(0x1f2c68, "SIEntityRecords","initdata");
             AddGlobalVariable(0x1f2c74, "numSIEntityRecords", "initdatas");
+            AddGlobalVariable(0x1f2c78, "mapeffect12byterecords", "has effect data");
+            AddGlobalVariable(0x1f2c84, "nummapeffect12byterecords", "has effect");
+            AddGlobalVariable(0x1f2c88, "mapeventrecords", "has map triggered eventprog(b) data");
+
+            AddGlobalVariable(0x1efbfc, "activecollisionentity", "");
+            AddGlobalVariable(0x1efbf4, "camfollowentity", "camera follows");
+
+            AddGlobalVariable(0x133730, "effectslist", "0x80 byte records and 0x80 in the list");
+            AddGlobalVariable(0x1380f0, "spritereflist", "list of pointers to spriteref");
+            AddGlobalVariable(0x1ef1d0, "spritereflisttailptr", "this is used to add to the list");
+
+            AddGlobalVariable(0x13c028, "mapeventlist", "these things are 0x48 bytes long, and max of 0x40 of them");
+
+            AddGlobalVariable(0x9ad10, "randomseed", "");
 
             AddGlobalVariable(0x1f2c60, "mapspritetable", "");
             AddGlobalVariable(0x1f36f8, "globalspritetable", "");
+
+            AddGlobalVariable(0x1f922c, "activeevtcode", "");
+            AddGlobalVariable(0x1428f8, "prevevtcode", "");
+            AddGlobalVariable(0x1f91d0, "activeprogindex", "");
+            AddGlobalVariable(0x13c020, "activeentityrefid", "");
+            AddGlobalVariable(0x140e14, "activeevtprogtype", "");
+
 
             AddGlobalVariable(0x1F801040, "portjoydata", "controller port");
             AddGlobalVariable(0x1F801044, "portjoystat", "controller port");

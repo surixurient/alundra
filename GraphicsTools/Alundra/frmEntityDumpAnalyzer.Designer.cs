@@ -74,6 +74,12 @@
             this.label35 = new System.Windows.Forms.Label();
             this.label36 = new System.Windows.Forms.Label();
             this.label37 = new System.Windows.Forms.Label();
+            this.label38 = new System.Windows.Forms.Label();
+            this.label39 = new System.Windows.Forms.Label();
+            this.label40 = new System.Windows.Forms.Label();
+            this.label41 = new System.Windows.Forms.Label();
+            this.label42 = new System.Windows.Forms.Label();
+            this.label43 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lstValues
@@ -145,7 +151,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(267, 341);
+            this.label1.Location = new System.Drawing.Point(267, 342);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(113, 17);
@@ -225,12 +231,12 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(267, 139);
+            this.label9.Location = new System.Drawing.Point(267, 138);
             this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(147, 17);
+            this.label9.Size = new System.Drawing.Size(217, 17);
             this.label9.TabIndex = 15;
-            this.label9.Text = "?, portraitsprite, name";
+            this.label9.Text = "f_interact, sprite, spritetableindex";
             // 
             // label10
             // 
@@ -258,9 +264,9 @@
             this.label12.Location = new System.Drawing.Point(267, 370);
             this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(222, 17);
+            this.label12.Size = new System.Drawing.Size(248, 17);
             this.label12.TabIndex = 18;
-            this.label12.Text = "ridingentity, xcollision?, ycollision?";
+            this.label12.Text = "ridingentity, xcollision?, entityzcollision";
             // 
             // label14
             // 
@@ -268,9 +274,9 @@
             this.label14.Location = new System.Drawing.Point(267, 235);
             this.label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(195, 17);
+            this.label14.Size = new System.Drawing.Size(239, 17);
             this.label14.TabIndex = 20;
-            this.label14.Text = "?, fall/rise speed, targetxforce";
+            this.label14.Text = "animflags,fall/rise speed,targetxforce";
             // 
             // label13
             // 
@@ -288,9 +294,9 @@
             this.label15.Location = new System.Drawing.Point(265, 180);
             this.label15.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(148, 17);
+            this.label15.Size = new System.Drawing.Size(191, 17);
             this.label15.TabIndex = 22;
-            this.label15.Text = "?,targetanim, targetdir";
+            this.label15.Text = "spriteu8,targetanim, targetdir";
             // 
             // label16
             // 
@@ -458,12 +464,12 @@
             // label29
             // 
             this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(267, 317);
+            this.label29.Location = new System.Drawing.Point(267, 316);
             this.label29.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(251, 17);
+            this.label29.Size = new System.Drawing.Size(236, 17);
             this.label29.TabIndex = 39;
-            this.label29.Text = "aboveabove ypos, aboveabove xpos,?";
+            this.label29.Text = "screenclipx, screenclipy, screenclipz";
             // 
             // label30
             // 
@@ -471,9 +477,9 @@
             this.label30.Location = new System.Drawing.Point(267, 330);
             this.label30.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(177, 17);
+            this.label30.Size = new System.Drawing.Size(155, 17);
             this.label30.TabIndex = 40;
-            this.label30.Text = "above xpos, above ypos, ?";
+            this.label30.Text = "neg xmod, neg ymod, ?";
             // 
             // label31
             // 
@@ -481,19 +487,19 @@
             this.label31.Location = new System.Drawing.Point(266, 383);
             this.label31.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(251, 17);
+            this.label31.Size = new System.Drawing.Size(278, 17);
             this.label31.TabIndex = 41;
-            this.label31.Text = "zcollision, forceadjusted, entitycollision";
+            this.label31.Text = "mapzcollision, forceadjusted, entitycollision";
             // 
             // label32
             // 
             this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(268, 153);
+            this.label32.Location = new System.Drawing.Point(266, 151);
             this.label32.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(112, 17);
+            this.label32.Size = new System.Drawing.Size(113, 17);
             this.label32.TabIndex = 42;
-            this.label32.Text = "gravityflags, ?, ?";
+            this.label32.Text = "flags, spriteu4, ?";
             // 
             // label33
             // 
@@ -511,19 +517,19 @@
             this.label34.Location = new System.Drawing.Point(267, 221);
             this.label34.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(136, 17);
+            this.label34.Size = new System.Drawing.Size(337, 17);
             this.label34.TabIndex = 44;
-            this.label34.Text = "nextframedelay, ?, ?";
+            this.label34.Text = "nextframedelay,wierddelayflag,animcompletecounter";
             // 
             // label35
             // 
             this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(267, 113);
+            this.label35.Location = new System.Drawing.Point(267, 112);
             this.label35.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(98, 17);
+            this.label35.Size = new System.Drawing.Size(197, 17);
             this.label35.TabIndex = 45;
-            this.label35.Text = "entityrefid,? ,?";
+            this.label35.Text = "entityrefid,a_load ,b_unknown";
             // 
             // label36
             // 
@@ -538,30 +544,92 @@
             // label37
             // 
             this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(269, 46);
+            this.label37.Location = new System.Drawing.Point(269, 45);
             this.label37.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(78, 17);
+            this.label37.Size = new System.Drawing.Size(173, 17);
             this.label37.TabIndex = 47;
-            this.label37.Text = "?, status, ?";
+            this.label37.Text = "ownerentity, status, health";
+            // 
+            // label38
+            // 
+            this.label38.AutoSize = true;
+            this.label38.Location = new System.Drawing.Point(267, 31);
+            this.label38.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label38.Name = "label38";
+            this.label38.Size = new System.Drawing.Size(118, 17);
+            this.label38.TabIndex = 48;
+            this.label38.Text = "indexentityid, ?, ?";
+            // 
+            // label39
+            // 
+            this.label39.AutoSize = true;
+            this.label39.Location = new System.Drawing.Point(264, 166);
+            this.label39.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label39.Name = "label39";
+            this.label39.Size = new System.Drawing.Size(211, 17);
+            this.label39.TabIndex = 49;
+            this.label39.Text = "throwtype, spriteu6, breaksound";
+            // 
+            // label40
+            // 
+            this.label40.AutoSize = true;
+            this.label40.Location = new System.Drawing.Point(268, 126);
+            this.label40.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label40.Name = "label40";
+            this.label40.Size = new System.Drawing.Size(179, 17);
+            this.label40.TabIndex = 50;
+            this.label40.Text = "c_tick,d_touch ,e_unknown";
+            // 
+            // label41
+            // 
+            this.label41.AutoSize = true;
+            this.label41.Location = new System.Drawing.Point(268, 59);
+            this.label41.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(104, 17);
+            this.label41.TabIndex = 51;
+            this.label41.Text = "maxhealth, ?, ?";
+            // 
+            // label42
+            // 
+            this.label42.AutoSize = true;
+            this.label42.Location = new System.Drawing.Point(266, 515);
+            this.label42.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(206, 17);
+            this.label42.TabIndex = 52;
+            this.label42.Text = "addedtosheet,addedtopalette,?";
+            // 
+            // label43
+            // 
+            this.label43.AutoSize = true;
+            this.label43.Location = new System.Drawing.Point(267, 529);
+            this.label43.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label43.Name = "label43";
+            this.label43.Size = new System.Drawing.Size(86, 17);
+            this.label43.TabIndex = 53;
+            this.label43.Text = "depthsortval";
             // 
             // frmEntityDumpAnalyzer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(512, 844);
+            this.Controls.Add(this.label42);
+            this.Controls.Add(this.label21);
+            this.Controls.Add(this.label41);
+            this.Controls.Add(this.label40);
+            this.Controls.Add(this.label30);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.label37);
             this.Controls.Add(this.label36);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label35);
             this.Controls.Add(this.label34);
             this.Controls.Add(this.label33);
-            this.Controls.Add(this.label9);
-            this.Controls.Add(this.label32);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.label31);
-            this.Controls.Add(this.label29);
-            this.Controls.Add(this.label30);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.label25);
             this.Controls.Add(this.label26);
@@ -570,7 +638,6 @@
             this.Controls.Add(this.label28);
             this.Controls.Add(this.label24);
             this.Controls.Add(this.label23);
-            this.Controls.Add(this.label21);
             this.Controls.Add(this.label22);
             this.Controls.Add(this.lblfaddr3);
             this.Controls.Add(this.lblfaddr2);
@@ -581,7 +648,6 @@
             this.Controls.Add(this.label10);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
@@ -596,6 +662,12 @@
             this.Controls.Add(this.label17);
             this.Controls.Add(this.label20);
             this.Controls.Add(this.label19);
+            this.Controls.Add(this.label39);
+            this.Controls.Add(this.label29);
+            this.Controls.Add(this.label32);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.label38);
+            this.Controls.Add(this.label43);
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "frmEntityDumpAnalyzer";
             this.Text = "frmEntityDumpAnalyzer";
@@ -653,5 +725,11 @@
         private System.Windows.Forms.Label label35;
         private System.Windows.Forms.Label label36;
         private System.Windows.Forms.Label label37;
+        private System.Windows.Forms.Label label38;
+        private System.Windows.Forms.Label label39;
+        private System.Windows.Forms.Label label40;
+        private System.Windows.Forms.Label label41;
+        private System.Windows.Forms.Label label42;
+        private System.Windows.Forms.Label label43;
     }
 }

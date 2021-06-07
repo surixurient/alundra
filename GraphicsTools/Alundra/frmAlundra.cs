@@ -76,7 +76,7 @@ namespace GraphicsTools.Alundra
             if (!selectedGame.loaded)
             {
                 var reader = datasBin.OpenBin();
-                selectedGame.Load(reader);
+                selectedGame.Load(reader, false);
                 reader.Close();
             }
             CachedTiles = new Dictionary<int, Bitmap>();//blow cache
@@ -131,8 +131,8 @@ namespace GraphicsTools.Alundra
 
             //spriteinfo
             var sinfo = selectedGame.spriteinfo.header;
-            lblSpriteInfo.Text = string.Format(@"{0}    {1} {2} {3} {4} palettes:{5}    {6} {7} {8} {9} {10}    {11}", Fix(sinfo.entitiespointer), Fix(sinfo.sector3pointer), Fix(sinfo.mapeventspointer), Fix(sinfo.spritetablepointer), Fix(sinfo.unknown1pointer), Fix(sinfo.spritepalettespointer), Fix(sinfo.eventcodesapointer), Fix(sinfo.eventcodesbpointer), Fix(sinfo.eventcodescpointer), Fix(sinfo.eventcodesdpointer), Fix(sinfo.eventcodesepointer), Fix(sinfo.eventcodesfpointer));
-            lblSpriteInfoSizes.Text = string.Format("{0}    {1} {2} {3} {4} palettes:{5}    {6} {7} {8} {9} {10}    {11}", Fix(sinfo.entitiessize), Fix(sinfo.sector3size), Fix(sinfo.mapeventssize), Fix(sinfo.spritetablesize), Fix(sinfo.unknown1size), Fix(sinfo.spritepalettessize), Fix(sinfo.eventcodesasize), Fix(sinfo.eventcodesbsize), Fix(sinfo.eventcodescsize), Fix(sinfo.eventcodesdsize), Fix(sinfo.eventcodesesize), Fix(sinfo.eventcodesfandremainingsize));
+            lblSpriteInfo.Text = string.Format(@"{0}    {1} {2} {3} {4} palettes:{5}    {6} {7} {8} {9} {10}    {11}", Fix(sinfo.entitiespointer), Fix(sinfo.mapeffectsector3pointer), Fix(sinfo.mapeventspointer), Fix(sinfo.spritetablepointer), Fix(sinfo.spriteeffectspointer), Fix(sinfo.spritepalettespointer), Fix(sinfo.eventcodesapointer), Fix(sinfo.eventcodesbpointer), Fix(sinfo.eventcodescpointer), Fix(sinfo.eventcodesdpointer), Fix(sinfo.eventcodesepointer), Fix(sinfo.eventcodesfpointer));
+            lblSpriteInfoSizes.Text = string.Format("{0}    {1} {2} {3} {4} palettes:{5}    {6} {7} {8} {9} {10}    {11}", Fix(sinfo.entitiessize), Fix(sinfo.mapeffectsector3size), Fix(sinfo.mapeventssize), Fix(sinfo.spritetablesize), Fix(sinfo.spriteeffectssize), Fix(sinfo.spritepalettessize), Fix(sinfo.eventcodesasize), Fix(sinfo.eventcodesbsize), Fix(sinfo.eventcodescsize), Fix(sinfo.eventcodesdsize), Fix(sinfo.eventcodesesize), Fix(sinfo.eventcodesfandremainingsize));
             //scroll info
             if (selectedGame.scrollscreen != null)
             {
@@ -207,7 +207,7 @@ namespace GraphicsTools.Alundra
                             entity.eventcodese_unknown_index.ToString("x2"),
                             entity.eventcodesf_interact_index.ToString("x2")
                         });
-                    lvi.ToolTipText = DispByte(entity.u7) + DispByte(entity.u8) + DispByte(entity.u9) + DispByte(entity.u10) + DispByte(entity.minx) + DispByte(entity.miny);
+                    lvi.ToolTipText = DispByte((byte)(entity.u7&0xff)) + DispByte((byte)((entity.u7&0xff00)>>8)) + DispByte(entity.contents) + DispByte(entity.u10) + DispByte(entity.minx) + DispByte(entity.miny);
                     lsvEntities.Items.Add(lvi);
                 }
             }
@@ -220,14 +220,14 @@ namespace GraphicsTools.Alundra
                 {
                     lsvSector4.Items.Add(new ListViewItem(new string[]{
                             "record "+dex,
-                            record.u1.ToString("x2"),
-                            record.u2.ToString("x2"),
+                            record.x1.ToString("x2"),
+                            record.y1.ToString("x2"),
+                            record.x2.ToString("x2"),
+                            record.y2.ToString("x2"),
                             record.eventcodesbindex.ToString("x2"),
-                            record.u4.ToString("x2"),
-                            record.u5.ToString("x2"),
-                            record.u6.ToString("x2"),
-                            record.u7.ToString("x2"),
-                            record.u8.ToString("x2")
+                            record.ub1.ToString("x2"),
+                            record.ub2.ToString("x2"),
+                            record.ub3.ToString("x2")
                         }));
                 }
             }
@@ -912,9 +912,9 @@ namespace GraphicsTools.Alundra
 
                 rdoDown.Checked = true;
 
-                lblAnimProps.Text = "speed:" + selectedAnimSet.speed.ToString("x4") + " " +
-                    selectedAnimSet.u3.ToString("x2") +
-                    selectedAnimSet.u4.ToString("x2") +
+                lblAnimProps.Text = "speed:" + selectedAnimSet.speed.ToString("x4") +
+                    " sfx:" + selectedAnimSet.sfx.ToString("x2") +
+                    " flags:" + selectedAnimSet.flags.ToString("x2") +
                     selectedAnimSet.u5.ToString("x2") +
                     selectedAnimSet.u6.ToString("x2");
             }
@@ -1099,7 +1099,7 @@ namespace GraphicsTools.Alundra
 
             }
         }
-        SISector4Record selectedMapEvent;
+        SIMapEventRecord selectedMapEvent;
         private void lsvSector4_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (selectedGame != null && lsvSector4.SelectedIndices.Count == 1)

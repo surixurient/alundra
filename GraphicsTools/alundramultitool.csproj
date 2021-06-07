@@ -72,9 +72,17 @@
     <Compile Include="Alundra\FrmEventProgram.Designer.cs">
       <DependentUpon>FrmEventProgram.cs</DependentUpon>
     </Compile>
+    <Compile Include="Alundra\frmGame.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Alundra\frmGame.Designer.cs">
+      <DependentUpon>frmGame.cs</DependentUpon>
+    </Compile>
     <Compile Include="Alundra\GameEngine.cs" />
     <Compile Include="Alundra\GameEngine\EventHandlers.cs" />
     <Compile Include="Alundra\GameEngine\GameState.cs" />
+    <Compile Include="Alundra\MapEvent.cs" />
+    <Compile Include="Alundra\SpriteEffect.cs" />
     <Compile Include="Alundra\SpriteInstance.cs" />
     <Compile Include="bmp.cs" />
     <Compile Include="carpet\DataDir.cs" />
@@ -139,6 +147,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Alundra\FrmEventProgram.resx">
       <DependentUpon>FrmEventProgram.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Alundra\frmGame.resx">
+      <DependentUpon>frmGame.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="carpet\frmMagicCarpet.resx">
       <DependentUpon>frmMagicCarpet.cs</DependentUpon>

@@ -57,6 +57,8 @@ namespace GraphicsTools.Alundra
             return new BinaryReader(File.OpenRead(binfile));
         }
 
+        
+
     }
 
     public class GameMap
@@ -99,7 +101,7 @@ namespace GraphicsTools.Alundra
         byte[] spritesheetimagedata;
         public Bitmap spritesheetbmp;
         int numspritesheets = 8;
-        public void Load(BinaryReader br)
+        public void Load(BinaryReader br, bool ismap)
         {
             //read info
             if (header.infoblock != -1)
@@ -131,7 +133,7 @@ namespace GraphicsTools.Alundra
             if (header.spriteinfo != -1)
             {
                 br.BaseStream.Position = binoffset + header.spriteinfo;
-                spriteinfo = new SpriteInfo(br, memaddr + header.spriteinfo, header.spritesheets);
+                spriteinfo = new SpriteInfo(br, memaddr + header.spriteinfo, header.spritesheets, ismap);
             }
 
             //spritesheet
@@ -179,7 +181,19 @@ namespace GraphicsTools.Alundra
             //loaded = true;
         }
 
-        public Bitmap GenerateSpriteBitmap(SIImage img, Color[] pal, int sheetmod = 0)
+        Dictionary<long, Bitmap> spriteCache = new Dictionary<long, Bitmap>();
+        public Bitmap GetSpriteBitmap(SIImage img)
+        {
+            var pal = spriteinfo.palettes[img.palette & 0x1f];
+            if (spriteCache.ContainsKey(img.signature))
+                return spriteCache[img.signature];
+            var bmp = GenerateSpriteBitmap(img, pal);
+            spriteCache.Add(img.signature, bmp);
+
+            return bmp;
+        }
+
+        public Bitmap GenerateSpriteBitmap(SIImage img, Color[] pal)
         {
             bool shiftleft = img.sx % 2 == 1;
             int swidth = img.swidth;
@@ -199,7 +213,7 @@ namespace GraphicsTools.Alundra
 
             for (int y = 0; y < img.sheight; y++)
             {
-                Buffer.BlockCopy(spritesheetimagedata, (((img.spritesheet&0x7)+sheetmod)*256 + img.sy + y) * 256 / 2 + img.sx / 2, readbuff, 0, readwidth / 2);
+                Buffer.BlockCopy(spritesheetimagedata, (((img.spritesheet&0x7))*256 + img.sy + y) * 256 / 2 + img.sx / 2, readbuff, 0, readwidth / 2);
 
                 if (shiftleft)
                 {
@@ -241,6 +255,21 @@ namespace GraphicsTools.Alundra
             }
 
             return Utils.BitmapFromPsxBuff(buff, outputwidth, img.sheight, 4, pal);
+        }
+
+
+
+        Dictionary<long, Bitmap> tileCache = new Dictionary<long, Bitmap>();
+        public Bitmap GetTileBitmap(int tileid)
+        {
+            int tiledex = tileid & 0x3ff;
+            int paldex = (tileid & 0xf000) >> 12;
+            if (tileCache.ContainsKey(tileid))
+                return tileCache[tileid];
+            var bmp = GenerateTileBitmap(tiledex, info.palettes[paldex]);
+            tileCache.Add(tileid, bmp);
+
+            return bmp;
         }
 
         public Bitmap GenerateTileBitmap(int tile,Color[]pal)
@@ -406,7 +435,7 @@ namespace GraphicsTools.Alundra
 
     public class SpriteInfo
     {
-        public SpriteInfo(BinaryReader br, int memaddr, int sectorend)
+        public SpriteInfo(BinaryReader br, int memaddr, int sectorend, bool ismap)
         {
             binoffset = br.BaseStream.Position;
             
@@ -418,6 +447,26 @@ namespace GraphicsTools.Alundra
             for (int dex = 0; dex < spritetable.Length; dex++)
             {
                 spritetable[dex] = br.ReadInt32();
+            }
+
+            br.BaseStream.Position = binoffset + header.spriteeffectspointer;
+            spriteeffecttable = new int[0xff];
+            for (int dex = 0; dex < spriteeffecttable.Length; dex++)
+            {
+                spriteeffecttable[dex] = br.ReadInt32();
+                if (spriteeffecttable[dex] == 0)
+                {
+                    numspriteeffects = dex;
+                    break;
+                }
+            }
+
+            //event effects
+            br.BaseStream.Position = binoffset + header.mapeffectsector3pointer;
+            mapeffectrecords = new MapEffectRecord[header.mapeffectsector3size/12];
+            for(int dex=0;dex<mapeffectrecords.Length;dex++)
+            {
+                mapeffectrecords[dex] = new MapEffectRecord(br);
             }
 
             //read palettes
@@ -440,7 +489,7 @@ namespace GraphicsTools.Alundra
             palettesbitmap = Utils.BitmapFromPsxBuff(buff, 16, maxpalettes, 16, null);
 
             //read eventcodes
-            eventcodes = new SpriteInfoEventCodes(br, binoffset, header);
+            eventcodes = new SpriteInfoEventCodes(br, binoffset, header, ismap);
 
             //read entities
             br.BaseStream.Position = binoffset + header.entitiespointer;
@@ -460,6 +509,16 @@ namespace GraphicsTools.Alundra
                     sprites[dex] = new SpriteRecord(br, binoffset, dex, memaddr + spritetable[dex], memaddr);
                 }
             }
+
+            spriteeffects = new SpriteEffectRecord[numspriteeffects];
+            for (int dex = 0; dex < spriteeffects.Length; dex++)
+            {
+                if (spriteeffecttable[dex] != -1)
+                {
+                    br.BaseStream.Position = binoffset + spriteeffecttable[dex];
+                    spriteeffects[dex] = new SpriteEffectRecord(br, binoffset + spriteeffecttable[dex], dex | 0x8000, memaddr + spriteeffecttable[dex], memaddr + spriteeffecttable[dex]);
+                }
+            }
         }
 
         public SpriteInfoHeader header;
@@ -469,6 +528,12 @@ namespace GraphicsTools.Alundra
 
         public int[] spritetable;
         public SpriteRecord[] sprites;
+
+        public int[] spriteeffecttable;
+        public SpriteEffectRecord[] spriteeffects;
+        public int numspriteeffects;
+
+        public MapEffectRecord[] mapeffectrecords;
 
         long binoffset;
 
@@ -487,6 +552,44 @@ namespace GraphicsTools.Alundra
             {
                 animsets[dex] = new SIAnimSet(br, memaddr + 32 + dex * 14);
             }
+
+            //preload all of the animations here
+            int animdex;
+            for (animdex = 0; animdex < animsets.Length; animdex++)
+            {
+                int dirdex;
+                for (dirdex = 0; dirdex < 4; dirdex++)
+                {
+                    if (animsets[animdex].animoffsets[dirdex] != 0xffff)
+                    {
+                        animsets[animdex].preloaded_anims[dirdex] = GetAnimation(br, animsets[animdex].animoffsets[dirdex]);
+                        
+                        /*DBFrame* frames = (DBFrame*)&(*spr->framesdata)[spr->animsets[animdex].diroffsets[dirdex]];
+                        int framedex;
+                        for (framedex = 0; framedex < 32; framedex++)
+                        {
+                            DBFrame* frame = &frames[framedex];
+                            if ((frame->delay & 0x80) != 0x80)
+                                break;
+
+                            DBImageSet* imageset = (DBImageSet*)&(*spr->imagesetdata)[flipu16(frame->imagesetoffset) << 1];
+
+                            int imagedex;
+                            for (imagedex = 0; imagedex < imageset->numimages; imagedex++)
+                            {
+                                numimages++;
+                                if (dex > 0)
+                                    cache_image(&imageset->images[imagedex], 1);
+                            }
+
+                        }*/
+
+                    }
+                }
+
+
+            }
+
         }
 
         public SIAnimation GetAnimation(BinaryReader br, int animationoffset)
@@ -515,6 +618,60 @@ namespace GraphicsTools.Alundra
 
     }
 
+    public class SpriteEffectRecord
+    {
+        public SpriteEffectRecord(BinaryReader br, long binoffset, int id, int memaddr, int spriteinfomemaddr)
+        {
+            this.effectid = id;
+            this.binoffset = binoffset;
+            this.spriteinfomemaddr = spriteinfomemaddr;
+
+            animoffsets = new int[255];
+            int final = -1;
+            for (int dex = 0; dex < animoffsets.Length; dex++)
+            {
+                if (final != -1 && dex >= final)
+                {
+                    numanims = dex;
+                    break;
+                }
+                animoffsets[dex] = br.ReadInt16();
+                if (final == -1)
+                {
+                    final = animoffsets[dex]/2;
+                }
+                
+            }
+            //preload all of the animations here
+            int animdex;
+            preloaded_anims = new SIEffectAnimation[numanims];
+            for (animdex = 0; animdex < numanims; animdex++)
+            {
+                preloaded_anims[animdex] = GetAnimation(br, animoffsets[animdex]);
+            }
+
+        }
+        long binoffset;
+        int spriteinfomemaddr;
+        int[] animoffsets;
+        int numanims;
+        int effectid;
+        public SIEffectAnimation[] preloaded_anims;
+
+
+        public SIEffectAnimation GetAnimation(BinaryReader br, int animationoffset)
+        {
+            br.BaseStream.Position = binoffset + animationoffset;
+
+            var anim = new SIEffectAnimation(br, effectid, (int)binoffset, spriteinfomemaddr + animationoffset);
+
+            return anim;
+        }
+
+        
+
+    }
+
     public class SIAnimSet
     {
         public SIAnimSet(BinaryReader br, int memaddr)
@@ -524,16 +681,18 @@ namespace GraphicsTools.Alundra
             for (int dex = 0; dex < animoffsets.Length; dex++)
                 animoffsets[dex] = br.ReadInt16();
             speed = br.ReadUInt16();
-            u3 = br.ReadByte();
-            u4 = br.ReadByte();
+            sfx = br.ReadByte();
+            flags = br.ReadByte();
             u5 = br.ReadByte();
             u6 = br.ReadByte();
+            preloaded_anims = new SIAnimation[4];
         }
         public int memaddr;
         public int[] animoffsets;//4 of them for each direction
+        public SIAnimation[] preloaded_anims;
         public ushort speed;
-        public byte u3;
-        public byte u4;
+        public byte sfx;
+        public byte flags;//0x80 adds 0x100 to sfx, does it mean global or map sfx?
         public byte u5;
         public byte u6;
 
@@ -566,22 +725,22 @@ namespace GraphicsTools.Alundra
             br.Read(ubuff, 0, ubuff.Length);
 
             br.BaseStream.Position -= 16;
-            u1 = br.ReadByte();
-            canpickup = br.ReadByte();
-            flags_portrait_shadowtype = br.ReadByte();
-            u4 = br.ReadByte();
-            throwtype = br.ReadByte();
-            u6 = br.ReadByte();
-            breaksound = br.ReadByte();
-            u8 = br.ReadByte();
-            u9 = br.ReadByte();
-            u10 = br.ReadByte();
-            u11 = br.ReadByte();
-            u12 = br.ReadByte();
-            u13 = br.ReadByte();
-            stackable = br.ReadByte();
-            breakanim = br.ReadByte();
-            contents = br.ReadByte();
+            moreflags = br.ReadByte();//10
+            canpickup = br.ReadByte();//11
+            flags_portrait_shadowtype = br.ReadByte();//12
+            u4 = br.ReadByte();//13
+            throwtype = br.ReadByte();//14
+            u6 = br.ReadByte();//15
+            breaksound = br.ReadByte();//16
+            u8 = br.ReadByte();//17
+            xmod = br.ReadByte();//18+0
+            ymod = br.ReadByte();//18+1
+            zmod = br.ReadByte();//18+2
+            width = br.ReadByte();//18+3
+            depth = br.ReadByte();//18+4
+            height = br.ReadByte();//18+5
+            breakanim = br.ReadByte();//18+6
+            contents = br.ReadByte();//18+7
         }
         public int sector5id;
         public long binoffset;
@@ -594,7 +753,7 @@ namespace GraphicsTools.Alundra
         public int framespointer;
         public byte[] ubuff;
 
-        public byte u1;
+        public byte moreflags;
         public byte canpickup;
         public byte flags_portrait_shadowtype;
         public byte u4;
@@ -602,14 +761,46 @@ namespace GraphicsTools.Alundra
         public byte u6;
         public byte breaksound;
         public byte u8;
-        public byte u9;
-        public byte u10;
-        public byte u11;
-        public byte u12;
-        public byte u13;
-        public byte stackable;
+        public byte xmod;
+        public byte ymod;
+        public byte zmod;
+        public byte width;
+        public byte depth;
+        public byte height;
         public byte breakanim;
         public byte contents;
+    }
+
+    public class SIEffectAnimation
+    {
+        public SIEffectAnimation(BinaryReader br, int effectid, int binoffset, int memaddr)
+        {
+            this.memaddr = memaddr;
+            frames = new SIEffectFrame[32];//32 max frames?
+            for (int dex = 0; dex < frames.Length; dex++)
+            {
+                //read test bytes to check for the end of the list
+                short test = br.ReadByte();
+                if ((test & 0x80) != 0x80)
+                    break;
+                numframes++;
+                br.BaseStream.Position -= 1;
+
+                frames[dex] = new SIEffectFrame(br, effectid, binoffset, memaddr + dex * 3);
+
+                for (int dex2 = 0; dex2 < dex; dex2++)
+                {
+                    if (frames[dex2].imagesetpointer == frames[dex].imagesetpointer)
+                    {
+                        frames[dex].images = frames[dex2].images;
+                        break;
+                    }
+                }
+            }
+        }
+        public int memaddr;
+        public int numframes;
+        public SIEffectFrame[] frames;
     }
 
 
@@ -673,6 +864,32 @@ namespace GraphicsTools.Alundra
         public SIImageSet images;
     }
 
+    public class SIEffectFrame
+    {
+        public SIEffectFrame(BinaryReader br, int effectid, int binoffset, int memaddr)
+        {
+            this.memaddr = memaddr;
+            delay = br.ReadByte();
+            imagesetpointer = br.ReadUInt16() * 2;
+
+
+            //load images
+            long savepos = br.BaseStream.Position;
+
+            br.BaseStream.Position = binoffset + imagesetpointer;
+            images = new SIImageSet(br, effectid << 16 | imagesetpointer, memaddr + imagesetpointer);
+
+            br.BaseStream.Position = savepos;
+        }
+
+
+        public int memaddr;
+        public byte delay;//top bit masked
+        public short unknown;//-1
+        public int imagesetpointer;
+        public SIImageSet images;
+    }
+
     public class SIImageSet
     {
         public SIImageSet(BinaryReader br, int imagesetid, int memaddr, bool isportrait = false)
@@ -699,6 +916,7 @@ namespace GraphicsTools.Alundra
 
     public class SIImage
     {
+        public long signature;
         public SIImage(BinaryReader br)
         {
             spritesheet = br.ReadByte();
@@ -716,6 +934,7 @@ namespace GraphicsTools.Alundra
             x4 = br.ReadSByte();
             y4 = br.ReadSByte();
 
+            signature = spritesheet | palette << 8 | sx << 16 | sy << 24 | swidth << 32 | sheight << 38;
             /*if (rejigger)
             {//byte align
                 if (sx % 2 == 1)
@@ -769,10 +988,10 @@ namespace GraphicsTools.Alundra
         {
             
             entitiespointer = br.ReadInt32();
-            sector3pointer = br.ReadInt32();
+            mapeffectsector3pointer = br.ReadInt32();
             mapeventspointer = br.ReadInt32();
             spritetablepointer = br.ReadInt32();
-            unknown1pointer = br.ReadInt32();
+            spriteeffectspointer = br.ReadInt32();
             spritepalettespointer = br.ReadInt32();
             eventcodesapointer = br.ReadInt32();
             eventcodesbpointer = br.ReadInt32();
@@ -784,11 +1003,11 @@ namespace GraphicsTools.Alundra
             this.memaddr = memaddr;
             this.eventcodeaddr = memaddr + eventcodesapointer;
 
-            entitiessize = sector3pointer - entitiespointer;
-            sector3size = mapeventspointer - sector3pointer;
+            entitiessize = mapeffectsector3pointer - entitiespointer;
+            mapeffectsector3size = mapeventspointer - mapeffectsector3pointer;
             mapeventssize = -1;// unknown4 - unknown3;
-            spritetablesize = unknown1pointer - spritetablepointer;
-            unknown1size = spritepalettespointer - unknown1pointer;
+            spritetablesize = spriteeffectspointer - spritetablepointer;
+            spriteeffectssize = spritepalettespointer - spriteeffectspointer;
             spritepalettessize = eventcodesapointer - spritepalettespointer;
             eventcodesasize = eventcodesbpointer - eventcodesapointer;
             eventcodesbsize = eventcodescpointer - eventcodesbpointer;
@@ -802,14 +1021,14 @@ namespace GraphicsTools.Alundra
 
         public int entitiespointer;
         public int entitiessize;
-        public int sector3pointer;
-        public int sector3size;
+        public int mapeffectsector3pointer;
+        public int mapeffectsector3size;
         public int mapeventspointer;
         public int mapeventssize;
         public int spritetablepointer;
         public int spritetablesize;
-        public int unknown1pointer;//0000333b000e240e0400000000000000
-        public int unknown1size;
+        public int spriteeffectspointer;//0000333b000e240e0400000000000000
+        public int spriteeffectssize;
         public int spritepalettespointer;
         public int spritepalettessize;
         public int eventcodesapointer;
@@ -827,11 +1046,14 @@ namespace GraphicsTools.Alundra
         public int eventcodesfandremainingsize;
     }
 
+    
+
     public class SpriteInfoEventCodes
     {
-        public SpriteInfoEventCodes(BinaryReader br, long binoffset, SpriteInfoHeader header)
+        public static byte[] Code = new byte[1024 * 1024];//1mb of event codes, too much prob but oh well;
+
+        public SpriteInfoEventCodes(BinaryReader br, long binoffset, SpriteInfoHeader header, bool ismap)
         {
-            
             int table_size = 0;
             short firstoffset = 0;
 
@@ -906,6 +1128,23 @@ namespace GraphicsTools.Alundra
             this.binoffset = binoffset + header.eventcodesapointer;
             this.memaddr = header.memaddr + header.eventcodesapointer;
             this.datasize = header.entitiespointer - header.eventcodesapointer;
+
+            eventcodestable.Add(eventcodesatable);
+            eventcodestable.Add(eventcodesbtable);
+            eventcodestable.Add(eventcodesctable);
+            eventcodestable.Add(eventcodesdtable);
+            eventcodestable.Add(eventcodesetable);
+            eventcodestable.Add(eventcodesftable);
+
+            int Top = 0;
+            if (ismap)
+                Top += 1024 * 512;
+
+
+            br.BaseStream.Position = binoffset;
+            if (datasize > 0)
+                br.Read(Code, Top, datasize);
+            //half mb for global codes, half mb for map codes
         }
         
         public class SICode
@@ -1023,6 +1262,14 @@ namespace GraphicsTools.Alundra
                     name = "waitforceadjusted";//waits until force adjust is > 0
                     size = 1;
                     break;
+                case 0x25:
+                    name = "waitentitycollisionzor144";
+                    size = 1;
+                    break;
+                case 0x26:
+                    name = "waitforceadjustedorentitycollisionz";
+                    size = 1;
+                    break;
                 case 0x27:
                     name = "faceplayer";
                     size = 1;
@@ -1056,14 +1303,17 @@ namespace GraphicsTools.Alundra
                     size = 4;
                     break;
                 case 0x30:
-                    name = "ifnot";//if a logic switch is on
+                    name = "ifflagoff";//if a logic switch is on
                     size = 5;
                     break;
                 case 0x31:
-                    name = "if";//if a logic switch is not on
+                    name = "ifflagon";//if a logic switch is not on
                     size = 5;
                     break;
-
+                case 0x32:
+                    name = "toggleflag";//toggle bit on a flag
+                    size = 3;
+                    break;
                 case 0x33:
                     name = "checkflagson";
                     size = 9;
@@ -1072,9 +1322,12 @@ namespace GraphicsTools.Alundra
                     name = "checkflagsoff";
                     size = 9;
                     break;
-
+                case 0x35:
+                    name = "untilflagoff";//block until a flag is off
+                    size = 3;
+                    break;
                 case 0x36:
-                    name = "until";//block until a logic switch is on
+                    name = "untilflagon";//block until a flag is on
                     size = 3;
                     break;
                 case 0x37:
@@ -1085,13 +1338,17 @@ namespace GraphicsTools.Alundra
                     name = "registersomething?";
                     size = 5;
                     break;
+                case 0x39:
+                    name = "waitfordaialog";//blocks until the dialog is finished
+                    size = 1;
+                    break;
 
                 case 0x3b:
                     name = "checkplayerinarea";
                     size = 7;
                     break;
                 case 0x40:
-                    name = "setentityvarafterrefid";
+                    name = "setprogramindex";
                     size = 3;
                     break;
                 case 0x41:
@@ -1143,6 +1400,10 @@ namespace GraphicsTools.Alundra
                     name = "setunwalkable";
                     size = 5;
                     break;
+                case 0x58:
+                    name = "directionalbranch";
+                    size = 9;
+                    break;
                 case 0x59:
                     name = "setentityanim";
                     size = 3;
@@ -1152,7 +1413,7 @@ namespace GraphicsTools.Alundra
                     size = 3;
                     break;
                 case 0x5b:
-                    name = "turn";//also has other flags related to on ground or climbing, etc
+                    name = "turnentitywithanim";//also has anim flag for on ground or climbing, etc
                     size = 4;
                     break;
                 case 0x5c:
@@ -1170,6 +1431,10 @@ namespace GraphicsTools.Alundra
                     break;
                 case 0x64:
                     name = "setentityposition";
+                    size = 8;
+                    break;
+                case 0x65:
+                    name = "moveentityposition";
                     size = 8;
                     break;
 
@@ -1220,16 +1485,30 @@ namespace GraphicsTools.Alundra
                     size = 1;
                     break;
 
-                case 0x39://dialog?
-                    size = 1;
+
+                //unknowns, just get the size down
+                case 0xb:
+                    size = 4;
                     break;
                 case 0x50://dialog?
                     size = 2;
                     break;
-                case 0x58:
-                    name = "directionalbranch";
-                    size = 9;
+                case 0x69:
+                    size = 7;
                     break;
+                case 0x73:
+                    size = 2;
+                    break;
+                case 0x74:
+                    size = 3;
+                    break;
+                case 0x78:
+                    size = 3;
+                    break;
+                case 0x98:
+                    size = 3;
+                    break;
+
                 default:
                     Debug.Print("Unknown code " + b.ToString("x2"));
                     break;
@@ -1337,6 +1616,8 @@ namespace GraphicsTools.Alundra
         public short[] eventcodesdtable;
         public short[] eventcodesetable;
         public short[] eventcodesftable;
+
+        public List<short[]> eventcodestable = new List<short[]>();
     }
 
     public class SetFlagCommand : SICommand
@@ -1560,10 +1841,11 @@ namespace GraphicsTools.Alundra
             eventcodesd_touch_index = br.ReadByte();
             eventcodese_unknown_index = br.ReadByte();
             eventcodesf_interact_index = br.ReadByte();
-            u7 = br.ReadByte();
-            u8 = br.ReadByte();
-            u9 = br.ReadByte();
-            u10 = br.ReadByte();
+            u7 = br.ReadByte();//10
+            u7 = (short)(u7 | (br.ReadByte() << 8));
+            //u8 = br.ReadByte();//11
+            contents = br.ReadByte();//12
+            u10 = br.ReadByte();//13
             
         }
 
@@ -1608,15 +1890,40 @@ namespace GraphicsTools.Alundra
         public byte eventcodesd_touch_index;
         public byte eventcodese_unknown_index;
         public byte eventcodesf_interact_index;
-        public byte u7;
-        public byte u8;
-        public byte u9;
+        public short u7;
+        //public byte u8;
+        public byte contents;
         public byte u10;
         
     }
 
-    public class SpriteInfoSector3
+    public class MapEffectRecord
     {
+        public MapEffectRecord(BinaryReader br)
+        {
+            x1 = br.ReadByte();
+            y1 = br.ReadByte();
+            x2 = br.ReadByte();
+            y2 = br.ReadByte();
+            flags = br.ReadByte();
+            effectid = br.ReadByte();
+            x = br.ReadByte();
+            y = br.ReadByte();
+            z = br.ReadByte();
+            animid = br.ReadByte();
+
+            u1 = br.ReadByte();//probably just padding
+            u2 = br.ReadByte();//padding
+        }
+        public byte x1,x2,y1,y2;//player must be within these map tiles
+        public byte flags;//0x80 ismapsprite //4
+        public byte effectid;//5
+        public byte x;//6
+        public byte y;//7
+        public byte z;//8
+        public byte animid;//9
+
+        public byte u1,u2;
 
     }
 
@@ -1624,50 +1931,47 @@ namespace GraphicsTools.Alundra
     {
         public SpriteInfoMapEvents(BinaryReader br, long sioffset, int sectorend)
         {
-            br.BaseStream.Position += 2;
 
-            records = new SISector4Record[64];
+            records = new SIMapEventRecord[64];
             for (int dex = 0; dex < records.Length; dex++)
             {
                 //read two test bytes to check for the end of the list
-                short test = br.ReadInt16();
+                int test = br.ReadInt32();
                 if (test == 0)
                     break;
-                br.BaseStream.Position -= 2;
+                br.BaseStream.Position -= 4;
 
                 //read the record
-                records[dex] = new SISector4Record(br);
+                records[dex] = new SIMapEventRecord(br);
             }
 
 
         }
 
-        public SISector4Record[] records;
+        public SIMapEventRecord[] records;
         
     }
 
-    public class SISector4Record
+    public class SIMapEventRecord
     {
-        public SISector4Record(BinaryReader br)
+        public SIMapEventRecord(BinaryReader br)
         {
-            u1 = br.ReadByte();
-            u2 = br.ReadByte();
+
+            x1 = br.ReadByte();
+            y1 = br.ReadByte();
+            x2 = br.ReadByte();
+            y2 = br.ReadByte();
             eventcodesbindex = br.ReadByte();
-            u4 = br.ReadByte();
-            u5 = br.ReadByte();
-            u6 = br.ReadByte();
-            u7 = br.ReadByte();
-            u8 = br.ReadByte();
+            ub1 = br.ReadByte();
+            ub2 = br.ReadByte();
+            ub3 = br.ReadByte();
         }
 
-        public byte u1;
-        public byte u2;
+        public byte x1,y1,x2,y2;
         public byte eventcodesbindex;
-        public byte u4;
-        public byte u5;
-        public byte u6;
-        public byte u7;
-        public byte u8;
+        public byte ub1;
+        public byte ub2;
+        public byte ub3;
     }
 
 

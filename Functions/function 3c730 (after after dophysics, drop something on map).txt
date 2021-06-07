@@ -17,7 +17,7 @@
 0003c76c: afb1002c sw r17,0x002c(r29)   
 0003c770: 00e08821 addu r17,r7,r0       
 0003c774: afbf004c sw r31,0x004c(r29)   
-0003c778: 0c00f090 jal 0x0003c240       ret = 3c240()
+0003c778: 0c00f090 jal 0x0003c240       ret = get_next_thing()
 0003c77c: afb00028 sw r16,0x0028(r29)   
 0003c780: 00408021 addu r16,r2,r0       
 0003c784: 12000015 beq r16,r0,0x0003c7dc
@@ -34,7 +34,7 @@
 0003c7ac: afa20020 sw r2,0x0020(r29)    
 0003c7b0: 8e22011c lw r2,0x011c(r17)    r2 = entity.zpos
 0003c7b4: 24070001 addiu r7,r0,0x0001   
-0003c7b8: 0c00f0e4 jal 0x0003c390       3c390(ret, 0, -1, 1, param1, param2, param3, entity.xpos, entity.ypos, entity.zpos)
+0003c7b8: 0c00f0e4 jal 0x0003c390       init_thing(ret, 0, -1, 1, param1, param2, param3, entity.xpos, entity.ypos, entity.zpos)
 0003c7bc: afa20024 sw r2,0x0024(r29)    
 0003c7c0: 02001021 addu r2,r16,r0       
 0003c7c4: ac510038 sw r17,0x0038(r2)    ret[38] = entity

@@ -380,7 +380,17 @@ namespace GraphicsTools
             }
         }
 
-        
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "DATAS.BIN|DATAS.BIN|All Files (*.*)|*.*";
+            ofd.ShowDialog();
+            if (!string.IsNullOrWhiteSpace(ofd.FileName))
+            {
+                var frmGame = new Alundra.frmGame(new Alundra.DatasBin(ofd.FileName));
+                frmGame.Show();
+            }
+        }
     }
 
 }
