@@ -13,7 +13,7 @@
                                         do{
 
 0x00039670: 8e240000 lw r4,0x0000(r17)
-00039674: 0c00e4b2 jal 0x000392c8         updateanims(*pnter++)
+00039674: 0c00e4b2 jal 0x000392c8         updateanim(*pnter++)
 00039678: 26310004 addiu r17,r17,0x0004   
 0003967c: 3c028014 lui r2, 0x8014         
 00039680: 8c42d5c8 lw r2,0xd5c8(r2)       r2 = r2[ffffd5c8]

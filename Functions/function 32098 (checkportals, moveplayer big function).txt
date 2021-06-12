@@ -63,7 +63,7 @@
 											if(ret == -1)
 												return
 00032178: 3c01801b lui r1, 0x801b       
-0003217c: ac22c664 sw r2,0xc664(r1)     	*playercharacter[1cc] = 0x78
+0003217c: ac22c664 sw r2,0xc664(r1)     	*playercharacter[1cc] = 0x78//damagedtickcounter
 00032180: 0800cbd4 j 0x00032f50         	return
 00032184: 00000000 nop                  
                                         }

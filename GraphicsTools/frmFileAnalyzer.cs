@@ -382,6 +382,7 @@ namespace GraphicsTools
             var fnames = Alundra.DebugSymbols.FunctionNames;
             var evars = Alundra.DebugSymbols.EntityVarOffsets;
             var globalvars = Alundra.DebugSymbols.GlobalVariableNames;
+            var comments = Alundra.DebugSymbols.Comments;
 
             int indentlevel = 0;
             int codestart = 40;
@@ -546,6 +547,8 @@ namespace GraphicsTools
                                     break;*/
                         }
                     }
+                    if (comments.ContainsKey(inst.address))
+                        ccode += "//" + comments[inst.address];
                     string asm = string.Format("{0}: {1} {2}", ((block.Instructions.IndexOf(inst) == 0 && block.IsJumpTarget) ? "0x" : "") + inst.address.ToString("x8"), inst.instruction.ToString("x8"), inst.display);
                     ftext += string.Format("{0}{1}{2}{3}\r\n", asm, RawIndent(codestart - asm.Length), Indent(indentlevel), ccode);
                 }
@@ -1087,6 +1090,67 @@ namespace GraphicsTools
                 eventFuncs.Add(efunc);
             }
 
+            //do the sprite event functions
+            var seventptrs = new uint[6];
+            stream = File.OpenRead(datafile);
+            stream.Position = 0x9b554;
+            numread = stream.Read(fdata, 0, chunklength);
+            stream.Close();
+            for (int dex = 0; dex < 6*4; dex += 4)
+            {
+                uint addr = (uint)(fdata[dex] | fdata[dex + 1] << 8 | fdata[dex + 2] << 16 | (uint)fdata[dex + 3] << 24);
+                seventptrs[dex/4] = (0xFFFFFFF & addr);
+            }
+            for(int sdex=0;sdex<6;sdex++)
+            {
+                if (seventptrs[sdex] == 0)
+                    continue;
+                var saddresses = new List<uint>();
+                stream = File.OpenRead(datafile);
+                stream.Position = seventptrs[sdex];
+                numread = stream.Read(fdata, 0, chunklength);
+                stream.Close();
+                for (int dex = 0; dex <= 0x3FC; dex += 4)
+                {
+                    uint addr = (uint)(fdata[dex] | fdata[dex + 1] << 8 | fdata[dex + 2] << 16 | (uint)fdata[dex + 3] << 24);
+                    saddresses.Add(0xFFFFFFF & addr);
+                }
+
+                for (int fdex = 0; fdex < saddresses.Count; fdex++)
+                {
+                    var functaddr = saddresses[fdex];
+                    if (functaddr == 0)
+                        continue;
+                    //var sicode = Alundra.SpriteInfoEventCodes.GetCode((byte)fdex);
+                    var sicodename = "";//TODO, add a way to register names for these
+                    string eventtypename = "";
+                    switch(sdex)
+                    {
+                        case 0:
+                            eventtypename = "eload";
+                            break;
+                        case 1:
+                            continue;
+                        case 2:
+                            eventtypename = "etick";
+                            break;
+                        case 3:
+                            eventtypename = "etouch";
+                            break;
+                        case 4:
+                            eventtypename = "edeactivate";
+                            break;
+                        case 5:
+                            eventtypename = "einteract";
+                            break;
+                    }
+                    string fname = $"({eventtypename}_{fdex.ToString("x2")}_{sicodename}_handler)";
+
+                    var efunc = new AnalyzedFunction(functaddr, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction, 0, fname);
+                    eventFuncs.Add(efunc);
+                }
+            }
+
             importantFuncs = new List<AnalyzedFunction>();
             //add the 3 dialog processing functions, they are called by register/function pointer so not found  with the function crawler
             importantFuncs.Add(new AnalyzedFunction(0x4d218, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
@@ -1371,7 +1435,7 @@ namespace GraphicsTools
 
             s = "int[] FrameDexTable = new int[]{\r\n";
             dex = 0;
-            for (int i = 0; i < 0x50; i++)
+            for (int i = 0; i < 0xff; i++)
             {
                 string line = "0x" + (data[dex + 0] + (data[dex + 1] << 8) + (data[dex + 2] << 16) + (data[dex + 3] << 24)).ToString("x8") + ",//0x" + i.ToString("x2");
                 dex += 4;
@@ -1379,6 +1443,21 @@ namespace GraphicsTools
             }
             s += "};";
             Clipboard.SetText(s);
+
+            /*s = "byte[][] ContentsTable = new byte[][]{\r\n";
+            dex = 0;
+            for (int i = 0; i < 0xff; i++)
+            {
+                string line = "new byte[]{";
+                for (int i2=0;i2<16;i2++)
+                {
+                    line += "0x" + data[dex + i2].ToString("x2") + ",";
+                }
+                dex += 16;
+                s += line + "},\r\n";
+            }
+            s += "};";
+            Clipboard.SetText(s);*/
         }
 
         private void btnFuncContainsAddr_Click(object sender, EventArgs e)

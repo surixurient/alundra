@@ -13,11 +13,17 @@ namespace GraphicsTools.Alundra
 		public int UnknownAfterIndex;
 		public SpriteInstance UnknownBeforeOwnerEntity;
 		public SpriteInstance OwnerEntity;
-		public int Status;
+		public int Status;//0=destroyed,1=loaded,2=normal,3=deactivated,4=flagtodestroy,5=?
 		public int HP;
 		public int MaxHp;
-		public SpriteInstance PlatformEntity;
+		public int UnknownCounter;//1c
+		public int _20;
 
+		public SpriteInstance PlatformEntity;
+		public int _2c;
+
+		public int ContentsItemId;
+		public int ContentsGameFlag;
 		public SIEntityRecord EntityRecord;
 		public int EntityRefId;
 		public int[] Program_Indexes = new int[6];
@@ -25,17 +31,18 @@ namespace GraphicsTools.Alundra
 		//public int ProgramB_Map;
 		//public int ProgramC_Tick;
 		//public int ProgramD_Touch;
-		//public int ProgramE_Unknown;
+		//public int ProgramE_Deactivate;
 		//public int ProgramF_Interact;
 		public SpriteRecord Sprite;
 		public int SpriteTableIndex;
-		public int Flags;//0x800000 = portrait,0x0100 = gravity,0xf = ?, 0x1 = ?
-		public int SpriteU4;
-		public int UnkownBeforeThrowType;
-		public int ThrowType;
-		public int SpriteU6;
-		public int BreakSound;
-		public int SpriteU8;
+		public int Flags;//0x800000 = portrait,0x0100 = gravity,0xf = ?, 0x1 = ? , 0x80 = collidable
+		public int[] Sprite_Program_Indexes = new int[6];
+		//public int SpriteU4;
+		//public int UnkownBeforeThrowType;
+		//public int ThrowType;
+		//public int SpriteU6;
+		//public int BreakSound;
+		//public int SpriteU8;
 
 		public int TargetAnim;
 		public int TargetDir;
@@ -75,26 +82,47 @@ namespace GraphicsTools.Alundra
 		public MapTile[] MapTiles = new MapTile[4];
 		public int[] MapHeights = new int[4];
 
-		public int _180,_184,_188,_18c,_190;
+		public int _180, _184, _188;
+		public int _18c,_190;//slopesomething?, slopesomethingprev?
 		public SpriteRef SpriteRef;//194 
 		
 
 		public int AddedToSheet, AddedToPalette;//represents offset where the pallets and sheets are in memory for map vs global sprites, prob not used with my engine
-
+		public SpriteEffect ActiveEffect;
 		public int DepthSortVal;
-
-		public int _1d4, ModdedXPos, ModdedYPos;
+		public BalanceRecord BalanceRecord;//1c4
+		public BalanceAnimValRef BalanceVal;//1c8
+		public int DamagedTickCounter;//1cc
+		public int FrameColTickCounter;//1d0
+		public FrameCollisionData FrameCollision;//1d4
+		public int ModdedXPos, ModdedYPos;
 		public int ModdedZPos, XMod, YMod;
 		public int ZMod, Width, Depth;
-		public int Height, _1fc, _200;//this set of vars is set when an animation has a frame with attached data
-		public int _204, _208, _20c;
-		public int _210;
-
-		public int MapEventId;//228
+		public int Height;
+		//this set of vars is set when an animation has a frame with attached data
+		public int FrameX;//1fc
+		public int FrameY;//200
+		public int FrameZ;//204
+		public int FrameXOff;//208
+		public int FrameYOff;//20c
+		public int FrameZOff;//210
+		public int FrameWidth;//214
+		public int FrameDepth;//218
+		public int FrameHeight;//21c
+		public int HitCounter;//220
+		public SpriteInstance TouchingEntity;//224
+		public int EventTrigger;//228  for the player character this holds the id of the map event that is triggering, for other entities this holds the type of event slot to trigger
 		public int MapEventProgramId;//22c
 		public SpriteInstance EntitySelf;
 		public EventProgramState eventdata = new EventProgramState();
-		public EventProgramState eventdata2 = new EventProgramState();
+		//public EventProgramState eventdata2 = new EventProgramState();
+		public int UnknownEventAnim;//26c
+		public int UnknownEventDir;//270
+		public int _274;
+		public int SpawnedItemId;//278
+		public int _27c;
+		public int SpawnedGameFlag;//280
+		public int SpawnedZForce;//284
 		public bool IsMapSprite { get
             {
 				return (EntityRecord.spritedir & 0x80) != 0;

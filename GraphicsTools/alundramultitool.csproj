@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Alundra\BalanceBin.cs" />
     <Compile Include="Alundra\DatasBin.cs" />
     <Compile Include="Alundra\DebugSymbols.cs" />
     <Compile Include="Alundra\frmAlundra.cs">
@@ -81,6 +82,7 @@
     <Compile Include="Alundra\GameEngine.cs" />
     <Compile Include="Alundra\GameEngine\EventHandlers.cs" />
     <Compile Include="Alundra\GameEngine\GameState.cs" />
+    <Compile Include="Alundra\GameEngine\SpriteEventHandlers.cs" />
     <Compile Include="Alundra\MapEvent.cs" />
     <Compile Include="Alundra\SpriteEffect.cs" />
     <Compile Include="Alundra\SpriteInstance.cs" />

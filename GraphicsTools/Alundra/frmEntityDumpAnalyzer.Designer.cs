@@ -80,6 +80,13 @@
             this.label41 = new System.Windows.Forms.Label();
             this.label42 = new System.Windows.Forms.Label();
             this.label43 = new System.Windows.Forms.Label();
+            this.label44 = new System.Windows.Forms.Label();
+            this.label45 = new System.Windows.Forms.Label();
+            this.label46 = new System.Windows.Forms.Label();
+            this.label47 = new System.Windows.Forms.Label();
+            this.label48 = new System.Windows.Forms.Label();
+            this.label49 = new System.Windows.Forms.Label();
+            this.label50 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lstValues
@@ -184,9 +191,9 @@
             this.label4.Location = new System.Drawing.Point(267, 654);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(132, 17);
+            this.label4.Size = new System.Drawing.Size(229, 17);
             this.label4.TabIndex = 10;
-            this.label4.Text = "?, ?, sprite instance";
+            this.label4.Text = "evtid, evtprogramid, sprite instance";
             // 
             // label5
             // 
@@ -204,9 +211,9 @@
             this.label6.Location = new System.Drawing.Point(267, 100);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(119, 17);
+            this.label6.Size = new System.Drawing.Size(253, 21);
             this.label6.TabIndex = 12;
-            this.label6.Text = "?, ?, entity record";
+            this.label6.Text = "contentsitemid, ?, entity record";
             // 
             // label7
             // 
@@ -407,9 +414,9 @@
             this.label23.Location = new System.Drawing.Point(267, 599);
             this.label23.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(79, 17);
+            this.label23.Size = new System.Drawing.Size(148, 17);
             this.label23.TabIndex = 33;
-            this.label23.Text = "height, ?, ?";
+            this.label23.Text = "height, framex, framey";
             // 
             // label24
             // 
@@ -497,14 +504,14 @@
             this.label32.Location = new System.Drawing.Point(266, 151);
             this.label32.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(113, 17);
+            this.label32.Size = new System.Drawing.Size(145, 17);
             this.label32.TabIndex = 42;
-            this.label32.Text = "flags, spriteu4, ?";
+            this.label32.Text = "flags, spr_codes_a-f, ";
             // 
             // label33
             // 
             this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(267, 712);
+            this.label33.Location = new System.Drawing.Point(267, 710);
             this.label33.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label33.Name = "label33";
             this.label33.Size = new System.Drawing.Size(112, 17);
@@ -607,15 +614,88 @@
             this.label43.Location = new System.Drawing.Point(267, 529);
             this.label43.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label43.Name = "label43";
-            this.label43.Size = new System.Drawing.Size(86, 17);
+            this.label43.Size = new System.Drawing.Size(201, 17);
             this.label43.TabIndex = 53;
-            this.label43.Text = "depthsortval";
+            this.label43.Text = "depthsortval, ?, balancerecord";
+            // 
+            // label44
+            // 
+            this.label44.AutoSize = true;
+            this.label44.Location = new System.Drawing.Point(267, 642);
+            this.label44.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(187, 17);
+            this.label44.TabIndex = 54;
+            this.label44.Text = "frameheight,?,touchingentity";
+            // 
+            // label45
+            // 
+            this.label45.AutoSize = true;
+            this.label45.Location = new System.Drawing.Point(267, 723);
+            this.label45.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(105, 17);
+            this.label45.TabIndex = 55;
+            this.label45.Text = "?, ?, u_evtanim";
+            // 
+            // label46
+            // 
+            this.label46.AutoSize = true;
+            this.label46.Location = new System.Drawing.Point(267, 737);
+            this.label46.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label46.Name = "label46";
+            this.label46.Size = new System.Drawing.Size(176, 17);
+            this.label46.TabIndex = 56;
+            this.label46.Text = "u_evtdir, ?,spawneditemid ";
+            // 
+            // label47
+            // 
+            this.label47.AutoSize = true;
+            this.label47.Location = new System.Drawing.Point(264, 751);
+            this.label47.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label47.Name = "label47";
+            this.label47.Size = new System.Drawing.Size(237, 17);
+            this.label47.TabIndex = 57;
+            this.label47.Text = "?, spawnedgameflag,spawnedzforce";
+            // 
+            // label48
+            // 
+            this.label48.AutoSize = true;
+            this.label48.Location = new System.Drawing.Point(267, 542);
+            this.label48.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label48.Name = "label48";
+            this.label48.Size = new System.Drawing.Size(16, 17);
+            this.label48.TabIndex = 58;
+            this.label48.Text = "?";
+            // 
+            // label49
+            // 
+            this.label49.AutoSize = true;
+            this.label49.Location = new System.Drawing.Point(267, 614);
+            this.label49.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label49.Name = "label49";
+            this.label49.Size = new System.Drawing.Size(184, 17);
+            this.label49.TabIndex = 59;
+            this.label49.Text = "framez, framexoff, frameyoff";
+            // 
+            // label50
+            // 
+            this.label50.AutoSize = true;
+            this.label50.Location = new System.Drawing.Point(267, 628);
+            this.label50.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label50.Name = "label50";
+            this.label50.Size = new System.Drawing.Size(215, 17);
+            this.label50.TabIndex = 60;
+            this.label50.Text = "framezoff,framewidth,framedepth";
             // 
             // frmEntityDumpAnalyzer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(512, 844);
+            this.Controls.Add(this.label50);
+            this.Controls.Add(this.label49);
+            this.Controls.Add(this.label44);
             this.Controls.Add(this.label42);
             this.Controls.Add(this.label21);
             this.Controls.Add(this.label41);
@@ -668,6 +748,10 @@
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label38);
             this.Controls.Add(this.label43);
+            this.Controls.Add(this.label45);
+            this.Controls.Add(this.label46);
+            this.Controls.Add(this.label47);
+            this.Controls.Add(this.label48);
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "frmEntityDumpAnalyzer";
             this.Text = "frmEntityDumpAnalyzer";
@@ -731,5 +815,12 @@
         private System.Windows.Forms.Label label41;
         private System.Windows.Forms.Label label42;
         private System.Windows.Forms.Label label43;
+        private System.Windows.Forms.Label label44;
+        private System.Windows.Forms.Label label45;
+        private System.Windows.Forms.Label label46;
+        private System.Windows.Forms.Label label47;
+        private System.Windows.Forms.Label label48;
+        private System.Windows.Forms.Label label49;
+        private System.Windows.Forms.Label label50;
     }
 }

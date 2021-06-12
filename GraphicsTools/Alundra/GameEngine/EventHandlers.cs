@@ -12,9 +12,12 @@ namespace GraphicsTools.Alundra
     {
         GameState gameState;
         Dictionary<int, ScriptEventHandler> Handlers = new Dictionary<int, ScriptEventHandler>();
+        public SpriteEventHandlers SpriteHandlers;
         public EventHandlers(GameState gameState)
         {
             this.gameState = gameState;
+
+            SpriteHandlers = new SpriteEventHandlers(gameState);
             //add handlers
             for (int dex = 0; dex <= 0xff; dex++)
                 Handlers.Add(dex, __Unknown_Handler);
@@ -64,7 +67,7 @@ namespace GraphicsTools.Alundra
             Handlers.Add(0x37, _37_Wait_Handler);
             Handlers.Add(0x3b, _3b_CheckPlayerInArea_Handler);
             Handlers.Add(0x40, _40_SetProgramIndex_Handler);
-            Handlers.Add(0x41, _41_SetSpriteProperty_Handler);
+            Handlers.Add(0x41, _41_SetSpriteProgramIndex_Handler);
             Handlers.Add(0x45, _45_Flag4Off_Handler);
             Handlers.Add(0x46, _46_Flag4On_Handler);
             Handlers.Add(0x49, _49_Restart_Handler);
@@ -112,8 +115,8 @@ namespace GraphicsTools.Alundra
                             if (entity.MapEventProgramId != 2)
                             {
                                 //TODO make sure these event vars are right
-                                entity.TargetAnim = entity.eventdata2.evtvars[0];
-                                entity.TargetDir = entity.eventdata2.evtvars[1];
+                                entity.TargetAnim = entity.UnknownEventAnim;
+                                entity.TargetDir = entity.UnknownEventDir;
                             }
                         }
                         break;
@@ -130,8 +133,8 @@ namespace GraphicsTools.Alundra
 
                         if (entity.MapEventProgramId != 2)
                         {
-                            entity.eventdata2.evtvars[0] = entity.TargetAnim;
-                            entity.eventdata2.evtvars[1] = entity.TargetDir;
+                            entity.UnknownEventAnim = entity.TargetAnim;
+                            entity.UnknownEventDir = entity.TargetDir;
                         }
 
                         InitEventData(entity, eventprogramtype, eventdata);
@@ -1047,35 +1050,12 @@ namespace GraphicsTools.Alundra
             return 3;
         }
 
-        public int _41_SetSpriteProperty_Handler(SpriteInstance entity, SpriteInstance entityself/*?*/, int exp, EventProgramState eventData, byte[] code)
+        public int _41_SetSpriteProgramIndex_Handler(SpriteInstance entity, SpriteInstance entityself/*?*/, int exp, EventProgramState eventData, byte[] code)
         {
-            var propertyid = code[exp + 1];
+            var programid = code[exp + 1];
             var indexval = code[exp + 2];
 
-            switch (propertyid)
-            {
-                case 0:
-                    entity.SpriteU4 = indexval;
-                    break;
-                case 1:
-                    entity.UnkownBeforeThrowType = indexval;
-                    break;
-                case 2:
-                    entity.ThrowType = indexval;
-                    break;
-                case 3:
-                    entity.SpriteU6 = indexval;
-                    break;
-                case 4:
-                    entity.BreakSound = indexval;
-                    break;
-                case 5:
-                    entity.SpriteU8 = indexval;
-                    break;
-                default:
-                    //not supported
-                    break;
-            }
+            entity.Sprite_Program_Indexes[programid] = indexval;
 
             return 3;
         }
@@ -1309,7 +1289,7 @@ namespace GraphicsTools.Alundra
         public const int PROGRAM_B_MAP = 1;
         public const int PROGRAM_C_TICK = 2;
         public const int PROGRAM_D_TOUCH = 3;
-        public const int PROGRAM_E_UNKNOWN = 4;
+        public const int PROGRAM_E_DEACTIVATE = 4;
         public const int PROGRAM_F_INTERACT = 5;
 
         public static int SignExtendWord(int i)

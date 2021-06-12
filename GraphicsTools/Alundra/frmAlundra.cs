@@ -92,7 +92,7 @@ namespace GraphicsTools.Alundra
             if (selectedGame.info != null)
             {
                 var info = selectedGame.info;
-                lblInfo.Text = string.Format("grav:{0} term_vel:{1} {2} {3} {4} {5}", info.gravity, info.terminal_velocity, info.unknown512, info.unknown7, info.unknown3882a + ":" + info.unknown3882b, info.uknown17);
+                lblInfo.Text = string.Format("grav:{0} term_vel:{1} _a:{2} balance:{3} _c:{4} _d:{5} _e:{6} _f:{7} _10:{8}", info.gravity, info.terminal_velocity, info._a, info.balancelevel, info._c, info._d, info._e, info._f, info._10);
 
                 //portals
                 lstPortals.Items.Clear();
@@ -201,10 +201,10 @@ namespace GraphicsTools.Alundra
                             (entity.ypos/2).ToString(),
                             entity.height.ToString("x2"),
                             entity.eventcodesa_load_index.ToString("x2"),
-                            entity.eventcodesb_unknown_index.ToString("x2"),
+                            entity.eventcodesb_map_index.ToString("x2"),
                             entity.eventcodesc_tick_index.ToString("x2"),
                             entity.eventcodesd_touch_index.ToString("x2"),
-                            entity.eventcodese_unknown_index.ToString("x2"),
+                            entity.eventcodese_deactivate_index.ToString("x2"),
                             entity.eventcodesf_interact_index.ToString("x2")
                         });
                     lvi.ToolTipText = DispByte((byte)(entity.u7&0xff)) + DispByte((byte)((entity.u7&0xff00)>>8)) + DispByte(entity.contents) + DispByte(entity.u10) + DispByte(entity.minx) + DispByte(entity.miny);
@@ -791,10 +791,10 @@ namespace GraphicsTools.Alundra
                     lblEntityInfo.Text = "si addr:" + GameMap.EventObjectAddr(lsvEntities.SelectedIndices[0]).ToString("x6") + " entity addr:" + selectedEntity.memaddr.ToString("x6") + " u123: " + DispByte(selectedEntity.maxx) + DispByte(selectedEntity.maxy) + DispByte(selectedEntity.u3) + " u789ab:" + lsvEntities.Items[lsvEntities.SelectedIndices[0]].ToolTipText;
                     var sector1 = selectedGame.spriteinfo.eventcodes;
                     lblSector1a.Text = GetSector1ByteCodes(br, selectedEntity.eventcodesa_load_index, sector1.eventcodesatable);
-                    lblSector1b.Text = GetSector1ByteCodes(br, selectedEntity.eventcodesb_unknown_index, sector1.eventcodesbtable);
+                    lblSector1b.Text = GetSector1ByteCodes(br, selectedEntity.eventcodesb_map_index, sector1.eventcodesbtable);
                     lblSector1c.Text = GetSector1ByteCodes(br, selectedEntity.eventcodesc_tick_index, sector1.eventcodesctable);
                     lblSector1d.Text = GetSector1ByteCodes(br, selectedEntity.eventcodesd_touch_index, sector1.eventcodesdtable);
-                    lblSector1e.Text = GetSector1ByteCodes(br, selectedEntity.eventcodese_unknown_index, sector1.eventcodesetable);
+                    lblSector1e.Text = GetSector1ByteCodes(br, selectedEntity.eventcodese_deactivate_index, sector1.eventcodesetable);
                     lblSector1f.Text = GetSector1ByteCodes(br, selectedEntity.eventcodesf_interact_index, sector1.eventcodesftable);
                     
                     br.Close();
@@ -949,7 +949,7 @@ namespace GraphicsTools.Alundra
                 selectedFrame = selectedAnim.frames[lstSector5Frames.SelectedIndex];
                 lblFrameAddr.Text = selectedFrame.memaddr.ToString("x6");
                 lblImgAddr.Text = selectedFrame.images.memaddr.ToString("x6");
-                lblFrameData.Text = "dly: " + DispByte(selectedFrame.delay) + " frm?: " + selectedFrame.unknown.ToString("x4") + " imgs?: " + DispByte(selectedFrame.images.unknown);
+                lblFrameData.Text = "dly: " + DispByte(selectedFrame.delay) + " frm?: " + selectedFrame.collisionoffset.ToString("x4") + " imgs?: " + DispByte(selectedFrame.images.unknown);
                 //CachedSprites.Remove(selectedFrame.images.imagesetid);
                 for (int dex = 0; dex < selectedFrame.images.numimages; dex++)
                 {
@@ -1154,7 +1154,7 @@ namespace GraphicsTools.Alundra
             var br = datasBin.OpenBin();
             if (selectedEntity != null)
             {
-                frm.Init(GetEventCodeCommands(br, selectedEntity.eventcodesb_unknown_index, selectedGame.spriteinfo.eventcodes.eventcodesbtable));
+                frm.Init(GetEventCodeCommands(br, selectedEntity.eventcodesb_map_index, selectedGame.spriteinfo.eventcodes.eventcodesbtable));
                 frm.Show();
             }
             else if (selectedMapEvent != null)

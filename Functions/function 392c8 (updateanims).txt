@@ -1,4 +1,4 @@
-										void updateanims(entity) //0x392c8
+										void updateanim(entity) //0x392c8
 000392c8: 27bdffd8 addiu r29,r29,0xffd8 
 000392cc: afb00010 sw r16,0x0010(r29)   
 000392d0: 00808021 addu r16,r4,r0       
@@ -52,15 +52,15 @@
 0003937c: 9082000d lbu r2,0x000d(r4)      
 00039380: ae0000ac sw r0,0x00ac(r16)      entity.wierdnextframedelayflag = 0
 00039384: ae0200b4 sw r2,0x00b4(r16)      entity.animflags = entity.animset.u4
-00039388: 90a3000e lbu r3,0x000e(r5)      r3 = *entity[1c4]
+00039388: 90a3000e lbu r3,0x000e(r5)      r3 = *entity.balancerecord.numvals
 0003938c: 00000000 nop                    
 00039390: 10600009 beq r3,r0,0x000393b8   
 00039394: 24c20001 addiu r2,r6,0x0001     
-                                          if
+                                          if numvals!=0
 00039398: 0043102a slt r2,r2,r3           
 0003939c: 10400004 beq r2,r0,0x000393b0   
 000393a0: 00061040 sll r2,r6,1            
-                                          if
+                                          if targetanim+1 < numvals
 000393a4: 00451021 addu r2,r2,r5          
 000393a8: 0800e4ef j 0x000393bc           
 000393ac: 24420011 addiu r2,r2,0x0011     
@@ -70,9 +70,9 @@
 000393b4: 24a2000f addiu r2,r5,0x000f     
                                           else
 
-0x000393b8: 00001021 addu r2,r0,r0        
+0x000393b8: 00001021 addu r2,r0,r0         animptr=0
 
-0x000393bc: ae0201c8 sw r2,0x01c8(r16)    entity[1c8] = r2
+0x000393bc: ae0201c8 sw r2,0x01c8(r16)    entity.balancevalref = r2
 000393c0: 9082000d lbu r2,0x000d(r4)      r2 = entity.animeset.u4
 000393c4: 9084000c lbu r4,0x000c(r4)      r4 = entity.animeset.u3
 000393c8: 30420020 andi r2,r2,0x0020      

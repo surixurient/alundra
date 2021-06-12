@@ -14,8 +14,16 @@ namespace GraphicsTools.Alundra
         public GameMap[] gamemaps;
         public GameMap alundragamemap;
         public string binfile;
+        public BalanceBin balancebin;
         public DatasBin(string binfile)
         {
+            //load balance file
+            var balancefile = binfile.Substring(0, binfile.LastIndexOf('\\') + 1) + "BALANCE.BIN";
+            using (var br = new BinaryReader(File.OpenRead(balancefile)))
+            {
+                balancebin = new BalanceBin(br);
+            }
+
             this.binfile = binfile;
             using (var br = new BinaryReader(File.OpenRead(binfile)))
             {
@@ -719,7 +727,7 @@ namespace GraphicsTools.Alundra
             this.binoffset = binoffset;
             animationoffsetspointer = br.ReadInt32();
             animationspointer = br.ReadInt32();
-            unknownpointer = br.ReadInt32();
+            framecollisionpointer = br.ReadInt32();
             framespointer = br.ReadInt32();
             ubuff = new byte[16];
             br.Read(ubuff, 0, ubuff.Length);
@@ -728,11 +736,11 @@ namespace GraphicsTools.Alundra
             moreflags = br.ReadByte();//10
             canpickup = br.ReadByte();//11
             flags_portrait_shadowtype = br.ReadByte();//12
-            u4 = br.ReadByte();//13
-            throwtype = br.ReadByte();//14
-            u6 = br.ReadByte();//15
-            breaksound = br.ReadByte();//16
-            u8 = br.ReadByte();//17
+            program_load = br.ReadByte();//13
+            program_tick = br.ReadByte();//14
+            program_touch = br.ReadByte();//15
+            program_deactivate = br.ReadByte();//16
+            program_interact = br.ReadByte();//17
             xmod = br.ReadByte();//18+0
             ymod = br.ReadByte();//18+1
             zmod = br.ReadByte();//18+2
@@ -749,18 +757,18 @@ namespace GraphicsTools.Alundra
 
         public int animationoffsetspointer;
         public int animationspointer;
-        public int unknownpointer;
+        public int framecollisionpointer;
         public int framespointer;
         public byte[] ubuff;
 
         public byte moreflags;
         public byte canpickup;
         public byte flags_portrait_shadowtype;
-        public byte u4;
-        public byte throwtype;
-        public byte u6;
-        public byte breaksound;
-        public byte u8;
+        public byte program_load;
+        public byte program_tick;
+        public byte program_touch;
+        public byte program_deactivate;
+        public byte program_interact;
         public byte xmod;
         public byte ymod;
         public byte zmod;
@@ -843,7 +851,7 @@ namespace GraphicsTools.Alundra
             this.memaddr = memaddr;
             delay = br.ReadByte();
 
-            unknown = br.ReadInt16();
+            collisionoffset = br.ReadInt16();
             imagesetpointer = br.ReadUInt16() * 2;
             
             
@@ -853,15 +861,36 @@ namespace GraphicsTools.Alundra
             br.BaseStream.Position = header.binoffset + header.framespointer + imagesetpointer;
             images = new SIImageSet(br, header.sector5id << 16 | imagesetpointer, header.spriteinfomemaddr + header.framespointer + imagesetpointer);
 
+            if (collisionoffset != -1)
+            {
+                br.BaseStream.Position = header.binoffset + header.framecollisionpointer + collisionoffset;
+                CollisionData = new FrameCollisionData(br);
+            }
+
             br.BaseStream.Position = savepos;
         }
 
-
+        public FrameCollisionData CollisionData;
         public int memaddr;
         public byte delay;//top bit masked
-        public short unknown;//-1
+        public short collisionoffset;//-1
         public int imagesetpointer;
         public SIImageSet images;
+    }
+
+    public class FrameCollisionData
+    {
+        public FrameCollisionData(BinaryReader br)
+        {
+            XOff = br.ReadByte();
+            YOff = br.ReadByte();
+            ZOff = br.ReadByte();
+            Width = br.ReadByte();
+            Depth = br.ReadByte();
+            Height = br.ReadByte();
+        }
+        public byte XOff, YOff, ZOff;
+        public byte Width, Depth, Height;
     }
 
     public class SIEffectFrame
@@ -1352,7 +1381,7 @@ namespace GraphicsTools.Alundra
                     size = 3;
                     break;
                 case 0x41:
-                    name = "setentityvaraftergravflags";
+                    name = "setspriteprogramindex";
                     size = 3;
                     break;
                 case 0x44:
@@ -1836,10 +1865,10 @@ namespace GraphicsTools.Alundra
             ypos = br.ReadByte();//8
             height = br.ReadByte();//9
             eventcodesa_load_index = br.ReadByte();
-            eventcodesb_unknown_index = br.ReadByte();
+            eventcodesb_map_index = br.ReadByte();
             eventcodesc_tick_index = br.ReadByte();
             eventcodesd_touch_index = br.ReadByte();
-            eventcodese_unknown_index = br.ReadByte();
+            eventcodese_deactivate_index = br.ReadByte();
             eventcodesf_interact_index = br.ReadByte();
             u7 = br.ReadByte();//10
             u7 = (short)(u7 | (br.ReadByte() << 8));
@@ -1885,10 +1914,10 @@ namespace GraphicsTools.Alundra
         public byte ypos;//divide by 2
         public byte height;//divide by 2
         public byte eventcodesa_load_index;
-        public byte eventcodesb_unknown_index;
+        public byte eventcodesb_map_index;
         public byte eventcodesc_tick_index;
         public byte eventcodesd_touch_index;
-        public byte eventcodese_unknown_index;
+        public byte eventcodese_deactivate_index;
         public byte eventcodesf_interact_index;
         public short u7;
         //public byte u8;
@@ -1988,14 +2017,16 @@ namespace GraphicsTools.Alundra
         {
             this.memaddr = memaddr;
             long binoffset = br.BaseStream.Position;
-            mapid = br.ReadInt32();
-            gravity = br.ReadInt16();
-            terminal_velocity = br.ReadInt16();
-            unknown512 = br.ReadInt16();
-            unknown7 = br.ReadInt16();
-            unknown3882a = br.ReadByte();
-            unknown3882b = br.ReadByte();
-            uknown17 = br.ReadInt16();
+            mapid = br.ReadInt32();//0
+            gravity = br.ReadInt16();//4
+            terminal_velocity = br.ReadInt16();//8
+            slideeffectid = br.ReadByte();//a
+            balancelevel = br.ReadByte();//b
+            _c = br.ReadByte();//c
+            _d = br.ReadByte();//d
+            _e = br.ReadByte();//e
+            _f = br.ReadByte();//f
+            _10 = br.ReadInt16();//10
             //read palettes
             int maxpalettes = 32;
             palettes = new System.Drawing.Color[maxpalettes][];
@@ -2029,11 +2060,13 @@ namespace GraphicsTools.Alundra
         public int mapid;
         public short gravity;
         public short terminal_velocity;
-        public short unknown512;
-        public short unknown7;
-        public byte unknown3882a;
-        public byte unknown3882b;
-        public short uknown17;
+        public byte slideeffectid;
+        public byte balancelevel;
+        public byte _c;
+        public byte _d;
+        public byte _e;
+        public byte _f;
+        public short _10;
         public System.Drawing.Color[][] palettes;
         public Bitmap palettesbitmap;
         public byte portalflag1;
@@ -2085,13 +2118,13 @@ namespace GraphicsTools.Alundra
         }
         public GameMapHeader(BinaryReader br)
         {
-            infoblock = br.ReadInt32();
-            mapblock = br.ReadInt32();
-            tilesheets = br.ReadInt32();
-            spriteinfo = br.ReadInt32();
-            spritesheets = br.ReadInt32();
-            scrollscreen = br.ReadInt32();
-            stringtable = br.ReadInt32();
+            infoblock = br.ReadInt32();//0
+            mapblock = br.ReadInt32();//4
+            tilesheets = br.ReadInt32();//8
+            spriteinfo = br.ReadInt32();//c
+            spritesheets = br.ReadInt32();//10
+            scrollscreen = br.ReadInt32();//14
+            stringtable = br.ReadInt32();//18
 
             infosize = mapblock - infoblock;
             mapsize = tilesheets - mapblock;
@@ -2124,18 +2157,18 @@ namespace GraphicsTools.Alundra
     {
         public DBHeader(BinaryReader br)
         {
-            alundraspriteinfo = br.ReadUInt32();
-            alundrasprites = br.ReadUInt32();
-            alundraspritesrepeat = br.ReadUInt32();
-            alundrastringtable = br.ReadUInt32();
-            alundrastringtablerepeat = br.ReadUInt32();
-            unknownmapa = br.ReadUInt32();
-            unknownmapb = br.ReadUInt32();
-            unknownmapb2 = br.ReadUInt32();
-            unknownmapb3 = br.ReadUInt32();
-            unknownmapb4 = br.ReadUInt32();
+            alundraspriteinfo = br.ReadUInt32();//0
+            alundrasprites = br.ReadUInt32();//4
+            alundraspritesrepeat = br.ReadUInt32();//8
+            alundrastringtable = br.ReadUInt32();//c
+            alundrastringtablerepeat = br.ReadUInt32();//10
+            unknownmapa = br.ReadUInt32();//14
+            unknownmapb = br.ReadUInt32();//18
+            unknownmapb2 = br.ReadUInt32();//1c
+            unknownmapb3 = br.ReadUInt32();//20
+            unknownmapb4 = br.ReadUInt32();//24
             int maxmaps = 502;
-            gamemaps = new UInt32[maxmaps];
+            gamemaps = new UInt32[maxmaps];//28
             for (int dex = 0; dex < maxmaps; dex++)
             {
                 gamemaps[dex] = br.ReadUInt32();

@@ -23,7 +23,7 @@ namespace GraphicsTools.Alundra
                 datasBin.alundragamemap.Load(reader, false);
             reader.Close();
 
-            game = new GameState (datasBin.alundragamemap) { CamXPos = 100 << 16, CamYPos = 100 << 16 };
+            game = new GameState (datasBin.alundragamemap, datasBin.balancebin) { CamXPos = 100 << 16, CamYPos = 100 << 16 };
 
             eventHandlers = new EventHandlers(game);
         }
@@ -261,6 +261,396 @@ namespace GraphicsTools.Alundra
 
         public void UpdateEntities()
         {
+            if ((game.PlayerControlSetting & 0x48) == 0)
+            {
+                ProcessDestroyedEntities();
+
+                DoEvents();
+
+                UpdateCounters();
+
+
+
+                AddToLists();
+
+                UpdateAnims();
+
+                //DoPhysics();
+
+                UpdateActiveEffects();
+
+                //UpdateBalanceRecords();
+            }
+            else
+            {
+                AddToLists();
+            }
+
+            if (game.CamFollowEntity != null)
+            {
+                if (game.CamFollowEntity.Status <= 3)
+                {
+                    //gets halfwords
+                    game.CamTargetX = game.CamFollowEntity.XPos >> 16;
+                    game.CamTargetY = game.CamFollowEntity.YPos >> 16;
+                    game.CamTargetZ = game.CamFollowEntity.ZPos >> 16;
+                }
+            }
+            //_3a1e4();
+
+            //add spriterefs
+            if (game.ToRenderCount > 0)
+            {
+                for (int dex = 0;dex<game.ToRenderCount;dex++)
+                {
+                    var entity = game.ToRenderList[dex];
+
+                    entity.SpriteRef.DepthSortVal = entity.DepthSortVal;
+                    entity.SpriteRef.X = entity.XPos;
+                    entity.SpriteRef.Y = entity.YPos;
+                    entity.SpriteRef.Z = entity.ZPos;
+                    game.SpriteRefs[game.NumSprites++] = entity.SpriteRef;
+                }
+            }
+        }
+
+        void UpdateActiveEffects()
+        {
+            if (game.MaxEntity < 0)
+                return;
+            for (int dex = 0; dex < game.MaxEntity; dex++)
+            {
+                var entity = game.Entities[dex];
+                if(entity.Status-2 >= 2 || (entity.DamagedTickCounter & 3) ==3)
+                {
+                    if (entity.ActiveEffect != null)
+                    {
+                        entity.ActiveEffect.Status = 0;
+                        entity.ActiveEffect = null;
+                    }
+                    continue;
+                }
+                var effect = entity.ActiveEffect;
+                if (effect == null)
+                {
+                    effect = game.CreateEffect_Type3(0, 0, 0, entity, -1, 0, 0, 0);
+                    if (effect == null)
+                        continue;
+                    entity.ActiveEffect = effect;
+                }
+
+                if (((entity.Flags>>16) & 7) == 0)
+                    continue;
+
+                if ((entity.AnimFlags & 0x10) != 0)
+                    continue;
+
+                if (entity.PlatformEntity != null)
+                {
+                    effect.Status = 1;
+                    continue;
+                }
+                //TODO: what is 18c, something with slope and sliding?
+                int animid = -1;
+                if ((entity._18c == 4 || entity._190 == 4) 
+                    && entity._18c != entity._190)
+                {
+                    game.CreateEffect_Type0(0, 6, 0, entity.XPos, entity.YPos, entity.CollidedWithEntityZ);
+                }
+
+                if (entity._18c >= 8)
+                    continue;
+                switch(entity._18c)
+                {
+                    case 1:
+                    case 2:
+                        effect.TargetIsMapSprite = 0;
+                        effect.TargetSpriteTableIndex = 1;
+                        effect.TargetAnim = (byte)animid;
+                        effect.Status = 2;
+                        effect.X = entity.XPos;
+                        effect.Y = entity.YPos;
+                        effect.Z = entity.CollidedWithEntityZ;
+                        continue;
+                    case 4:
+                        effect.Status = 1;
+                        if ((entity.UnknownCounter & 7) != 0)
+                            continue;
+                        if ((entity.XForce | entity.YForce) == 0)
+                            continue;
+
+                        game.CreateEffect_Type0(0, 0x15, 0, entity.XPos, entity.YPos, entity.CollidedWithEntityZ);
+                        continue;
+                    case 3:
+                        if ((entity.UnknownCounter & 0x7) != 0)
+                            break;
+                        if ((entity.XForce | entity.YForce) == 0)
+                            break;
+                        game.CreateEffect_Type0(0, game.gameMap.info.slideeffectid, 0, entity.XPos, entity.YPos, entity.CollidedWithEntityZ);
+                        break;
+                    default:
+                        break;
+                }
+
+                animid -= ((entity.ZPos - entity.CollidedWithEntityZ) >> 20);
+
+                if (animid >= 6)
+                    animid = 5;
+                else if (animid < 0)
+                    animid = 0;
+
+                effect.TargetIsMapSprite = 0;
+                effect.TargetSpriteTableIndex = 0;
+
+                effect.TargetAnim = (byte)animid;
+                effect.Status = 2;
+
+                effect.X = entity.XPos;
+                effect.Y = entity.YPos;
+                effect.Z = entity.CollidedWithEntityZ;
+            }
+        }
+
+        void UpdateAnims()
+        {
+            for (int dex =0;dex<game.ToProcessesCount;dex++)
+            {
+                var entity = game.Entities[dex];
+                game.UpdateAnim(entity);
+            }
+        }
+
+        void MovePlayer()
+        {
+            //TODO: impliment
+            //this function is MASSIVE
+            //perhaps the largest in the entire game
+        }
+
+        void DoEvents()
+        {
+            MovePlayer();
+
+            if (game.MaxEntity > 0)
+            {
+                for (int dex =1;dex<game.MaxEntity;dex++)
+                {
+                    var entity = game.Entities[dex];
+                    int evttype = -1;
+                    if (entity._20 == 0 && entity.Status< 5)
+                    {
+                        switch(entity.Status)
+                        {
+                            case 1://loading/activating
+                                evttype = Helper.PROGRAM_A_LOAD;
+                                entity.Status = 2;
+                                break;
+                            case 2://normal
+
+                                if ((entity.Flags & 0x100000) != 0)
+                                {
+                                    if (entity._18c == 4)
+                                    {
+                                        game.DestroyEntity(entity, 6);
+
+                                        evttype = -1;
+                                        break;
+                                    }
+                                }
+
+                                if ((entity.Flags & 0x200000) != 0)
+                                {
+                                    if ((entity._180 & 0x8004) != 0)
+                                    {
+                                        game.DestroyEntity(entity, -1);
+
+                                        evttype = -1;
+                                        break;
+                                    }
+                                }
+
+                                if ((entity.Flags & 0x10) != 0)
+                                {
+                                    if (entity.ForceAdjusted != 0 || entity._144 != 3)
+                                    {
+                                        entity.Status = 3;//decativate
+                                        evttype = Helper.PROGRAM_E_DEACTIVATE;
+                                        break;
+                                    }
+                                }
+
+                                if ((entity.Flags & 0x20) != 0)
+                                {
+                                    if (entity.HitCounter != 0)
+                                    {
+                                        entity.Status = 3;//decativate
+                                        evttype = Helper.PROGRAM_E_DEACTIVATE;
+                                        break;
+                                    }
+                                }
+
+                                if ((entity.Flags & 0x40) != 0)
+                                {
+                                    if (entity.WierdNextFrameDelayFlag != 0)
+                                    {
+                                        entity.Status = 3;//decativate
+                                        evttype = Helper.PROGRAM_E_DEACTIVATE;
+                                        break;
+                                    }
+                                }
+
+                                if (entity.TouchingEntity != null)
+                                {
+                                    evttype = Helper.PROGRAM_D_TOUCH;
+                                    break;
+                                }
+
+                                //i think this gamevar is more than just activecollitionentity, 
+                                //the interact button probabaly has to be down for this to be set
+                                if (game.ActiveCollisionEntity != entity)
+                                {
+                                    evttype = 2;
+                                    break;
+                                }
+                                //if it gets here it means the player is interacting with this entity
+
+                                if (entity.Sprite_Program_Indexes[Helper.PROGRAM_F_INTERACT] != 0)
+                                {
+                                    evttype = 5;
+                                    break;
+                                }
+
+                                if (entity.Program_Indexes[Helper.PROGRAM_F_INTERACT] != 0)
+                                {
+                                    evttype = 5;
+                                    break;
+                                }
+                                evttype = 2;
+                                break;
+                            case 3://deactivating
+                                evttype = Helper.PROGRAM_E_DEACTIVATE;
+                                break;
+                            case 0:
+                            case 4:
+                                evttype = -1;
+                                break;
+                        }
+                    }
+                    entity.EventTrigger = evttype;
+                }
+            }
+
+            //run events
+            bool keepgoing = false;
+            do
+            {
+                keepgoing = false;
+                if (game.MaxEntity > 0)
+                {
+                    //foreach entity besides player
+                    for (int dex = 1; dex < game.MaxEntity; dex++)
+                    {
+                        var entity = game.Entities[dex];
+
+                        if (entity.EventTrigger != -1)
+                        {
+                            int progindex = entity.Program_Indexes[entity.EventTrigger] & 0x7f;
+
+                            if (progindex != 0)
+                            {
+                                //run the eventhandler script
+                                eventHandlers.RunEntityEventScripts(entity, entity.EventTrigger);
+                                entity.EventTrigger = -1;
+                            }
+                            else
+                            {
+                                int eventid = entity.Sprite_Program_Indexes[entity.EventTrigger];
+                                //run the sprite event handler
+                                eventHandlers.SpriteHandlers.RunSpriteHandler(entity.EventTrigger, eventid, entity);
+                                entity.EventTrigger = -1;
+                            }
+
+                            keepgoing = true;
+                        }
+                    }
+                }
+
+            } while (keepgoing);
+        }
+
+        void UpdateCounters()
+        {
+            if (game.MaxEntity>=0)
+            {
+                for (int dex = 0; dex <= game.MaxEntity; dex++)
+                {
+                    var entity = game.Entities[dex];
+                    entity.UnknownCounter++;
+                    if (entity.DamagedTickCounter != 0)
+                        entity.DamagedTickCounter--;
+                    if (entity.FrameColTickCounter != 0)
+                        entity.FrameColTickCounter--;
+                }
+            }
+
+            //displays debug records here
+
+        }
+
+        void ProcessDestroyedEntities()
+        {
+            int max = 0;
+            for (int dex = 0;dex<game.Entities.Length;dex++)
+            {
+                var entity = game.Entities[dex];
+                if (entity.Status == 4)
+                {
+                    //zero out the properties
+                    entity = new SpriteInstance();
+                    entity.EntityRefId = -1;
+                    game.Entities[dex] = entity;
+                    entity.Index = dex;
+                }
+                if (entity.Status != 0)
+                {
+                    max = dex;
+                }
+            }
+
+            game.MaxEntity = max;
+        }
+
+        void AddToLists()
+        {
+            game.ToProcessesCount = 0;
+            game.ToCollideCount = 0;
+            game.ToRenderCount = 0;
+
+            if (game.MaxEntity < 0)
+                return;
+
+            foreach(var entity in game.Entities)
+            {
+                //processable
+                if (entity.Status -2 < 2 && entity._20 == 0)
+                {
+                    game.ToProcessList[game.ToProcessesCount++] = entity;
+                }
+
+                //collidable
+                if ((entity.Flags & 0x80) != 0
+                    && (entity.AnimFlags & 0x80) == 0
+                    && entity.PlatformEntity == null)
+                {
+                    game.ToCollideList[game.ToCollideCount++] = entity;
+                }
+
+                //renderable
+                if (entity.Status-2 < 2 && (entity.DamagedTickCounter & 3) != 3)//flicker effect, every 3rd frame when being damaged
+                {
+                    game.ToRenderList[game.ToRenderCount++] = entity;
+                }
+            }
 
         }
 
@@ -281,7 +671,7 @@ namespace GraphicsTools.Alundra
                     p.Program_Indexes[Helper.PROGRAM_B_MAP] = mapevent.ProgramB_Map;
                     p.MapEventProgramId = mapevent.ProgramB_Map;
                     p.eventdata = mapevent.EventData;
-                    p.MapEventId = medex;
+                    p.EventTrigger = medex;
                     p.EntitySelf = mapevent.Entity;
                     eventHandlers.RunEntityEventScripts(p, Helper.PROGRAM_B_MAP);
                     
