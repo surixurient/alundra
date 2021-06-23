@@ -102,9 +102,12 @@ namespace alundramultitool
         {
             if (lstCalledFunctions.SelectedItem != null)
             {
-                var tofind = lstCalledFunctions.SelectedItem.ToString().Split('(')[0];
-
-                FindText(tofind);
+                    var cfunc = (AnalyzedFunction)lstCalledFunctions.SelectedItem;
+                    if (cfunc != null)
+                    {
+                        var frm = new frmAnalyzedFunction(cfunc, datafile);
+                        frm.Show();
+                    }
 
             }
         }
@@ -136,6 +139,23 @@ namespace alundramultitool
                     break;
                 }
             }
+        }
+
+        private void lstVarsIncludedIn_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            var cfunc = (AnalyzedFunction)lstVarsIncludedIn.SelectedItem;
+            if (cfunc != null)
+            {
+                var frm = new frmAnalyzedFunction(cfunc, datafile);
+                frm.Show();
+            }
+        }
+
+        private void lstCalledFunctions_MouseClick(object sender, MouseEventArgs e)
+        {
+            var tofind = lstCalledFunctions.SelectedItem.ToString().Split('(')[0];
+
+            FindText(tofind);
         }
     }
 }

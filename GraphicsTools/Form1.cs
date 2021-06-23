@@ -359,7 +359,12 @@ namespace GraphicsTools
             {
                 var frmAlundra = new Alundra.frmAlundra();
                 frmAlundra.Show();
-                frmAlundra.Init(new Alundra.DatasBin(ofd.FileName));
+                var datasBin = new Alundra.DatasBin(ofd.FileName);
+                frmAlundra.Init(datasBin);
+
+                //show soundboard too
+                var frmSoundboard = new Alundra.frmSoundboard(datasBin);
+                frmSoundboard.Show();
             }
         }
 
@@ -390,6 +395,11 @@ namespace GraphicsTools
                 var frmGame = new Alundra.frmGame(new Alundra.DatasBin(ofd.FileName));
                 frmGame.Show();
             }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            
         }
     }
 

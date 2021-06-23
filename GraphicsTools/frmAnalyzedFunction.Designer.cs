@@ -84,6 +84,7 @@ namespace alundramultitool
             this.lstVarsIncludedIn.Name = "lstVarsIncludedIn";
             this.lstVarsIncludedIn.Size = new System.Drawing.Size(347, 84);
             this.lstVarsIncludedIn.TabIndex = 46;
+            this.lstVarsIncludedIn.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lstVarsIncludedIn_MouseDoubleClick);
             // 
             // lstCalledBy
             // 
@@ -165,6 +166,7 @@ namespace alundramultitool
             this.lstCalledFunctions.Name = "lstCalledFunctions";
             this.lstCalledFunctions.Size = new System.Drawing.Size(335, 84);
             this.lstCalledFunctions.TabIndex = 55;
+            this.lstCalledFunctions.MouseClick += new System.Windows.Forms.MouseEventHandler(this.lstCalledFunctions_MouseClick);
             this.lstCalledFunctions.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lstCalledFunctions_MouseDoubleClick);
             // 
             // frmAnalyzedFunction

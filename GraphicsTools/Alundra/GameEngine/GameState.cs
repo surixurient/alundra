@@ -1150,9 +1150,9 @@ namespace GraphicsTools.Alundra
             effect.XOff = 0;
             effect.YOff = 0;
             effect.ZOff = 0;
-            effect.XMod = 0;
-            effect.YMod = 0;
-            effect.ZMod = 0;
+            effect.XForce = 0;
+            effect.YForce = 0;
+            effect.ZForce = 0;
             effect.DepthSortMod = 0;
             effect.DepthSortVal = 0;
             effect.Status = 0;

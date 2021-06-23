@@ -79,11 +79,18 @@
     <Compile Include="Alundra\frmGame.Designer.cs">
       <DependentUpon>frmGame.cs</DependentUpon>
     </Compile>
+    <Compile Include="Alundra\frmSoundboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Alundra\frmSoundboard.Designer.cs">
+      <DependentUpon>frmSoundboard.cs</DependentUpon>
+    </Compile>
     <Compile Include="Alundra\GameEngine.cs" />
     <Compile Include="Alundra\GameEngine\EventHandlers.cs" />
     <Compile Include="Alundra\GameEngine\GameState.cs" />
     <Compile Include="Alundra\GameEngine\SpriteEventHandlers.cs" />
     <Compile Include="Alundra\MapEvent.cs" />
+    <Compile Include="Alundra\SoundBin.cs" />
     <Compile Include="Alundra\SpriteEffect.cs" />
     <Compile Include="Alundra\SpriteInstance.cs" />
     <Compile Include="bmp.cs" />
@@ -130,16 +137,25 @@
     <Compile Include="frmIntGrid.Designer.cs">
       <DependentUpon>frmIntGrid.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmLib.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmLib.Designer.cs">
+      <DependentUpon>frmLib.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmViewer.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="frmViewer.Designer.cs">
       <DependentUpon>frmViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="LIB.cs" />
+    <Compile Include="MIDI.cs" />
     <Compile Include="MIPS.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SH2.cs" />
+    <Compile Include="SoundFont.cs" />
     <Compile Include="Utils.cs" />
     <EmbeddedResource Include="Alundra\frmAlundra.resx">
       <DependentUpon>frmAlundra.cs</DependentUpon>
@@ -152,6 +168,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Alundra\frmGame.resx">
       <DependentUpon>frmGame.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Alundra\frmSoundboard.resx">
+      <DependentUpon>frmSoundboard.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="carpet\frmMagicCarpet.resx">
       <DependentUpon>frmMagicCarpet.cs</DependentUpon>
@@ -170,6 +189,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmFileAnalyzer.resx">
       <DependentUpon>frmFileAnalyzer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmLib.resx">
+      <DependentUpon>frmLib.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmViewer.resx">
       <DependentUpon>frmViewer.cs</DependentUpon>

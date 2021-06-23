@@ -65,7 +65,7 @@ namespace GraphicsTools
         int chunklength = 1024 * 1024;
         byte[] data;
 
-        int ParseNum(string num)
+        public int ParseNum(string num)
         {
             int i = 0;
             if (num.StartsWith("0x"))
@@ -79,9 +79,20 @@ namespace GraphicsTools
             return i;
         }
 
+        List<frmLib.AnalyzedFunction> libfuncs;
         private void frmFileAnalyzer_Load(object sender, EventArgs e)
         {
             loadchunk(offset);
+
+            //var frm = new frmLib("C:\\PSYQ_SDK\\psyq\\lib\\LIBSND.LIB", "C:\\PSYQ_SDK\\psyq\\include\\LIBSND.H", "C:\\PSYQ_SDK\\psyq\\lib", "C:\\PSYQ_SDK\\psyq\\include", this);
+            var frm = new frmLib(
+                "C:\\PSYQ_SDK\\psyq\\lib\\old_libs\\LIB35\\LIB\\LIBSND.LIB", 
+                "C:\\PSYQ_SDK\\psyq\\lib\\old_libs\\LIB35\\INCLUDE\\LIBSND.H", 
+                "C:\\PSYQ_SDK\\psyq\\lib\\old_libs\\LIB35\\LIB", 
+                "C:\\PSYQ_SDK\\psyq\\lib\\old_libs\\LIB35\\INCLUDE", 
+                this);
+            frm.Show();
+            libfuncs = frm.analyzedfuncs;
         }
 
         int instOffset = 0;
@@ -809,6 +820,7 @@ namespace GraphicsTools
                 bool exit = false;
 
                 var function = new List<ISInstruction>();
+                instructions = function;
 
                 for (int dex = 0; dex < 10000; dex += 4)
                 {
@@ -820,7 +832,7 @@ namespace GraphicsTools
                         exit = true;
                 }
                 length = (int)(function.Last().address - address);
-                var blocks = AnalyzeFunction(function);
+                blocks = AnalyzeFunction(function);
 
                 var debugnames = new[] { "outputdebuginfo", "printdebug", "printdebugparams", "printdebugerror" };
 
@@ -963,7 +975,11 @@ namespace GraphicsTools
                 if (calledfunctions.Any(x => debugnames.Contains(x.name)))
                     hasdebugoutput = true;
             }
+            public List<ISInstruction> instructions;
+            public List<CodeBlock<ISInstruction>> blocks;
             public uint address;
+            public string libname;
+            public List<frmLib.AnalyzedFunction> potentiallibs = new List<frmLib.AnalyzedFunction>();
             public string addressstring { get { return address.ToString("x"); } }
             public int length;
             public string name;
@@ -1006,8 +1022,15 @@ namespace GraphicsTools
             {
                 get
                 {
+                    
+                    if (!string.IsNullOrEmpty(libname))
+                        return libname;
                     if (!string.IsNullOrEmpty(name))
                         return name;
+                    //if (potentiallibs.Count > 0)
+                    //{
+                    //    return name + string.Join(",", potentiallibs.Select(x => x.name));
+                    //}
                     return address.ToString("x");
                 }
             }
@@ -1022,7 +1045,7 @@ namespace GraphicsTools
             }
         }
 
-        List<AnalyzedFunction> analyzedfunctions = new List<AnalyzedFunction>();
+        public List<AnalyzedFunction> analyzedfunctions = new List<AnalyzedFunction>();
         List<AnalyzedGlobalVariable> analyzedglobalvariables = new List<AnalyzedGlobalVariable>();
         AnalyzedFunction root = null;
 
@@ -1048,6 +1071,47 @@ namespace GraphicsTools
 
             return node;
         }
+
+        float Compare(AnalyzedFunction func, frmLib.AnalyzedFunction comp)
+        {
+            var ablocks = func.blocks;
+            var bblocks = comp.blocks;
+            int hits =0;
+            int misses=0;
+            if (ablocks.Count != bblocks.Count)
+                return 0;
+            for (int bdex=0;bdex<ablocks.Count;bdex++)
+            {
+                var ablock = ablocks[bdex];
+                var bblock = bblocks[bdex];
+                if (ablock.BlockType != bblock.BlockType)
+                    return 0;
+                var ainst = ablock.Instructions.Where(x => x.cmd != "nop").OrderBy(x => x.cmd).ToList();
+                var binst = bblock.Instructions.Where(x => x.cmd != "nop").OrderBy(x => x.cmd).ToList();
+                if (ainst.Count == binst.Count)
+                {
+                    for (int dex =0;dex<ainst.Count;dex++)
+                    {
+                        if(ainst[dex].cmd == binst[dex].cmd)
+                        {
+                            hits++;
+                        }
+                        else
+                        {
+                            misses++;
+                        }
+                    }
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+
+            float percent = hits / (float)(hits + misses);
+            return percent;
+        }
+
         Dictionary<string, List<AnalyzedFunction>> debugStrings = new Dictionary<string, List<AnalyzedFunction>>();
         List<AnalyzedFunction> eventFuncs = new List<AnalyzedFunction>();
         List<AnalyzedFunction> importantFuncs = new List<AnalyzedFunction>();
@@ -1056,8 +1120,12 @@ namespace GraphicsTools
             this.Height = 1000;
             var address = (uint)ParseNum(txtOffset.Text);
 
-            address = 0x002c038;
-            //address = 0x0002c4a4;
+            address = 0x8db44;//alun_cd.exe entry point
+            if (datafile.Contains("startscreen"))
+                address = 0x36028;//slus_005.53 entry point (start screen)
+            //address = 0x8db44;//alun_cd.exe entry point
+            //address = 0x002c038;//main function
+            //address = 0x0002c4a4;//inner loop of main function
             var endaddress = (uint)0x0002c518;
             analyzedfunctions = new List<AnalyzedFunction>();
             analyzedglobalvariables = new List<AnalyzedGlobalVariable>();
@@ -1191,6 +1259,8 @@ namespace GraphicsTools
             debugStrings = new Dictionary<string, List<AnalyzedFunction>>();
             foreach (var func in analyzedfunctions)
             {
+                
+
                 string fname = "";
                 if (!string.IsNullOrEmpty(func.name) || !string.IsNullOrEmpty(func.notes))
                 {
@@ -1201,7 +1271,28 @@ namespace GraphicsTools
                         fname += "//" + func.notes;
                     fname += ")";
                 }
-                foreach(var dbs in func.debugstrings)
+
+
+                //try to find if its in the lib
+                int len = func.instructions.Count;
+                func.potentiallibs.Clear();
+                if (len > 5)
+                {
+                    foreach (var testme in libfuncs)
+                    {
+                        var percent = Compare(func, testme);
+                        if (percent > 0.90)
+                        {
+                            func.potentiallibs.Add(testme);
+                        }
+                    }
+                }
+                if (func.potentiallibs.Count>0)
+                {
+                    fname += " (" + string.Join(",", func.potentiallibs.Select(x => x.name)) + ")";
+                }
+
+                foreach (var dbs in func.debugstrings)
                 {
                     List<AnalyzedFunction> dbfuncs;
                     if (!debugStrings.ContainsKey(dbs))
@@ -1214,6 +1305,7 @@ namespace GraphicsTools
                     if (!dbfuncs.Contains(func))
                         dbfuncs.Add(func);
                 }
+
                 lstFunctions.Items.Add("0x" + func.address.ToString("x") + fname);
             }
 
@@ -1435,7 +1527,7 @@ namespace GraphicsTools
 
             s = "int[] FrameDexTable = new int[]{\r\n";
             dex = 0;
-            for (int i = 0; i < 0xff; i++)
+            for (int i = 0; i < 504; i++)
             {
                 string line = "0x" + (data[dex + 0] + (data[dex + 1] << 8) + (data[dex + 2] << 16) + (data[dex + 3] << 24)).ToString("x8") + ",//0x" + i.ToString("x2");
                 dex += 4;
@@ -1446,14 +1538,14 @@ namespace GraphicsTools
 
             /*s = "byte[][] ContentsTable = new byte[][]{\r\n";
             dex = 0;
-            for (int i = 0; i < 0xff; i++)
+            for (int i = 0; i < 0x3c2; i++)
             {
                 string line = "new byte[]{";
-                for (int i2=0;i2<16;i2++)
+                for (int i2=0;i2<22;i2++)
                 {
                     line += "0x" + data[dex + i2].ToString("x2") + ",";
                 }
-                dex += 16;
+                dex += 22;
                 s += line + "},\r\n";
             }
             s += "};";

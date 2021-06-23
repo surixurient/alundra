@@ -46,8 +46,9 @@ namespace GraphicsTools.Alundra
         public static void Init()
         {
             Comments.Clear();
-
+            GlobalVariableNames.Clear();
             FunctionNames.Clear();
+
             AddFunction(0x2abe8, "debugcheck", "tons of potential error messages");
             AddFunction(0x2bc18, "update", "main update");
             AddFunction(0x2bdb8, "render", "renders maps and sprites");
@@ -115,25 +116,9 @@ namespace GraphicsTools.Alundra
             AddFunction(0x83e18, "printdebugparams","");
             AddFunction(0x84ef8, "printdebugerror", "");
             AddFunction(0x857c0, "debugfunction", "");
-            AddFunction(0x84534, "seektopartofstring?", "");
-            AddFunction(0x845dc, "seektozero", "");
-            AddFunction(0x8cc94, "getcontrollerinput", "");
-            AddFunction(0x8cd04, "controllerhardwareaccess", "");
-            AddFunction(0x8cd24, "", "advance frame and sound");
-            AddFunction(0x8ce6c, "vsync", "framecounter wait");
-            AddFunction(0x8af84, "cdcontrol", "");
-            AddFunction(0x89f08, "", "calls cd");
-            AddFunction(0x8a040, "", "calls cd");
-            AddFunction(0x8a16c, "", "calls cd");
             AddFunction(0x89e98, "", "calls cd");
-            AddFunction(0x8aa38, "cdsync", "");
             AddFunction(0x8a4c0, "diskread", "");
-            AddFunction(0x8acb8, "", "calls cd");
-            AddFunction(0x8bbc0, "iowithdebugger", "?");
             AddFunction(0x5c800, "opencdfile", "");
-            AddFunction(0x8bc10, "cdsearchfile", "");
-            AddFunction(0x8bf14, "cdnewmedia", "");
-            AddFunction(0x8c880, "cdread", "");
             AddFunction(0x8794c, "putdrawenv", "");
             AddFunction(0x87b24, "putdispenv", "");
             AddFunction(0x42fec, "somedrawcommands", "");
@@ -145,12 +130,10 @@ namespace GraphicsTools.Alundra
             AddFunction(0x2e3a4, "rendersprites", "");
             AddFunction(0x2ddb8, "rendersprite", "");
 
-            AddFunction(0x869bc, "setcmdto4pointtexturedpoly", "");
-            AddFunction(0x86a20, "setcmdtosomething1", "");
-            AddFunction(0x86908, "setcmdtosomething2", "");
-            AddFunction(0x86930, "setcmdtosomething3", "");
+            AddFunction(0x869bc, "SetPolyFT4", "setcmdto4pointtexturedpoly");
+            AddFunction(0x86a20, "SetSprt", "setcmdtosomething1");
+            AddFunction(0x86930, "SetShadeTex", "setsomethingtocmd3");
             AddFunction(0x84598, "copystring", "src, dest");
-            AddFunction(0x873e0, "imagecommand", "commandtext, rect  //clear, load, store");
             AddFunction(0x87508, "clearimage", "");
             AddFunction(0x8759c, "loadimage", "");
             AddFunction(0x87600, "storeimage", "");
@@ -189,7 +172,9 @@ namespace GraphicsTools.Alundra
             AddFunction(0x03afec, "hideentity", "(entity)");
             AddFunction(0x3d97c, "turnentity", "(entity,turncode)");
             AddFunction(0x3d8d4, "getcardinaldirtoplayer", "(entity)");
-
+            AddFunction(0x399a8, "createrandompoofs", "(x, y, z)");
+            AddFunction(0x39fd4, "setdepthsortval", "(entity)");
+            AddFunction(0x2e5d0, "initinput", "");
 
             //spriteevents
             AddFunction(0x3ae08, "destroyentity", "(entity,animid) -1 loads animid from spriterecord");
@@ -226,6 +211,174 @@ namespace GraphicsTools.Alundra
 
             AddFunction(0x5f6b0, "unknown", "(0x340,0x100,0x100,0x1f0,*0x1f2bd6, *0x1f2c02, *0x1f2c2e, *0x1f2c5a, 0x12e160)");
             AddFunction(0x44edc, "unknown", "(gamemap[c]*8,gamemap[d]*8,gamemap[e]*8,warpinfo.98)");
+            AddFunction(0x5ca04, "loadaran_xa", "//intro music or video?");
+            AddGlobalVariable(0x121c6c, "aranxacdpos", "");
+
+            AddFunction(0x83de0, "getdatafilescdpos", "");
+            AddFunction(0x4fdb0, "getdatafilescdpos_inner", "");
+            AddGlobalVariable(0x1192a4, "soundbinposint", "");
+            AddFunction(0x5fcf8, "junkfunction?", "");
+            AddFunction(0x2c71c, "loadetc_usar", "");
+
+
+            //audio sdk
+            AddFunction(0x8e20c, "SsSeqOpen", "");
+            AddFunction(0x8472c, "printf", "");
+            AddFunction(0x8ded4, "_snd_openflag", "");
+            AddFunction(0x90640, "SsInit", "");
+            AddFunction(0x8cf18, "ResetCallback", "");
+            AddFunction(0x97c1c, "SpuInit", "");
+            AddFunction(0x97c3c, "_SpuInit", "");
+            AddFunction(0x90558, "_SsInit", "");
+            AddFunction(0x90510, "SsSeqClose", "");
+            AddFunction(0x90398, "_SsClose", "");
+            AddFunction(0x96284, "SpuVmSetSeqVol", "");
+            AddFunction(0x96500, "SpuVmSeqKeyOff", "");
+            AddFunction(0x8cfa8, "VSyncCallback", "");
+            AddFunction(0x91794, "SsSeqPlay", "");
+            AddFunction(0x91694, "SpuVmSetSeqVol", "");
+            AddFunction(0x91fb0, "SsVabClose", "");
+            AddFunction(0x995c8, "SpuFree", "");
+            AddFunction(0x992c8, "_spu_gcSPU", "");
+            AddFunction(0x920b8, "SsVabOpenHeadSticky", "");
+            AddFunction(0x92118, "SsVabOpenHeadWithMode", "");
+            AddFunction(0x9a7a4, "_spu_getInTransfer", "");
+            AddFunction(0x9a778, "_spu_setInTransfer", "");
+            AddFunction(0x99000, "SpuMalloc", "");
+            AddFunction(0x925cc, "SsVabTransBodyPartly", "");
+            AddFunction(0x9a610, "SpuSetTransferMode", "");
+            AddFunction(0x9a5d4, "SpuSetTransferStartAddr", "");
+            AddFunction(0x98dc4, "_spu_FsetRXXa", "");
+            AddFunction(0x9a644, "SpuWritePartly", "");
+            AddFunction(0x98c8c, "_spu_write", "");
+            AddFunction(0x97d04, "SpuStart", "");
+            AddFunction(0x84000, "EnterCriticalSection", "");
+            AddFunction(0x98ea4, "_SpuDataCallback", "");
+            AddFunction(0x83fc0, "OpenEvent", "");
+            AddFunction(0x83ff0, "EnableEvent", "");
+            AddFunction(0x84010, "ExitCriticalSection", "");
+            AddFunction(0x9a7b4, "SpuSetCommonAttr", "");
+            AddFunction(0x9ac18, "SpuGetAllKeysStatus", "");
+            AddFunction(0x914b8, "SsSetTableSize", "");
+            AddFunction(0x91298, "SsSetTickMode", "");
+            AddFunction(0x8dac0, "GetVideoMode", "");
+            AddFunction(0x92774, "SsUtFlush", "");
+            AddFunction(0x95728, "SpuVmFlush", "");
+            AddFunction(0x927b4, "SsUtGetProgAtr", "");
+            AddFunction(0x928b8, "SpuVmVSetUp", "");
+            AddFunction(0x9297c, "SsUtGetVagAtr", "(vabid, progNum, toneNum, vagatrptr)");
+            AddFunction(0x92bb4, "SsUtGetVBaddrInSB", "");
+            AddFunction(0x978a4, "SsUtSetDetVVol", "");
+            AddFunction(0x998d4, "SpuSetReverbModeParam", "");
+            AddFunction(0x9985c, "_SpuIsInAllocateArea_", "");
+            AddFunction(0x99de4, "_spu_setReverbAttr", "");
+            AddFunction(0x9a350, "SpuClearReverbWorkArea", "");
+            AddFunction(0x989e4, "_spu_t", "");
+            AddFunction(0x9a4ec, "WaitEvent", "");
+            AddFunction(0x98d7c, "_spu_FsetRXX", "");
+            AddFunction(0x98f54, "SpuSetMute", "");
+            AddFunction(0x98fac, "SpuInitMalloc", "");
+            AddFunction(0x9971c, "SpuSetReverb", "");
+            AddFunction(0x9a2b4, "SpuSetReverbDepth", "");
+            AddFunction(0x9a4fc, "SpuSetKey", "");
+            AddFunction(0x9a6d0, "SpuIsTransferCompleted", "");
+            AddFunction(0x83fe0, "TestEvent", "");
+            AddFunction(0x96c6c, "SsUtKeyOn", "");
+            AddFunction(0x92ff4, "_svm_orev1", "");
+            AddFunction(0x938c0, "SpuVmDoAllocate", "");
+            AddFunction(0x93ad8, "vmNoiseOn", "");
+            AddFunction(0x94224, "note2pitch2", "");
+            AddFunction(0x93264, "SpuVmKeyOnNow", "(vabid,prog,tone,note,fine,voll,volr)");
+
+
+            //gpu sdk
+            AddFunction(0x859ec, "LoadClut2", "");
+            //AddFunction(0x8759c, "LoadImage", "");
+            AddFunction(0x873e0, "checkRECT", "commandtext, rect  //clear, load, store");
+            AddFunction(0x866f4, "GetClut", "");
+            AddFunction(0x86220, "FntPrint", "");
+            AddFunction(0x845dc, "strlen", "seektozero");
+            AddFunction(0x85ba0, "FntLoad", "");
+            AddFunction(0x85898, "LoadTPage", "");
+            AddFunction(0x8662c, "GetTPage", "");
+            AddFunction(0x8725c, "GetGraphType", "");
+            AddFunction(0x86600, "memset", "");
+            AddFunction(0x85b60, "SetDumpFnt", "");
+            AddFunction(0x86b5c, "SetDrawTPage", "");
+            AddFunction(0x87fd4, "SetDrawOffset", "");
+            //AddFunction(0x87374, "DrawSync", "");//already had this one ;)
+            AddFunction(0x8807c, "SetDrawArea", "");
+            AddFunction(0x8816c, "SetDrawMode", "");
+            AddFunction(0x85c44, "FntOpen", "");
+            AddFunction(0x86a70, "SetTile", "");
+            AddFunction(0x86908, "SetSemiTrans", "");
+            AddFunction(0x869f8, "SetSprt8", "");
+            AddFunction(0x86ed8, "ResetGraph", "");
+            AddFunction(0x89bf8, "memset", "");
+            AddFunction(0x89c24, "GPU_cw", "");
+            AddFunction(0x896f8, "_reset", "");
+            AddFunction(0x8d094, "SetIntrMask", "");
+            AddFunction(0x89b1c, "_version", "");
+            AddFunction(0x881c4, "SetDrawEnv", "");
+            AddFunction(0x884c4, "get_cs", "");
+            AddFunction(0x88590, "get_ce", "");
+            AddFunction(0x8865c, "get_ofs", "");
+            AddFunction(0x88468, "get_mode", "");
+            AddFunction(0x886a4, "get_tw", "");
+            AddFunction(0x8727c, "DrawSyncCallback", "");
+            AddFunction(0x86a0c, "SetSprt16", "");
+            AddFunction(0x869d0, "SetPolyG4", "");
+            AddFunction(0x86b40, "SetDrawMove", "");
+            AddFunction(0x872d8, "SetDispMask", "");
+            AddFunction(0x87664, "MoveImage", "");
+
+            //cd api
+            AddFunction(0x89c34, "CdInit", "");
+            AddFunction(0x89d8c, "CdReset", "");
+            AddFunction(0x89ed8, "CdSyncCallback", "");
+            AddFunction(0x89ef0, "CdReadyCallback", "");
+            AddFunction(0x8cc2c, "CdReadCallback", "");
+            AddFunction(0x8bc10, "CdSearchFile", "");
+            AddFunction(0x8bf14, "CD_newmedia", "");
+            AddFunction(0x8c53c, "cd_read", "");
+            AddFunction(0x8a33c, "CdIntToPos", "");
+            AddFunction(0x89f08, "CdControl", "");
+            AddFunction(0x8af84, "CD_cw", "");
+            AddFunction(0x8ca58, "CdRead", "");
+            AddFunction(0x8cd24, "VSync", "advance frame and sound");
+            AddFunction(0x8ce6c, "v_wait", "framecounter wait");
+            AddFunction(0x8bbc0, "puts", "iowithdebugger");
+            AddFunction(0x8cd14, "ChangeClearPAD", "");
+            AddFunction(0x8cf08, "ChangeClearRCnt", "");
+            AddFunction(0x89d4c, "CdStatus", "");
+            AddFunction(0x8a16c, "CdControlB", "");
+            AddFunction(0x8aa38, "CD_sync", "");
+            AddFunction(0x8c880, "cd_read_retry", "");
+            AddFunction(0x8a040, "CdControlF", "");
+            AddFunction(0x89d7c, "CdLastPos", "");
+            AddFunction(0x89df8, "CdFlush", "");
+            AddFunction(0x8b454, "CD_flush", "");
+            AddFunction(0x89d5c, "CdMode", "");
+            AddFunction(0x8a440, "CdPosToInt", "");
+            AddFunction(0x8cb60, "CdReadSync", "");
+            AddFunction(0x89eb8, "CdReady", "");
+            AddFunction(0x8acb8, "CD_ready", "");
+            AddFunction(0x8c5dc, "strncmp", "");
+            AddFunction(0x8c5a8, "memcpy", "");
+            AddFunction(0x8c1f0, "CD_searchdir", "");
+            AddFunction(0x84534, "strcmp", "");
+            AddFunction(0x8c298, "CD_cachefile", "");
+            AddFunction(0x8bef0, "_cmp", "");
+
+            //pad sdk
+            AddFunction(0x8cc94, "PadRead", "getcontrollerinput");
+            AddFunction(0x8cd04, "PAD_dr", "getcontrollerhardwareaccess");
+            AddFunction(0x8cc44, "PadInit", "");
+            AddFunction(0x8ccf4, "PAD_init", "");
+
+
+
+
             /*FunctionNames.Add(0x36d30, "setridingentities");
             FunctionNames.Add(0x36e80, "setxyforces");
             FunctionNames.Add(0x36f64, "setadjustedxyforces");
@@ -361,6 +514,7 @@ namespace GraphicsTools.Alundra
             EntityVarOffsets[0x1b4] = "addedtopallete?";
             EntityVarOffsets[0x1b8] = "activeeffect";
             EntityVarOffsets[0x1bc] = "depthsortval";
+            EntityVarOffsets[0x1c0] = "sorttop";
             EntityVarOffsets[0x1c4] = "balancerecord";
             EntityVarOffsets[0x1c8] = "balancevalref";
             EntityVarOffsets[0x1cc] = "damagedtickcounter";
@@ -481,7 +635,7 @@ namespace GraphicsTools.Alundra
             MapNames[391] = "ship night";
             MapNames[392] = "ship int";
 
-            GlobalVariableNames.Clear();
+            
             AddGlobalVariable(0x13d224, "getentitieslist","");
             AddGlobalVariable(0x13d228, "getentitiesliststart", "");
             AddGlobalVariable(0x1d918c, "numentities", "");
@@ -611,6 +765,64 @@ namespace GraphicsTools.Alundra
 
             AddGlobalVariable(0x153460, "mapinfo", "");
 
+            AddGlobalVariable(0x45e24, "loadfontinner", "");
+
+
+            //audio variables
+            AddGlobalVariable(0x26848, "numsfx", "");
+            AddGlobalVariable(0x139070, "somesfxlist", "");
+            AddGlobalVariable(0xa9934, "global_vab_headoffset", "");
+            AddGlobalVariable(0xa9938, "global_vab_bodyoffset", "");
+            AddGlobalVariable(0xa993c, "vab_offset_list_beginning", "8 byte records:beginnig of head and beginning of body");
+            AddGlobalVariable(0xa9b98, "music_offset_list.seq", "12 byte record:seq offset, vabhead offset, vabbody offset");
+            AddGlobalVariable(0xa9b9c, "music_offset_list.head", "12 byte record: this is past the first value which is the seq offset");
+            AddGlobalVariable(0xa9ba0, "music_offset_list.body", "12 byte record: this is past the first values");
+            AddGlobalVariable(0x1d7938, "music_seq_vab_index", "");
+            AddGlobalVariable(0x1d7b64, "map_vab_index", "");
+            
+            AddGlobalVariable(0x1f28e0, "seqdatatable", "seqsep 4max open at a time, 1 in sep currently");
+
+            AddGlobalVariable(0x1142a0, "global_vab_headbuff", "used for loading vab from disk to audio memory");
+            AddGlobalVariable(0x142920, "vab_bodybuff", "used for loading vab from disk to audio memory");
+
+            AddGlobalVariable(0x116aa0, "map_vab_headbuff", "used for loading vab from disk to audio memory");
+
+
+            AddGlobalVariable(0xa9e4c, "musicvabid", "");
+            AddGlobalVariable(0x139df0, "musicseqid", "");
+            AddGlobalVariable(0xa9e4e, "globalsfxvabid", "when there is a seqid?");
+            AddGlobalVariable(0xa9e50, "mapsfxvabid", "when seqid is -1?");
+
+            AddGlobalVariable(0xa9ef0, "sfxrecords.vabid", "can be -1");
+            AddGlobalVariable(0xa9ef2, "sfxrecords.prognum", "");
+            AddGlobalVariable(0xa9ef4, "sfxrecords.tonenum", "");
+            AddGlobalVariable(0xa9ef6, "sfxrecords.note", "");
+            AddGlobalVariable(0xa9ef8, "sfxrecords.unknownaddr", "4 byte aligned?");
+            AddGlobalVariable(0xa9efa, "sfxrecords.seqid", "index to seq buffer offset table");
+            AddGlobalVariable(0xa9efc, "sfxrecords.refrecordid", "index to a different sfxrecord");
+            AddGlobalVariable(0xa9f00, "sfxrecords.00", "");
+            AddGlobalVariable(0xa9f04, "sfxrecords.numtones", "how many times to add to tonenum");
+
+            AddGlobalVariable(0xa9dd0, "seseqbuff_offsets", "seqid is index into this array of words");
+
+            AddGlobalVariable(0x1e7c08, "seseqbuff", "loads beginning of file from audio.bin");
+            AddGlobalVariable(0x1f5128, "seqnumtoseqidtable", "shorts");
+
+            AddGlobalVariable(0x1efc08, "voicesactive", "array of bytes to signify if the voices are being used");
+            AddGlobalVariable(0x1efc20, "voiceinfo", "has a lot of info about the state of the 24 spu voices");
+
+            AddFunction(0x49f9c, "voicesplayingsfx", "");
+
+            AddFunction(0x49388, "loadaudiobin", "loads audio from disk 1");
+            AddFunction(0x495d8, "loadaudiobininner", "loads audio from disk 2");
+            AddFunction(0x4b19c, "loadmapaudio", "(mapid)");
+            AddFunction(0x498d0, "loadmapvab", "(mapid)");
+            AddFunction(0x49744, "loadmapvabinner", "loads audio from disk 3");
+            AddFunction(0x4affc, "mapidtovabindex", "(mapid)");
+            AddGlobalVariable(0xc8930, "mapidtovablist", "");
+
+            AddGlobalVariable(0x1ef1b8, "cdifile_datasbin", "");
+            AddGlobalVariable(0x1efe38, "cdifile_soundbin", "");
 
             AddGlobalVariable(0x1F801040, "portjoydata", "controller port");
             AddGlobalVariable(0x1F801044, "portjoystat", "controller port");
@@ -646,7 +858,104 @@ namespace GraphicsTools.Alundra
             AddGlobalVariable(0x1F801820, "portmdec", "");
             AddGlobalVariable(0x1F801824, "portmdec", "");
 
+            AddFunction(0x8db44, "entrypoint", "");
+            bool isstartmenu = false;
+            if (isstartmenu)
+            {
+                AddGlobalVariable(0x1f4b28, "soundbinhandle","");
+                AddFunction(0x290e4, "readfromdisk", "(filename, buffer, position, length)");
 
+                AddFunction(0x36028, "entrypoint", "");
+                AddFunction(0x255a0, "main", "");
+                AddFunction(0x2535c, "tomenu", "");
+                AddFunction(0x21f2c, "menuloop", "");
+
+                //startmenu audio sdk funcs
+                AddFunction(0x38838, "SsInit", "");
+                AddFunction(0x35440, "ResetCallback", "");
+                AddFunction(0x3fdc4, "SpuInit", "");
+                AddFunction(0x3fde4, "_SpuInit", "");
+                AddFunction(0x38750, "_SsInit", "");
+                AddFunction(0x3a1a8, "SsVabClose", "");
+                AddFunction(0x41760, "SpuFree", "");
+                AddFunction(0x41460, "_spu_gcSPU", "");
+                AddFunction(0x3a7c4, "SsVabTransBodyPartly", "");
+                AddFunction(0x42730, "SpuSetTransferMode", "");
+                AddFunction(0x426f4, "SpuSetTransferStartAddr", "");
+                AddFunction(0x40f6c, "_spu_FsetRXXa", "");
+                AddFunction(0x42898, "_spu_setInTransfer", "");
+                AddFunction(0x42764, "SpuWritePartly", "");
+                AddFunction(0x40e34, "_spu_write", "");
+                AddFunction(0x3a2b0, "SsVabOpenHeadSticky", "");
+                AddFunction(0x3a310, "SsVabOpenHeadWithMode", "");
+                AddFunction(0x428c4, "_spu_getInTransfer", "");
+                AddFunction(0x41198, "SpuMalloc", "");
+                AddFunction(0x3feac, "SpuStart", "");
+                AddFunction(0x29c88, "EnterCriticalSection", "");
+                AddFunction(0x4104c, "_SpuDataCallback", "");
+                AddFunction(0x29c38, "OpenEvent", "");
+                AddFunction(0x29c68, "EnableEvent", "");
+                AddFunction(0x29c98, "ExitCriticalSection", "");
+                AddFunction(0x41070, "SpuQuit", "");
+                AddFunction(0x29c48, "CloseEvent", "");
+                AddFunction(0x29c78, "DisableEvent", "");
+                AddFunction(0x410ec, "SpuSetMute", "");
+                AddFunction(0x41144, "SpuInitMalloc", "");
+                AddFunction(0x418b4, "SpuSetReverb", "");
+                AddFunction(0x419f4, "_SpuIsInAllocateArea_", "");
+                AddFunction(0x41a6c, "SpuSetReverbModeParam", "");
+                AddFunction(0x41f7c, "_spu_setReverbAttr", "");
+                AddFunction(0x424e8, "SpuClearReverbWorkArea", "");
+                AddFunction(0x40b8c, "_spu_t", "");
+                AddFunction(0x42684, "WaitEvent", "");
+                AddFunction(0x40f24, "_spu_FsetRXX", "");
+                AddFunction(0x4244c, "SpuSetReverbDepth", "");
+                AddFunction(0x427f0, "SpuIsTransferCompleted", "");
+                AddFunction(0x29c58, "TestEvent", "");
+                AddFunction(0x428d4, "SpuSetCommonAttr", "");
+                AddFunction(0x42d38, "SpuGetAllKeysStatus", "");
+
+                //cd sdk funcs
+                AddFunction(0x30e74, "CdInit", "");
+                AddFunction(0x30fcc, "CdReset", "");
+                AddFunction(0x31118, "CdSyncCallback", "");
+                AddFunction(0x31130, "CdReadyCallback", "");
+                AddFunction(0x33dec, "CdReadCallback", "");
+                AddFunction(0x2b154, "printf", "");
+                AddFunction(0x31148, "CdControl", "");
+                AddFunction(0x321c4, "CD_cw", "");
+                AddFunction(0x31680, "CdPosToInt", "");
+                AddFunction(0x313ac, "CdControlB", "");
+                AddFunction(0x31c78, "CD_sync", "");
+                AddFunction(0x31280, "CdControlF", "");
+                AddFunction(0x32e50, "CdSearchFile", "");
+                AddFunction(0x33154, "CD_newmedia", "");
+                AddFunction(0x3377c, "cd_read", "");
+                AddFunction(0x3157c, "CdIntToPos", "");
+                AddFunction(0x33c18, "CdRead", "");
+                AddFunction(0x3524c, "VSync", "");
+                AddFunction(0x35394, "v_wait", "");
+                AddFunction(0x32e00, "puts", "");
+                AddFunction(0x3523c, "ChangeClearPAD", "");
+                AddFunction(0x35430, "ChangeClearRCnt", "");
+                AddFunction(0x30f8c, "CdStatus", "");
+                AddFunction(0x33a40, "cd_read_retry", "");
+                AddFunction(0x30fbc, "CdLastPos", "");
+                AddFunction(0x31038, "CdFlush", "");
+                AddFunction(0x32694, "CD_flush", "");
+                AddFunction(0x30f9c, "CdMode", "");
+                AddFunction(0x33d20, "CdReadSync", "");
+                AddFunction(0x310f8, "CdReady", "");
+                AddFunction(0x31ef8, "CD_ready", "");
+                AddFunction(0x29ef4, "strncmp", "");
+                AddFunction(0x337e8, "memcpy", "");
+                AddFunction(0x33430, "CD_searchdir", "");
+                AddFunction(0x29e90, "strcmp", "");
+                AddFunction(0x334d8, "CD_cachefile", "");
+                AddFunction(0x33130, "_cmp", "");
+                AddFunction(0x33e04, "CdRead2", "");
+                AddFunction(0x31538, "CdDataCallback", "");
+            }
 
             //AddPlayerVariableRange(0x1ac498, "playercharacter")
 

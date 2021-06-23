@@ -4,7 +4,7 @@
 0003bbfc: 30420048 andi r2,r2,0x0048    
 0003bc00: 1440001b bne r2,r0,0x0003bc70 
 0003bc04: afbf0018 sw r31,0x0018(r29)   
-                                        if (*0xiefe00 & 0x48 == 0) {
+                                        if (playercontrolsetting & 0x48 == 0) {
 0003bc08: 0c00e392 jal 0x00038e48       	processdestroyedentities()//status == 4
 0003bc0c: 00000000 nop                  
 0003bc10: 0c00e3ba jal 0x00038ee8       	doevents()

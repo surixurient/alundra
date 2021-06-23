@@ -92,7 +92,7 @@ namespace GraphicsTools.Alundra
             if (selectedGame.info != null)
             {
                 var info = selectedGame.info;
-                lblInfo.Text = string.Format("grav:{0} term_vel:{1} _a:{2} balance:{3} _c:{4} _d:{5} _e:{6} _f:{7} _10:{8}", info.gravity, info.terminal_velocity, info._a, info.balancelevel, info._c, info._d, info._e, info._f, info._10);
+                lblInfo.Text = string.Format("grav:{0} term_vel:{1} _a:{2} balance:{3} _c:{4} _d:{5} _e:{6} _f:{7} _10:{8}", info.gravity, info.terminal_velocity, info.slideeffectid, info.balancelevel, info._c, info._d, info._e, info._f, info._10);
 
                 //portals
                 lstPortals.Items.Clear();

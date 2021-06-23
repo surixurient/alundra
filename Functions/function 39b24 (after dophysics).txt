@@ -1,4 +1,4 @@
-00039b24: 3c02801b lui r2, 0x801b       void updatebalancerecord()//after dophysics
+00039b24: 3c02801b lui r2, 0x801b       void updatebalancerecords()//after dophysics
 00039b28: 8c42c520 lw r2,0xc520(r2)     
 00039b2c: 3c038014 lui r3, 0x8014       
 00039b30: 8c63d5c8 lw r3,0xd5c8(r3)     
@@ -193,7 +193,7 @@
 00039d6c: 30420800 andi r2,r2,0x0800        
 00039d70: 10400020 beq r2,r0,0x00039df4     
 00039d74: 00131080 sll r2,r19,2             
-                                             && *0x1ac46c * 0x800 != 0) {
+                                             && *0x1ac46c & 0x800 != 0) {
 00039d78: 8e0301c4 lw r3,0x01c4(r16)        	r3 = r16.balancerecord
 00039d7c: 3c01800a lui r1, 0x800a           
 00039d80: 00220821 addu r1,r1,r2            
@@ -281,23 +281,23 @@
 00039e9c: 24420001 addiu r2,r2,0x0001       
 00039ea0: ae220220 sw r2,0x0220(r17)        entity.hitcounter++
 00039ea4: 8e0301d8 lw r3,0x01d8(r16)        r3 = r16.adjustedxpos
-00039ea8: 8faa0020 lw r10,0x0020(r29)       
+00039ea8: 8faa0020 lw r10,0x0020(r29)       //entity.framewidth
 00039eac: 8e0201f0 lw r2,0x01f0(r16)        r2 = r16.width
-00039eb0: 02ca2021 addu r4,r22,r10          
-00039eb4: 00624821 addu r9,r3,r2            
+00039eb0: 02ca2021 addu r4,r22,r10          x1 = entity.framex + entity.framewidth
+00039eb4: 00624821 addu r9,r3,r2            x2 = checkme.moddedxpos + checkme.width
 00039eb8: 0089102a slt r2,r4,r9             
 00039ebc: 10400002 beq r2,r0,0x00039ec8     
-00039ec0: 02c3102a slt r2,r22,r3            
-                                            if(r4 < r9)
-00039ec4: 00804821 addu r9,r4,r0            
+00039ec0: 02c3102a slt r2,r22,r3            int xr = x2
+                                            if(x1 < x2)
+00039ec4: 00804821 addu r9,r4,r0            	xr = x1;
 
 0x00039ec8: 10400002 beq r2,r0,0x00039ed4    
-00039ecc: 02c02021 addu r4,r22,r0           
-                                            if(r2 != 0)
-00039ed0: 00602021 addu r4,r3,r0            
+00039ecc: 02c02021 addu r4,r22,r0           int xl = entity.framex
+                                            if(entity.framex < checkme.moddedxpos)
+00039ed0: 00602021 addu r4,r3,r0            	xl = checkme.moddedxpos
 
 0x00039ed4: 8e0301dc lw r3,0x01dc(r16)      r3 = r16.adjustedypos
-00039ed8: 8faa0028 lw r10,0x0028(r29)       
+00039ed8: 8faa0028 lw r10,0x0028(r29)       //entity.framedepth
 00039edc: 8e0201f4 lw r2,0x01f4(r16)        r2 = r16.depth
 00039ee0: 02aa2821 addu r5,r21,r10          
 00039ee4: 00624021 addu r8,r3,r2            
@@ -313,7 +313,7 @@
 00039f00: 00602821 addu r5,r3,r0            
 
 0x00039f04: 8e0301e0 lw r3,0x01e0(r16)      r3 = r16.adjustedzpos
-00039f08: 8faa0030 lw r10,0x0030(r29)       
+00039f08: 8faa0030 lw r10,0x0030(r29)       //entity.frameheight
 00039f0c: 8e0201f8 lw r2,0x01f8(r16)        r2 = r16.height
 00039f10: 028a3021 addu r6,r20,r10          
 00039f14: 00623821 addu r7,r3,r2            
@@ -338,8 +338,8 @@
 00039f50: 00052843 sra r5,r5,1              
 00039f54: 00c73021 addu r6,r6,r7            
 00039f58: 000617c2 srl r2,r6,31             
-00039f5c: 00c23021 addu r6,r6,r2            
-00039f60: 0c00e66a jal 0x000399a8           399a8()//
+00039f5c: 00c23021 addu r6,r6,r2            //create 2 poofs on centerpoint of collision
+00039f60: 0c00e66a jal 0x000399a8           createrandompoofs(x,y,z)//
 00039f64: 00063043 sra r6,r6,1              
 
 0x00039f68: 3c028014 lui r2, 0x8014         

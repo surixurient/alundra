@@ -34,6 +34,7 @@
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.analyzeFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.analyzeCarpetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.openDATASBINToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
@@ -49,7 +50,6 @@
             this.btnZoomIn = new System.Windows.Forms.Button();
             this.btnZoomOut = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.picOut)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -57,7 +57,7 @@
             // picOut
             // 
             this.picOut.Location = new System.Drawing.Point(319, 33);
-            this.picOut.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.picOut.Margin = new System.Windows.Forms.Padding(4);
             this.picOut.Name = "picOut";
             this.picOut.Size = new System.Drawing.Size(487, 406);
             this.picOut.TabIndex = 0;
@@ -110,6 +110,13 @@
             this.analyzeCarpetToolStripMenuItem.Text = "Analyze Magic Carpet File";
             this.analyzeCarpetToolStripMenuItem.Click += new System.EventHandler(this.analyzeCarpetToolStripMenuItem_Click);
             // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(264, 26);
+            this.toolStripMenuItem1.Text = "Play DATAS.BIN";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+            // 
             // openDATASBINToolStripMenuItem
             // 
             this.openDATASBINToolStripMenuItem.Name = "openDATASBINToolStripMenuItem";
@@ -148,7 +155,7 @@
             // 
             this.lsvColors.HideSelection = false;
             this.lsvColors.Location = new System.Drawing.Point(21, 108);
-            this.lsvColors.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.lsvColors.Margin = new System.Windows.Forms.Padding(4);
             this.lsvColors.Name = "lsvColors";
             this.lsvColors.Size = new System.Drawing.Size(123, 330);
             this.lsvColors.TabIndex = 5;
@@ -179,7 +186,7 @@
             // 
             this.lsvCellColors.HideSelection = false;
             this.lsvCellColors.Location = new System.Drawing.Point(169, 108);
-            this.lsvCellColors.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.lsvCellColors.Margin = new System.Windows.Forms.Padding(4);
             this.lsvCellColors.Name = "lsvCellColors";
             this.lsvCellColors.Size = new System.Drawing.Size(123, 330);
             this.lsvCellColors.TabIndex = 8;
@@ -189,7 +196,7 @@
             // btnProcess
             // 
             this.btnProcess.Location = new System.Drawing.Point(212, 28);
-            this.btnProcess.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnProcess.Margin = new System.Windows.Forms.Padding(4);
             this.btnProcess.Name = "btnProcess";
             this.btnProcess.Size = new System.Drawing.Size(81, 26);
             this.btnProcess.TabIndex = 9;
@@ -217,7 +224,7 @@
             // 
             this.chkGrid.AutoSize = true;
             this.chkGrid.Location = new System.Drawing.Point(21, 33);
-            this.chkGrid.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.chkGrid.Margin = new System.Windows.Forms.Padding(4);
             this.chkGrid.Name = "chkGrid";
             this.chkGrid.Size = new System.Drawing.Size(79, 21);
             this.chkGrid.TabIndex = 12;
@@ -228,7 +235,7 @@
             // btnZoomIn
             // 
             this.btnZoomIn.Location = new System.Drawing.Point(96, 62);
-            this.btnZoomIn.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnZoomIn.Margin = new System.Windows.Forms.Padding(4);
             this.btnZoomIn.Name = "btnZoomIn";
             this.btnZoomIn.Size = new System.Drawing.Size(25, 22);
             this.btnZoomIn.TabIndex = 13;
@@ -239,7 +246,7 @@
             // btnZoomOut
             // 
             this.btnZoomOut.Location = new System.Drawing.Point(19, 62);
-            this.btnZoomOut.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnZoomOut.Margin = new System.Windows.Forms.Padding(4);
             this.btnZoomOut.Name = "btnZoomOut";
             this.btnZoomOut.Size = new System.Drawing.Size(25, 22);
             this.btnZoomOut.TabIndex = 14;
@@ -256,13 +263,6 @@
             this.label2.Size = new System.Drawing.Size(42, 17);
             this.label2.TabIndex = 15;
             this.label2.Text = "zoom";
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(264, 26);
-            this.toolStripMenuItem1.Text = "Play DATAS.BIN";
-            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
             // Form1
             // 
@@ -285,9 +285,10 @@
             this.Controls.Add(this.picOut);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.Resize += new System.EventHandler(this.Form1_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.picOut)).EndInit();
             this.menuStrip1.ResumeLayout(false);

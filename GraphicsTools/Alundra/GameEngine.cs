@@ -279,7 +279,7 @@ namespace GraphicsTools.Alundra
 
                 UpdateActiveEffects();
 
-                //UpdateBalanceRecords();
+                UpdateBalanceRecords();
             }
             else
             {
@@ -296,7 +296,7 @@ namespace GraphicsTools.Alundra
                     game.CamTargetZ = game.CamFollowEntity.ZPos >> 16;
                 }
             }
-            //_3a1e4();
+            SetDepthSortVals();
 
             //add spriterefs
             if (game.ToRenderCount > 0)
@@ -314,6 +314,271 @@ namespace GraphicsTools.Alundra
             }
         }
 
+        void SetDepthSortVals()
+        {
+            if (game.ToRenderCount <= 0)
+                return;
+            for (int dex = 0;dex<game.ToRenderCount;dex++)
+            {
+                var entity = game.ToRenderList[dex];
+                entity.DepthSortVal = 0;
+                entity.SortTop = entity.ModdedZPos + entity.Height;
+            }
+
+            for (int dex = 0; dex < game.ToRenderCount; dex++)
+            {
+                var entity = game.ToRenderList[dex];
+                if (entity.DepthSortVal == 0)
+                {
+                    SetDepthSortVal(entity);
+                }
+            }
+
+            for (int dex = 0; dex < game.ToRenderCount; dex++)
+            {
+                var entity = game.ToRenderList[dex];
+                entity.DepthSortVal = (int)(entity.DepthSortVal & 0xffff0000) + (entity.ZPos & 0xffff);
+            }
+        }
+
+        void SetDepthSortVal(SpriteInstance entity)
+        {
+            if (entity.DepthSortVal != 0)
+                return;
+            int sortval = entity.YPos + (entity.SpriteRef.NumImages << 16);
+            if ((entity.Flags & 0x80) != 0
+                || (entity.AnimFlags & 0x80) != 0)
+            {
+                entity.DepthSortVal = sortval;
+                return;
+            }
+
+            if (entity.PlatformEntity != null)
+            {
+                if (entity.PlatformEntity.DepthSortVal == 0)
+                {
+                    SetDepthSortVal(entity.PlatformEntity);
+                }
+                if (sortval < entity.PlatformEntity.DepthSortVal)
+                {
+                    entity.DepthSortVal = entity.PlatformEntity.DepthSortVal;
+                    return;
+                }
+            }
+
+            for (int dex = 0; dex < game.ToCollideCount; dex++)
+            {
+                var checkme = game.ToCollideList[dex];
+                if (checkme == entity)
+                    continue;
+                if (checkme.SortTop >= entity.SortTop)
+                    continue;
+                //X
+                int x = (checkme.XPos + checkme.XMod) - entity.ModdedXPos;
+                if (x>=0)
+                {
+                    if (x >= entity.Width + 1)
+                        continue;
+                }
+                else
+                {
+                    if (entity.ModdedXPos - (checkme.XPos + checkme.XMod) >= checkme.Width + 1)
+                        continue;
+                }
+
+                //Y
+                int y = (checkme.YPos + checkme.YMod) - entity.ModdedYPos;
+                if (y >= 0)
+                {
+                    if (y >= entity.Depth + 1)
+                        continue;
+                }
+                else
+                {
+                    if (entity.ModdedYPos - (checkme.YPos + checkme.YMod) >= checkme.Depth + 1)
+                        continue;
+                }
+
+                if (checkme.DepthSortVal == 0)
+                {
+                    SetDepthSortVal(checkme);
+                }
+
+                if (sortval < checkme.DepthSortVal)
+                {
+                    sortval = checkme.DepthSortVal;
+                }
+            }
+
+            entity.DepthSortVal = sortval;
+        }
+
+        void UpdateBalanceRecords()
+        {
+            if (game.ToProcessesCount <= 0)
+                return;
+            for (int dex = 0;dex<game.ToProcessesCount;dex++)
+            {
+                var entity = game.ToProcessList[dex];
+
+                if (entity.FrameCollision == null)
+                    continue;
+                if (entity.BalanceVal == null)
+                    continue;
+                if (entity.BalanceVal.Val == 0)
+                    continue;
+                var flags = ((entity.Flags >> 2) & 1) | ((entity.Flags << 2) & 8);
+                if ((entity.Flags & 0x1000) != 0)
+                    flags |= 0x800;
+
+                if (flags == 0)
+                    continue;
+                for(int dex2=0;dex2<game.ToProcessesCount;dex2++)
+                {
+                    var checkme = game.ToProcessList[dex2];
+                    if (checkme == entity)
+                        continue;
+                    if (checkme.FrameColTickCounter != 0)
+                        continue;
+                    if (checkme.DamagedTickCounter != 0)
+                        continue;
+                    if ((checkme.AnimFlags & 0x40) != 0)
+                        continue;
+                    if ((checkme.Flags & flags) == 0)
+                        continue;
+                    //X
+                    int difx = entity.FrameX - checkme.ModdedXPos;
+                    int width;
+                    if (difx > 0)
+                        width = checkme.Width + 1;
+                    else
+                    {
+                        difx = checkme.ModdedXPos - entity.FrameX;
+                        width = entity.FrameWidth + 1;
+                    }
+                    if (difx >= width)
+                        continue;
+
+                    //Y
+                    int dify = entity.FrameY - checkme.ModdedYPos;
+                    int depth;
+                    if (dify > 0)
+                        depth = checkme.Depth + 1;
+                    else
+                    {
+                        dify = checkme.ModdedYPos - entity.FrameY;
+                        depth = entity.FrameDepth + 1;
+                    }
+                    if (dify >= depth)
+                        continue;
+
+                    //Z
+                    int difz = entity.FrameZ - checkme.ModdedZPos;
+                    int height;
+                    if (difz > 0)
+                        height = checkme.Height + 1;
+                    else
+                    {
+                        difz = checkme.ModdedZPos - entity.FrameZ;
+                        height = entity.FrameHeight + 1;
+                    }
+                    if (difz >= height)
+                        continue;
+
+                    /*if (game._1ac468 < 0 
+                        && (game._1ac46c & 0x800) != 0)
+                    {
+                    DEBUG THING
+                    }*/
+                    var valdex = entity.BalanceVal.Val & 0xf;
+                    var val = checkme.BalanceRecord.Vals[valdex];
+
+                    if ((val & 0xc0) != 0x80)
+                    {
+                        if (valdex == 6 || valdex == 0xa)
+                        {
+                            game.CreateEffect_Type1(0, 4, 0, checkme, width, 0, 0, 0);
+                        }
+                        if (valdex == 7 || valdex == 9)
+                        {
+                            game.CreateEffect_Type1(0, 5, 0, checkme, 1, 0, 0, 0);
+                        }
+                        checkme.TouchingEntity = entity;
+                    }
+
+                    checkme.FrameColTickCounter = 0x19;
+
+                    entity.HitCounter++;
+                    //X
+                    int xr = checkme.ModdedXPos + checkme.Width;
+                    if (entity.FrameX + entity.FrameWidth < xr)
+                        xr = entity.FrameX + entity.FrameWidth;
+
+                    int xl = entity.FrameX;
+                    if (entity.FrameX < checkme.ModdedXPos)
+                        xl = checkme.ModdedXPos;
+
+                    //Y
+                    int yr = checkme.ModdedYPos + checkme.Depth;
+                    if (entity.FrameY + entity.FrameDepth < yr)
+                        yr = entity.FrameY + entity.FrameDepth;
+
+                    int yl = entity.FrameY;
+                    if (entity.FrameY < checkme.ModdedYPos)
+                        yl = checkme.ModdedYPos;
+
+                    //Z
+                    int zr = checkme.ModdedZPos + checkme.Height;
+                    if (entity.FrameZ + entity.FrameHeight < zr)
+                        zr = entity.FrameZ + entity.FrameHeight;
+
+                    int zl = entity.FrameZ;
+                    if (entity.FrameZ < checkme.ModdedZPos)
+                        zl = checkme.ModdedZPos;
+
+                    int x = (xl + xr) / 2;
+                    int y = (yl + yr) / 2;
+                    int z = (zl + zr) / 2;
+                    CreateRandomPoofs(x, y, z);
+                }
+            }
+        }
+
+        void CreateRandomPoofs(int x, int y, int z)
+        {
+            //creates two poofs moving away from the impact at random speed and direction
+            for (int dex = 0;dex<2;dex++)
+            {
+                var effect = game.CreateEffect_Type0(0, 9, 0, x, y, z);
+                if (effect == null)
+                    continue;
+                int baseforce = (int)(0xffff<<16);
+
+                int i = game.Seed;
+                int val1 = (int)(i * 0x7d2b89dd);
+                int val2 = (int)(0xe06a02e7 + val1);
+                int targetval = (int)(((long)val2 * 0x20001) >> 32);
+                game.Seed = val2;
+
+                effect.XForce = targetval + baseforce;
+
+                i = game.Seed;
+                val1 = (int)(i * 0x7d2b89dd);
+                val2 = (int)(0xe06a02e7 + val1);
+                targetval = (int)(((long)val2 * 0x20001) >> 32);
+                game.Seed = val2;
+
+                effect.YForce = targetval + baseforce;
+
+                i = game.Seed;
+                val1 = (int)(i * 0x7d2b89dd);
+                val2 = (int)(0xe06a02e7 + val1);
+                targetval = (int)(((long)val2 * 0x20001) >> 32);
+                game.Seed = val2;
+
+                effect.ZForce = targetval + baseforce;
+            }
+        }
         void UpdateActiveEffects()
         {
             if (game.MaxEntity < 0)
@@ -811,9 +1076,9 @@ namespace GraphicsTools.Alundra
         {
             if (effect.EffectType == 0)
             {
-                effect.X += effect.XMod; //forces?
-                effect.Y += effect.YMod;
-                effect.Z += effect.ZMod;
+                effect.X += effect.XForce; //forces?
+                effect.Y += effect.YForce;
+                effect.Z += effect.ZForce;
                 //some kind of unique id? maybe its used for zsorting
                 effect.DepthSortVal = (int)(effect.Y & 0xffff0000) + (effect.Z >> 16) + (effect.SpriteRef.NumImages << 16);
                 return;
@@ -840,9 +1105,9 @@ namespace GraphicsTools.Alundra
                 return;
             }
             //param3== 1 falls through to here, and param3 == 3 is here
-            effect.X += effect.XMod; //forces?
-            effect.Y += effect.YMod;
-            effect.Z += effect.ZMod;
+            effect.X += effect.XForce; //forces?
+            effect.Y += effect.YForce;
+            effect.Z += effect.ZForce;
 
             if (effect.EntityRef.Status != 0)
             {
