@@ -12,7 +12,7 @@
 00045fd8: afb50064 sw r21,0x0064(r29)   
 00045fdc: afb40060 sw r20,0x0060(r29)   
 00045fe0: afb3005c sw r19,0x005c(r29)   
-00045fe4: 0c012378 jal 0x00048de0       ret = 48de0()//
+00045fe4: 0c012378 jal 0x00048de0       ret = setdialogrecordandcallhandler(0)//(dialogrecordid)
 00045fe8: afb20058 sw r18,0x0058(r29)   
 00045fec: 1040012f beq r2,r0,0x000464ac 
 00045ff0: 00001021 addu r2,r0,r0        
@@ -64,8 +64,8 @@
                                         else
 
 0x0004609c: 3c048010 lui r4, 0x8010     
-000460a0: 248468a0 addiu r4,r4,0x68a0   	//0x1068a0
-000460a4: 0c021166 jal 0x00084598       	copystring(0x1068a0, text)//
+000460a0: 248468a0 addiu r4,r4,0x68a0   	//dialogtextbuffer
+000460a4: 0c021166 jal 0x00084598       	copystring(dialogtextbuffer, text)//
 000460a8: 02002821 addu r5,r16,r0       
 
 0x000460ac: 3c058010 lui r5, 0x8010     
@@ -107,7 +107,7 @@
 00046128: 000210c0 sll r2,r2,3          
 0004612c: 00821023 subu r2,r4,r2        
 00046130: 3c018010 lui r1, 0x8010       
-00046134: a42245f0 sh r2,0x45f0(r1)     *0x1045f0 = r2
+00046134: a42245f0 sh r2,0x45f0(r1)     *0x1045f0 = r2 //dialogboxlerperafterx
 00046138: 08011852 j 0x00046148         
 0004613c: 00000000 nop                  
                                         else
@@ -186,9 +186,9 @@
 00046238: 3c018010 lui r1, 0x8010       
 0004623c: ac207218 sw r0,0x7218(r1)     *0x107218 = r0
 00046240: 3c018010 lui r1, 0x8010       
-00046244: ac20721c sw r0,0x721c(r1)     *0x10721c = r04
+00046244: ac20721c sw r0,0x721c(r1)     *0x10721c = r0
 										//this is setting up some draw commands, 24 of them? or 3 of them
-                                        for 1 to 3{
+                                        for 0 to 2{
 
 0x00046248: 0000a021 addu r20,r0,r0       
 0004624c: 8fa80048 lw r8,0x0048(r29)      //somecounter +=4 on loop
@@ -199,7 +199,7 @@
 00046260: 8fb60040 lw r22,0x0040(r29)     //cmdbuffer +=0x28 on loop
 00046264: 00174100 sll r8,r23,4           
 00046268: afa80030 sw r8,0x0030(r29)      
-                                          for 1 to 3{
+                                          for 0 to 1{
 
 0x0004626c: 00009021 addu r18,r0,r0         
 00046270: 02a0f021 addu r30,r21,r0          
@@ -207,7 +207,7 @@
 00046278: 00009821 addu r19,r0,r0           
 0004627c: 25080020 addiu r8,r8,0x0020       
 00046280: afa80038 sw r8,0x0038(r29)        
-                                            for 1 to 2{
+                                            for 0 to 0{
 
 0x00046284: 3c118010 lui r17, 0x8010          
 00046288: 2631722c addiu r17,r17,0x722c       //cmdbuffer
@@ -222,44 +222,44 @@
 000462ac: 240200ff addiu r2,r0,0x00ff         
 000462b0: 3c018010 lui r1, 0x8010             
 000462b4: 00300821 addu r1,r1,r16             
-000462b8: a422723c sh r2,0x723c(r1)           r1[723c] = 0xff
+000462b8: a422723c sh r2,0x723c(r1)           r1[723c] = 0xff //line width 256
 000462bc: 24020010 addiu r2,r0,0x0010         
 000462c0: 3c018010 lui r1, 0x8010             
 000462c4: 00300821 addu r1,r1,r16             
-000462c8: a422723e sh r2,0x723e(r1)           r1[723e] = 0x10
+000462c8: a422723e sh r2,0x723e(r1)           r1[723e] = 0x10 //line height 16
 000462cc: 3c018010 lui r1, 0x8010             
 000462d0: 00300821 addu r1,r1,r16             
 000462d4: a0207238 sb r0,0x7238(r1)           r1[7238] = 0
 000462d8: 93a80038 lbu r8,0x0038(r29)         
 000462dc: 3c018010 lui r1, 0x8010             
 000462e0: 00300821 addu r1,r1,r16             
-000462e4: a0287239 sb r8,0x7239(r1)           r1[7239] = somevariable
-000462e8: 0c021a88 jal 0x00086a20             setcmdtosomething1(cmdbuffer)//these functions set options on the cmdbuffer
+000462e4: a0287239 sb r8,0x7239(r1)           r1[7239] = somevariable//yheight
+000462e8: 0c021a88 jal 0x00086a20             SetSprt(cmdbuffer)//these functions set options on the cmdbuffer
 000462ec: 02202021 addu r4,r17,r0             
 000462f0: 02202021 addu r4,r17,r0             
-000462f4: 0c021a42 jal 0x00086908             setcmdtosomething2(cmdbuffer, 0)//
+000462f4: 0c021a42 jal 0x00086908             SetSemiTrans(cmdbuffer, 0)//
 000462f8: 00002821 addu r5,r0,r0              
 000462fc: 02202021 addu r4,r17,r0             
-00046300: 0c021a4c jal 0x00086930             setcmdtosomething3(cmdbuffer, 1)//
+00046300: 0c021a4c jal 0x00086930             SetShadeTex(cmdbuffer, 1)//
 00046304: 24050001 addiu r5,r0,0x0001         
 00046308: 24020008 addiu r2,r0,0x0008         
 0004630c: 00521023 subu r2,r2,r18             
 00046310: 00021040 sll r2,r2,1                
 00046314: 3c018014 lui r1, 0x8014             
 00046318: 00220821 addu r1,r1,r2              
-0004631c: 94222900 lhu r2,0x2900(r1)          r2 = r1[2900]
+0004631c: 94222900 lhu r2,0x2900(r1)          r2 = r1[2900]//palettes
 00046320: 26520001 addiu r18,r18,0x0001       
 00046324: 3c018010 lui r1, 0x8010             
 00046328: 00300821 addu r1,r1,r16             
-0004632c: a422723a sh r2,0x723a(r1)           r1[723a] = r2
+0004632c: a422723a sh r2,0x723a(r1)           r1[723a] = r2//palette
 00046330: 1a40ffd4 blez r18, 0x00046284       
 00046334: 26730014 addiu r19,r19,0x0014       
-                                            }//loop twice
+                                            }//loop 1
 00046338: 26940001 addiu r20,r20,0x0001     
 0004633c: 2a820002 slti r2,r20,0x0002       
 00046340: 1440ffca bne r2,r0,0x0004626c     
 00046344: 26b50014 addiu r21,r21,0x0014     
-                                          }//loop 3 times
+                                          }//loop 2 times
 00046348: 8fa80040 lw r8,0x0040(r29)      
 0004634c: 26f70001 addiu r23,r23,0x0001   
 00046350: 25080028 addiu r8,r8,0x0028     
@@ -271,20 +271,20 @@
 00046368: afa80048 sw r8,0x0048(r29)      
                                         }//loop 3 times
 0004636c: 0000a021 addu r20,r0,r0       
-00046370: 24130010 addiu r19,r0,0x0010  
+00046370: 24130010 addiu r19,r0,0x0010  //width and height of the down arrow
 00046374: 3c12800a lui r18, 0x800a      
 00046378: 265274e0 addiu r18,r18,0x74e0 //0xa74e0
-0004637c: 00008821 addu r17,r0,r0       
-                                        for 1 to 2{
+0004637c: 00008821 addu r17,r0,r0       //this draws the little down arrow for continuing text
+                                        for 0 to 1{
 
 0x00046380: 3c108010 lui r16, 0x8010      
 00046384: 261072a4 addiu r16,r16,0x72a4   //0x1072a4
 00046388: 3c018010 lui r1, 0x8010         
 0004638c: 00310821 addu r1,r1,r17         
-00046390: a43372b4 sh r19,0x72b4(r1)      r1[72b4] = r19
+00046390: a43372b4 sh r19,0x72b4(r1)      r1[72b4] = r19//width, 16
 00046394: 3c018010 lui r1, 0x8010         
 00046398: 00310821 addu r1,r1,r17         
-0004639c: a43372b6 sh r19,0x72b6(r1)      r1[72b6] = r19
+0004639c: a43372b6 sh r19,0x72b6(r1)      r1[72b6] = r19//height, 16
 000463a0: 92420000 lbu r2,0x0000(r18)     r2 = r18[0]
 000463a4: 02308021 addu r16,r17,r16       
 000463a8: 3c018010 lui r1, 0x8010         
@@ -294,26 +294,26 @@
 000463b8: 3c018010 lui r1, 0x8010         
 000463bc: 00310821 addu r1,r1,r17         
 000463c0: a02272b1 sb r2,0x72b1(r1)       r1[72b1] = r2
-000463c4: 0c021a88 jal 0x00086a20         setcmdtosomething1(cmdbuffer)//
+000463c4: 0c021a88 jal 0x00086a20         SetSprt(cmdbuffer)//
 000463c8: 02002021 addu r4,r16,r0         
 000463cc: 02002021 addu r4,r16,r0         
-000463d0: 0c021a42 jal 0x00086908         setcmdtosomething2(cmdbuffer,0)//
+000463d0: 0c021a42 jal 0x00086908         SetSemiTrans(cmdbuffer,0)//
 000463d4: 00002821 addu r5,r0,r0          
 000463d8: 02002021 addu r4,r16,r0         
-000463dc: 0c021a4c jal 0x00086930         setcmdtosomething3(cmdbuffer,1)//
+000463dc: 0c021a4c jal 0x00086930         SetShadeTex(cmdbuffer,1)//
 000463e0: 24050001 addiu r5,r0,0x0001     
 000463e4: a6000008 sh r0,0x0008(r16)      r16[8] = r0
 000463e8: a600000a sh r0,0x000a(r16)      r16[a] = r0
 000463ec: 3c028014 lui r2, 0x8014         
-000463f0: 94422910 lhu r2,0x2910(r2)      r2 = *0x142910
+000463f0: 94422910 lhu r2,0x2910(r2)      r2 = *0x142910//palette
 000463f4: 26940001 addiu r20,r20,0x0001   
 000463f8: 3c018010 lui r1, 0x8010         
 000463fc: 00310821 addu r1,r1,r17         
-00046400: a42272b2 sh r2,0x72b2(r1)       r1[72b2] = r2
+00046400: a42272b2 sh r2,0x72b2(r1)       r1[72b2] = r2//palette
 00046404: 2a820002 slti r2,r20,0x0002     
 00046408: 1440ffdd bne r2,r0,0x00046380   
 0004640c: 26310014 addiu r17,r17,0x0014   
-                                        }//loop 2 times
+                                        }//loop 1 times
 00046410: 27a40010 addiu r4,r29,0x0010  
 00046414: 00002821 addu r5,r0,r0        
 00046418: 240203c0 addiu r2,r0,0x03c0   
@@ -350,7 +350,7 @@
 00046494: 24050800 addiu r5,r0,0x0800   
 00046498: 3c018015 lui r1, 0x8015       
 0004649c: ac2030d4 sw r0,0x30d4(r1)     *0x1530d4 = r0
-000464a0: 0c012813 jal 0x0004a04c       playsoundeffect()//
+000464a0: 0c012813 jal 0x0004a04c       playsoundeffect(6)//
 000464a4: 24040006 addiu r4,r0,0x0006   
 000464a8: 24020001 addiu r2,r0,0x0001   
 

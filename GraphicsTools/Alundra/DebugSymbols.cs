@@ -7,6 +7,7 @@ namespace GraphicsTools.Alundra
 {
     public static class DebugSymbols
     {
+        public static Dictionary<string, Dictionary<byte, string>> EventHandlerNames = new Dictionary<string, Dictionary<byte, string>>();
 
         public static string[] EntityVarOffsets = new string[GameMap.eventobject_size];
         public static Dictionary<uint, NameComment> FunctionNames = new Dictionary<uint, NameComment>();
@@ -20,6 +21,11 @@ namespace GraphicsTools.Alundra
         {
             public string name;
             public string comment;
+        }
+
+        static void AddHandlerName(string handlertype, byte eventcode, string name)
+        {
+            EventHandlerNames[handlertype][eventcode] = name;
         }
 
         static void AddFunction(uint addr, string name, string comment)
@@ -48,6 +54,12 @@ namespace GraphicsTools.Alundra
             Comments.Clear();
             GlobalVariableNames.Clear();
             FunctionNames.Clear();
+            EventHandlerNames = new Dictionary<string, Dictionary<byte, string>>();
+            EventHandlerNames.Add("eload", new Dictionary<byte, string>());
+            EventHandlerNames.Add("etick", new Dictionary<byte, string>());
+            EventHandlerNames.Add("etouch", new Dictionary<byte, string>());
+            EventHandlerNames.Add("edeactivate", new Dictionary<byte, string>());
+            EventHandlerNames.Add("einteract", new Dictionary<byte, string>());
 
             AddFunction(0x2abe8, "debugcheck", "tons of potential error messages");
             AddFunction(0x2bc18, "update", "main update");
@@ -98,7 +110,7 @@ namespace GraphicsTools.Alundra
             AddFunction(0x3c684, "createeffect_type0", "(ismapsprite,effectid,animid,x,y,z)");
             AddFunction(0x3c730, "createeffect_type1", "(ismapsprite,effectid,animid,entity,unknown,xoff,yoff,zoff)");
             AddFunction(0x3c8d0, "createeffect_type3", "(ismapsprite, effectid, animid, entity, unknown, x, y, z)");
-            AddFunction(0x3c99c, "createeffect_4", "this is used by events and loads in an unknown record");
+            AddFunction(0x3c99c, "createeffect_maptype", "(effectid, checkboundingbox) this is used by events");
             AddFunction(0x3cd18, "updateeffects", "after calls doevents, creates spriterefs from the effects");
             AddFunction(0x3cf7c, "updatemapevents", "before calls doevents");
             AddFunction(0x3d298, "getentityfromrefid", "can also get entities");
@@ -133,7 +145,7 @@ namespace GraphicsTools.Alundra
             AddFunction(0x869bc, "SetPolyFT4", "setcmdto4pointtexturedpoly");
             AddFunction(0x86a20, "SetSprt", "setcmdtosomething1");
             AddFunction(0x86930, "SetShadeTex", "setsomethingtocmd3");
-            AddFunction(0x84598, "copystring", "src, dest");
+            AddFunction(0x84598, "copystring", "dest, src");
             AddFunction(0x87508, "clearimage", "");
             AddFunction(0x8759c, "loadimage", "");
             AddFunction(0x87600, "storeimage", "");
@@ -144,18 +156,132 @@ namespace GraphicsTools.Alundra
             AddFunction(0x83e00, "emptyfunc", "");
 
 
-            AddFunction(0x59a08, "wrapssetupdialogportrait", "");
-            AddFunction(0x59a74, "setupdialogportrait", "");
-            AddFunction(0x5bfcc, "setname", "");
-            AddFunction(0x48de0, "setnameinnercallhardware", "");
-            AddFunction(0x42e98, "settext", "");
-            AddFunction(0x45fb0, "setupdialogdrawcmds", "");
+            AddFunction(0x59a08, "wrapssetupdialogportrait", "(x,y,z,camx,camy,sx,sy,width,height,palette,spritesheet)");
+            AddFunction(0x59a74, "setupdialogportrait", "(x,y,z,camx,camy,sx,sy,width,height,palette,spritesheet)//sets vals to");
+            AddFunction(0x5bfcc, "setname", "(nameid)");
+            AddFunction(0x48de0, "setuirecordcallsetup", "(uirecordid)");
+            AddFunction(0x42e98, "settext", "(textid,playercontrolflag)");
+            AddFunction(0x45fb0, "setupdialogdrawcmds", "(text,playercontrolflag)");
             AddFunction(0x8438c, "zerooutmemory", "ptr, length");
             AddFunction(0x83e98, "emptyfunction", "");
+            AddFunction(0x83ee8, "getetcstring", "etcid");
+            AddFunction(0x45f08, "getdialocchoiceinner", "");
+            AddFunction(0x42f2c, "isdialogactive", "");
+            AddFunction(0x45eb0, "isdialogactiveinner", "  *dialogstate & 4 != 0");
+            AddFunction(0x45f30, "setdialogdialogchoiceinner", "(val)");
+            AddFunction(0x45f68, "setdialogsomethinginner", "(val)");
+            AddFunction(0x45f40, "checkdialogsomethinginner", "");
+            AddFunction(0x5999c, "wrapsetupdialogportrait2", "(x,y,z,camx,camy,sx,sy,width,height,palette,spritesheet)//sets vals to");
 
-            AddFunction(0x4d218, "importantdialogfunc", "");//these 3 functions cycle when in a dialog
-            AddFunction(0x5c4ac, "importantdialogfunc2", "");
-            AddFunction(0x47de4, "importantdialogfunc2", "");
+            AddGlobalVariable(0x12b780, "etcstringtable", "");
+            AddGlobalVariable(0x12e020, "etcstringtableptr", "");
+            AddGlobalVariable(0x1072e8, "dialogchoice", "");
+            AddGlobalVariable(0x1072f8, "dialogchoicesaved", "");
+            AddGlobalVariable(0x107200, "dialogsomething", "");
+            AddGlobalVariable(0x107204, "dialogsomethingbit3on", "");
+            AddGlobalVariable(0x1ef1ac, "dialogval1", "");
+            AddGlobalVariable(0x1ef1b0, "dialogval2", "");
+            AddGlobalVariable(0x1ef188, "dialogval1saved", "");
+            AddGlobalVariable(0x1ef18c, "dialogval2saved", "");
+            AddGlobalVariable(0x1ef174, "dialogxpos", "");
+            AddGlobalVariable(0x1ef178, "dialogypos", "");
+            AddGlobalVariable(0x1ef17c, "dialogzpos", "");
+            AddGlobalVariable(0x1ef180, "dialogcamxpos", "");
+            AddGlobalVariable(0x1ef184, "dialogcamypos", "");
+            AddGlobalVariable(0x12e038, "uirecordid", "");
+            AddGlobalVariable(0x153154, "uirecord", "");
+            AddGlobalVariable(0xa8f24, "uirecordsrc.status", "");
+            AddGlobalVariable(0xa8f28, "uirecordsrc.funcptr1", "");
+            AddGlobalVariable(0xa8f2c, "uirecordsrc.x", "");
+            AddGlobalVariable(0xa8f2e, "uirecordsrc.y", "");
+            AddGlobalVariable(0xa8f30, "uirecordsrc.width", "");
+            AddGlobalVariable(0xa8f32, "uirecordsrc.height", "");
+            AddGlobalVariable(0xa8f34, "uirecordsrc.setupfunc", "");
+            AddGlobalVariable(0xa8f38, "uirecordsrc.renderfunc", "");
+            AddGlobalVariable(0xa8f3c, "uirecordsrc.funcptr2", "");
+            AddGlobalVariable(0x1efba8, "dialognameboxstate", "");
+            AddGlobalVariable(0x1efbac, "dialognameboxlerper.curtick", "");
+            AddGlobalVariable(0x1efbb0, "dialognameboxlerper.ticks", "");
+            AddGlobalVariable(0x1efbb4, "dialognameboxlerper.tickstolinger", "");
+            AddGlobalVariable(0x1efbb8, "dialognameboxlerper.x1", "");
+            AddGlobalVariable(0x1efbba, "dialognameboxlerper.y1", "");
+            AddGlobalVariable(0x1efbbc, "dialognameboxlerper.x2", "");
+            AddGlobalVariable(0x1efbbe, "dialognameboxlerper.y2", "");
+            AddGlobalVariable(0x1efbc4, "dialognameboxlerperafterx", "");
+            AddGlobalVariable(0x1efbc6, "dialognameboxlerperaftery", "");
+
+            AddGlobalVariable(0xc5c14, "stringptrtable", "");
+
+            AddGlobalVariable(0x1ddab0, "fontbitmap", "");
+
+
+            AddFunction(0x491a4, "inituifunc_1_dlg", "used by dialogbox");
+            AddFunction(0x4c998, "inituifunc_2_main", "used by main ui");
+            AddFunction(0x550d4, "inituifunc_3", "");
+            AddFunction(0x5c300, "inituifunc_4_dlgname", "used by dialog name box");
+
+            AddFunction(0x47de4, "renderdialogboxfunc", "");
+            AddFunction(0x4d218, "rendermainuifunc", "");
+            AddFunction(0x50bcc, "render2func", "");
+            AddFunction(0x518c4, "render3func", "");
+            AddFunction(0x54bcc, "render4func", "");
+            AddFunction(0x4ba10, "render5func", "");
+            AddFunction(0x5695c, "renderitemmenufunc", "");
+            AddFunction(0x4c170, "render8func", "");
+            AddFunction(0x52584, "render9func", "");
+            AddFunction(0x5a1f8, "renderafunc", "");
+            AddFunction(0x52c50, "renderbfunc", "");
+            AddFunction(0x5c4ac, "renderdialognameboxfunc", "");
+
+            AddFunction(0x48c1c, "lerpuibox", "(boxdrawer, lerper)");
+            AddFunction(0x45ec8, "zerodialogstate", "(ui)");
+            AddFunction(0x48af4, "zerouirecord", "(ui)");
+            AddFunction(0x5c2d8, "zerodialognamestate", "(ui)");
+            AddFunction(0x48570, "getrenderedtextwidth", "(text)");
+            AddFunction(0x481c4, "rendertext", "(cmdlist,text)");
+            AddFunction(0x5aa2c, "renderarenderinner", "");
+            AddFunction(0x486a4, "rendertextinner", "(linetext, outputbitmap, vramx, vramy, startx, starty, outputbitmapwidth, outputbitmapheight )");
+            AddFunction(0x46ed8, "renderdialogtext", "");
+
+            AddGlobalVariable(0x9b9cc, "fontcharinfos.kerning", "20 byte records for each ascii character");
+            AddGlobalVariable(0x9b9d0, "fontcharinfos.height", "character height");
+            AddGlobalVariable(0x9b9d4, "fontcharinfos.sx", "20 byte records for each ascii character");
+            AddGlobalVariable(0x9b9d8, "fontcharinfos.sy", "20 byte records for each ascii character");
+            AddGlobalVariable(0x9b9dc, "fontcharinfos.y", "output y offset");
+
+            AddGlobalVariable(0x1d0598, "rendertextbuff", "");
+            AddGlobalVariable(0x142900, "uipalettes", "");
+
+            AddGlobalVariable(0x107208, "dialogletterwait", "");
+            AddGlobalVariable(0x10720c, "dialogletterwaitremaining", "");
+            
+            AddGlobalVariable(0x107218, "dialogtextbufferpos", "");
+
+            AddGlobalVariableRange(0x1f5140, 0x1f5167, "drawarearecordsrange", "40 byte records (2 of them?)(linked list of sorts?)");
+
+            AddGlobalVariableRange(0x1efbc8, 0x1efbdc, "dialognamecmdlist", "20 byte records (2 of them?)(other half of linked list of sorts?)");
+
+            AddGlobalVariable(0x1f3748, "drawareas", "");
+            AddGlobalVariable(0x1e5cd8, "drawareaid", "");
+            AddGlobalVariable(0x1045e0, "dialogboxlerper.curtick", "");
+            AddGlobalVariable(0x1045e4, "dialogboxlerper.ticks", "");
+            AddGlobalVariable(0x1045e8, "dialogboxlerper.tickstolinger", "");
+            AddGlobalVariable(0x1045ec, "dialogboxlerper.x1", "");
+            AddGlobalVariable(0x1045ee, "dialogboxlerper.y1", "");
+            AddGlobalVariable(0x1045f0, "dialogboxlerper.x2", "");
+            AddGlobalVariable(0x1045f2, "dialogboxlerper.y2", "");
+
+            AddGlobalVariable(0x1045f8, "dialogboxlerperafterx", "");
+            AddGlobalVariable(0x1045fa, "dialogboxlerperaftery", "");
+
+            AddGlobalVariable(0x9ebc4, "boxdrawer1.x", "");
+            AddGlobalVariable(0x9ebc6, "boxdrawer1.y", "");
+            AddGlobalVariable(0x9ebc8, "boxdrawer1.width", "");
+            AddGlobalVariable(0x9ebca, "boxdrawer1.height", "");
+
+            AddGlobalVariable(0xa6bf4, "boxdrawer2", "");
+            AddGlobalVariable(0x1072ec, "dialogchoiceunknown1", "");
+            AddGlobalVariable(0x1072cc, "dialogchoiceunknown1", "");
 
             AddFunction(0x3a3e4, "getinitdata", "");//20 byte long records
 
@@ -175,6 +301,14 @@ namespace GraphicsTools.Alundra
             AddFunction(0x399a8, "createrandompoofs", "(x, y, z)");
             AddFunction(0x39fd4, "setdepthsortval", "(entity)");
             AddFunction(0x2e5d0, "initinput", "");
+            AddFunction(0x45a7c, "initui", "");
+            AddFunction(0x48a94, "initdialog", "");
+            AddFunction(0x598a0, "initdialogvals", "");
+            AddFunction(0x5c150, "inidialognamebox", "");
+
+            AddFunction(0x456b8, "loaduibitmaps", "");
+            AddFunction(0x459e0, "loaduipalettes", "");
+            AddFunction(0x45e24, "loadfontbitmap", "");
 
             //spriteevents
             AddFunction(0x3ae08, "destroyentity", "(entity,animid) -1 loads animid from spriterecord");
@@ -220,6 +354,15 @@ namespace GraphicsTools.Alundra
             AddFunction(0x5fcf8, "junkfunction?", "");
             AddFunction(0x2c71c, "loadetc_usar", "");
 
+            //general std
+            AddFunction(0x8444c, "rand", "");
+            AddFunction(0x843e8, "tolower", "");
+            AddFunction(0x84238, "atoi", "");
+            AddFunction(0x846cc, "todigit", "");
+            AddFunction(0x8dcd4, "PCread", "or write");
+            AddFunction(0x8dd94, "_SN_read", "or read");
+            AddFunction(0x8ddac, "PCwrite", " or read");
+            AddFunction(0x8de6c, "_SN_write", "or write");
 
             //audio sdk
             AddFunction(0x8e20c, "SsSeqOpen", "");
@@ -400,7 +543,7 @@ namespace GraphicsTools.Alundra
             //NudgeAddresses();
 
 
-
+            AddHandlerName("etick", 0x17, "jarsandboxes");
 
 
 
@@ -455,8 +598,8 @@ namespace GraphicsTools.Alundra
             EntityVarOffsets[0xc0] = "targetyforce";
             EntityVarOffsets[0xc4] = "xforce";
             EntityVarOffsets[0xc8] = "yforce";
-            EntityVarOffsets[0xcc] = "";
-            EntityVarOffsets[0xd0] = "";
+            EntityVarOffsets[0xcc] = "interact_xforce";
+            EntityVarOffsets[0xd0] = "interact_yforce";
             EntityVarOffsets[0xd4] = "xforcestep";
             EntityVarOffsets[0xd8] = "yforcestep";
             EntityVarOffsets[0xdc] = "adjustedxforce";
@@ -500,7 +643,7 @@ namespace GraphicsTools.Alundra
 
             EntityVarOffsets[0x180] = "";
             EntityVarOffsets[0x184] = "";
-            EntityVarOffsets[0x188] = "";
+            EntityVarOffsets[0x188] = "somethingforceindex";
             EntityVarOffsets[0x18c] = "";
             EntityVarOffsets[0x190] = "";
             EntityVarOffsets[0x194] = "imageref.images";
@@ -691,7 +834,7 @@ namespace GraphicsTools.Alundra
             AddGlobalVariable(0x1ef13a, "dialogsheet", "");
             AddGlobalVariable(0x1efbf0, "dialogname", "");
             AddGlobalVariable(0x10689c, "dialogstate", "");//0 no dialog, 5 swooshing open/closed, 4 running text,3 waiting, 14 next one, 6 user advanced
-            AddGlobalVariable(0x107310, "hasdialogfunctionptr", "");
+            AddGlobalVariable(0x107310, "dialogrecords", "28 byte records, offset 0 has some status flags, offset 0x10 has a handler function pointer");
             AddGlobalVariable(0x1068a0, "dialogtextbuffer", "");
             AddGlobalVariable(0x10722c, "dialogtextcmdbuffer", "");
             AddGlobalVariable(0x1f3df0, "mapstrings", "");

@@ -10,10 +10,14 @@ namespace GraphicsTools.LIB
     public class LIB
     {
         string[] hlines;
-        public LIB(string path, string hpath)
+        public LIB(string path, string hpath, List<string> otherdefs)
         {
             if (File.Exists(hpath))
                 hlines = File.ReadAllLines(hpath);
+            else
+            {
+                hlines = otherdefs.ToArray();
+            }
             name = Path.GetFileNameWithoutExtension(path);
             using (var br = new BinaryReader(File.OpenRead(path)))
             {

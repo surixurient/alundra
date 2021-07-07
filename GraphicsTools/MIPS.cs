@@ -213,6 +213,7 @@ namespace alundramultitool
         public abstract bool IsJump { get; }
         public abstract bool IsReturn { get; }
 
+        public int GlobalRegisterOffset = 0;
         public abstract uint GetGlobalVariable(CodeBlock<ISInstruction> block);
 
         public abstract bool IsAssignment { get;}
@@ -616,9 +617,10 @@ namespace alundramultitool
 
                 }
             }
-
+            
             public override uint GetGlobalVariable(CodeBlock<ISInstruction> block)
             {
+                GlobalRegisterOffset = 0;
                 //var varlist = GraphicsTools.Alundra.DebugSymbols.GlobalVariableNames;
                 //if its a global variable then return the address
                 var typesthatreallyare = new[] { "addiu", "addi", "ori" };
@@ -659,10 +661,21 @@ namespace alundramultitool
                             return fulladdr;
 
                         }
-                        else if ((binst.type == InstructionType.Itype && binst.rt == this.rs) || 
-                            (binst.type == InstructionType.Rtype && binst.rd == this.rs ))
+                        else if (binst.type == InstructionType.Itype && binst.rt == this.rs)
                         {
                             break;//dont seek back any further because the register in question was already overwritten
+                        }
+                        else if (binst.type == InstructionType.Rtype && binst.rd == this.rs)
+                        {
+                            //"addu", srd, srs, srt)
+                            if ((binst.cmd == "addu" || binst.cmd == "add") && binst.rs == this.rs )
+                            {
+                                GlobalRegisterOffset = binst.rt;
+                            }
+                            else
+                            {
+                                break;
+                            }
                         }
                     }
                 }

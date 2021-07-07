@@ -22,6 +22,12 @@ namespace GraphicsTools.Alundra
             TypeHandlers[Helper.PROGRAM_F_INTERACT] = new Dictionary<int, SpriteEventHandler>();
 
             //register the ones that have been implimented here
+            Register(Helper.PROGRAM_C_TICK, 0x17, etick_17_jarsandboxes_Handler);
+        }
+
+        void Register(int type, byte code, SpriteEventHandler handler)
+        {
+            TypeHandlers[type].Add(code, handler);
         }
 
         public void RunSpriteHandler(int eventtype, int eventid, SpriteInstance entity)
@@ -32,6 +38,34 @@ namespace GraphicsTools.Alundra
                 handlers[eventid](entity);
                 return;
             }
+        }
+
+        public void etick_17_jarsandboxes_Handler(SpriteInstance entity)
+        {
+            if (entity.PlatformEntity == null)
+                return;
+            if (entity._24 == 0)
+            {
+                entity.TargetAnim = 0;
+                return;
+            }
+
+
+            if(entity._24 == -1)
+            {
+                entity.TargetAnim = 3;
+            }
+            else
+            {
+                entity.TargetAnim = Helper.Anim_24_Table[entity._24];
+            }
+
+            if (entity.PlatformEntity != null)//redudant check
+                entity._2c = 0;
+
+            entity.PlatformEntity = null;
+            entity.Flags = (entity.Flags | 0x30) & 0xff7f;//turn off bit 8, turn on bits 5 and 6
+
         }
     }
 

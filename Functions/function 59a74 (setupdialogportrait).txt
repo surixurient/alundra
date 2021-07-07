@@ -5,7 +5,7 @@
 00059a80: 8faa0060 lw r10,0x0060(r29)   //sy
 00059a84: 8fa80064 lw r8,0x0064(r29)    //width
 00059a88: 3c0c801f lui r12, 0x801f      
-00059a8c: 258cf120 addiu r12,r12,0xf120 //0x1ef120
+00059a8c: 258cf120 addiu r12,r12,0xf120 //dialogstatus
 00059a90: afbf0044 sw r31,0x0044(r29) 
 00059a94: afbe0040 sw r30,0x0040(r29)   
 00059a98: afb7003c sw r23,0x003c(r29)   
@@ -20,7 +20,7 @@
 00059abc: 8fa90068 lw r9,0x0068(r29)    //height
 00059ac0: 14400062 bne r2,r0,0x00059c4c 
 00059ac4: 0000a021 addu r20,r0,r0       
-                                        if(*0x1ef120)
+                                        if(*dialogstatus)
 											return
 00059ac8: 240300ff addiu r3,r0,0x00ff   
 00059acc: 0168f021 addu r30,r11,r8      //sx+width
@@ -40,7 +40,7 @@
 00059b04: ac27f180 sw r7,0xf180(r1)     *0x1ef180 = camxpos
 00059b08: 3c01801f lui r1, 0x801f       
 00059b0c: ac2df184 sw r13,0xf184(r1)    *0x1ef184 = camypos
-00059b10: a5820000 sh r2,0x0000(r12)    *0x1ef120 = 0x5
+00059b10: a5820000 sh r2,0x0000(r12)    *dialogstatus = 0x5
 										//sets two commands to draw the portrait
 										cmd = 0x1ef124
                                         do{

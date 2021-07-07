@@ -80,6 +80,9 @@ namespace GraphicsTools.Alundra
         public int CamYPos;
         public int CamTargetX, CamTargetY, CamTargetZ;
         public bool BreakoutGameLoop;
+        public int SomeGravitySetting;//0x1d84e0
+
+        public int DialogState,DialogNameState, DialogName;
 
         //for event processing
         public int ActiveEventCode, PrevEventCode, ActiveEventProgramType, ActiveEventProgIndex, ActiveEntityRefId;
@@ -665,7 +668,7 @@ namespace GraphicsTools.Alundra
             }
 
             //all that slope code is for setting this value
-            entity._188 = 0;
+            entity.SomethingForceIndex = 0;
 
             var prevtohit = entity._18c;
             entity._18c = tohit;
@@ -1206,7 +1209,7 @@ namespace GraphicsTools.Alundra
 
             if (effectid == -1)
             {
-                effectid = entity.Sprite.header.breakanim;
+                effectid = entity.Sprite.header.breakeffect;
             }
 
             if (effectid != 0)

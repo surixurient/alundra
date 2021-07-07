@@ -201,8 +201,7 @@ namespace GraphicsTools
                 DisplayData(rtfText.SelectionStart);
         }
 
-        frmViewer viewer;
-        frmViewer pal;
+        
 
         private void btnViewImage_Click(object sender, EventArgs e)
         {
@@ -265,9 +264,9 @@ namespace GraphicsTools
                     palettes[dex] = Utils.FromPsxColor(data[ddex + 1], data[dex]);// Color.FromArgb(255, (data[ddex + 1] & 0x1f) << 3, ((data[ddex + 1] & 0xe0) >> 2) | ((data[ddex] & 0x3) << 6), data[ddex] & 0x7c);
                 }
             }
-            viewer = new frmViewer();
-            viewer.Show();
-            viewer.init(imagedata, 16, 4, width, height, palettes);
+            Program.viewer = new frmViewer();
+            Program.viewer.Show();
+            Program.viewer.init(imagedata, 16, 4, width, height, palettes);
         }
 
         private void btnJump_Click(object sender, EventArgs e)
@@ -296,7 +295,7 @@ namespace GraphicsTools
             }
             var frm = new frmViewer();
             frm.Show();
-            frm.initpalette(viewer, imagedata, 16, 4, width, height);
+            frm.initpalette(Program.viewer, imagedata, 16, 4, width, height);
         }
 
         private void rtfText_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -486,6 +485,10 @@ namespace GraphicsTools
                                             else
                                                 name2 += "[" + off.ToString("x") + "]";
 
+                                        }
+                                        if(inst.GlobalRegisterOffset > 0)
+                                        {
+                                            name2 += "[" + MIPS.GetRegister(inst.GlobalRegisterOffset) + "]";
                                         }
 
                                         if (inst.cmd == "lw" || inst.cmd == "lh" || inst.cmd == "lhu" || inst.cmd == "lb" || inst.cmd == "lbu")
@@ -1220,11 +1223,25 @@ namespace GraphicsTools
             }
 
             importantFuncs = new List<AnalyzedFunction>();
-            //add the 3 dialog processing functions, they are called by register/function pointer so not found  with the function crawler
-            importantFuncs.Add(new AnalyzedFunction(0x4d218, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
-            importantFuncs.Add(new AnalyzedFunction(0x5c4ac, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
+            //add the ui initialize and rendering functions, they are called by register/function pointer so not found  with the function crawler
+            importantFuncs.Add(new AnalyzedFunction(0x491a4, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
+            importantFuncs.Add(new AnalyzedFunction(0x4c998, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
+            importantFuncs.Add(new AnalyzedFunction(0x550d4, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
+            importantFuncs.Add(new AnalyzedFunction(0x5c300, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
+
             importantFuncs.Add(new AnalyzedFunction(0x47de4, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
-            
+            importantFuncs.Add(new AnalyzedFunction(0x4d218, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
+            importantFuncs.Add(new AnalyzedFunction(0x50bcc, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
+            importantFuncs.Add(new AnalyzedFunction(0x518c4, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
+            importantFuncs.Add(new AnalyzedFunction(0x54bcc, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
+            importantFuncs.Add(new AnalyzedFunction(0x4ba10, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
+            importantFuncs.Add(new AnalyzedFunction(0x5695c, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
+            importantFuncs.Add(new AnalyzedFunction(0x4c170, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
+            importantFuncs.Add(new AnalyzedFunction(0x52584, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
+            importantFuncs.Add(new AnalyzedFunction(0x5a1f8, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
+            importantFuncs.Add(new AnalyzedFunction(0x52c50, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
+            importantFuncs.Add(new AnalyzedFunction(0x5c4ac, analyzedfunctions, analyzedglobalvariables, datafile, AnalyzeFunction));
+
             //importantFuncs.Add(new AnalyzedFunction(0x2c038))
             foreach (var func in analyzedfunctions)
             {
@@ -1527,7 +1544,7 @@ namespace GraphicsTools
 
             s = "int[] FrameDexTable = new int[]{\r\n";
             dex = 0;
-            for (int i = 0; i < 504; i++)
+            for (int i = 0; i < 255; i++)
             {
                 string line = "0x" + (data[dex + 0] + (data[dex + 1] << 8) + (data[dex + 2] << 16) + (data[dex + 3] << 24)).ToString("x8") + ",//0x" + i.ToString("x2");
                 dex += 4;
@@ -1550,6 +1567,64 @@ namespace GraphicsTools
             }
             s += "};";
             Clipboard.SetText(s);*/
+
+            s = "cmds = new {\r\n";
+            dex = 0;
+            for (int i = 0;i<255;i++)
+            {
+                
+                var cmd = new Alundra.UIDrawCmd();
+                cmd.u = data[dex + 0xc];
+                cmd.v = data[dex + 0xd];
+                var addr = data[dex + 0xe] | data[dex + 0xf] << 8;
+                cmd.uipaletteindex = (short)((addr - 0x7812) / 64);
+                string line = $"new UIDrawCmd{{ u = 0x{cmd.u.ToString("x")}, v = 0x{cmd.v.ToString("x")}, w = 8, h = 8, uipaletteindex = {cmd.uipaletteindex}}},";
+                dex += 20;
+                s += line + "\r\n";
+            }
+            s += "}";
+            Clipboard.SetText(s);
+
+            s = "infos = new {\r\n";
+            dex = 0;
+            for (int i = 0; i < 128; i++)
+            {
+
+                int[] vals= new int[5];
+                for(int sdex=0; sdex<5;sdex++)
+                {
+                    vals[sdex] = data[dex + 3] << 24 | data[dex + 2] << 16 | data[dex + 1] << 8 | data[dex + 0];
+                    dex += 4;
+                }
+                string line = $"new FontCharInfo{{ width = 0x{vals[0].ToString("x")}, height = 0x{vals[1].ToString("x")}, sx = 0x{vals[3].ToString("x")}, sy = 0x{vals[3].ToString("x")}, y = 0x{vals[4].ToString("x")}}},//0x{i.ToString("x")}";
+                s += line + "\r\n";
+            }
+            s += "}";
+            Clipboard.SetText(s);
+
+            s = "string [] StringTable = new string[] {\r\n";
+            dex = 0;
+            
+            int soffset = data[dex + 3] << 24 | data[dex + 2] << 16 | data[dex + 1] << 8 | data[dex + 0];
+            while(soffset >> 31 == 1)
+            {
+                soffset = soffset & 0xffffff;
+                int diff = soffset - offset;
+                if (diff <= 0)
+                    break;
+                StringBuilder sb = new StringBuilder();
+                char chr = (char)data[diff++];
+                while(chr != 0)
+                {
+                    sb.Append(chr);
+                    chr = (char)data[diff++];
+                }
+                s += $"\"{sb.ToString()}\",\r\n";
+                dex += 4;
+                soffset = data[dex + 3] << 24 | data[dex + 2] << 16 | data[dex + 1] << 8 | data[dex + 0];
+            }
+            s += "}";
+            Clipboard.SetText(s);
         }
 
         private void btnFuncContainsAddr_Click(object sender, EventArgs e)
@@ -1562,6 +1637,21 @@ namespace GraphicsTools
                     var frm = new frmAnalyzedFunction(func, datafile);
                     frm.Show();
                     break;
+                }
+            }
+        }
+
+        private void tvFuncs_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            if (tvFuncs.SelectedNode != null)
+            {
+                var func = analyzedfunctions.FirstOrDefault(x => x.ToString() == tvFuncs.SelectedNode.Text);
+                if (func.name.Contains("_handler"))
+                {
+                    if (func.name.Contains("eload_"))
+                    {
+                        
+                    }
                 }
             }
         }

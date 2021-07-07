@@ -15,6 +15,7 @@ namespace GraphicsTools
         {
             public int index;
             public int samplestart;
+
             public int sampleend;
             public int loopstart;
             public int loopend;

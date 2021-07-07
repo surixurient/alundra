@@ -201,6 +201,8 @@ namespace GraphicsTools.Alundra
             return bmp;
         }
 
+        
+
         public Bitmap GenerateSpriteBitmap(SIImage img, Color[] pal)
         {
             bool shiftleft = img.sx % 2 == 1;
@@ -691,7 +693,7 @@ namespace GraphicsTools.Alundra
             speed = br.ReadUInt16();
             sfx = br.ReadByte();
             flags = br.ReadByte();
-            u5 = br.ReadByte();
+            acceleration = br.ReadByte();
             u6 = br.ReadByte();
             preloaded_anims = new SIAnimation[4];
         }
@@ -701,7 +703,7 @@ namespace GraphicsTools.Alundra
         public ushort speed;
         public byte sfx;
         public byte flags;//0x80 adds 0x100 to sfx, does it mean global or map sfx?
-        public byte u5;
+        public byte acceleration;
         public byte u6;
 
         public int downoffset { get { return animoffsets[(int)SIAnimDir.down]; } }
@@ -741,13 +743,13 @@ namespace GraphicsTools.Alundra
             program_touch = br.ReadByte();//15
             program_deactivate = br.ReadByte();//16
             program_interact = br.ReadByte();//17
-            xmod = br.ReadByte();//18+0
-            ymod = br.ReadByte();//18+1
-            zmod = br.ReadByte();//18+2
+            xmod = br.ReadSByte();//18+0
+            ymod = br.ReadSByte();//18+1
+            zmod = br.ReadSByte();//18+2
             width = br.ReadByte();//18+3
             depth = br.ReadByte();//18+4
             height = br.ReadByte();//18+5
-            breakanim = br.ReadByte();//18+6
+            breakeffect = br.ReadByte();//18+6
             contents = br.ReadByte();//18+7
         }
         public int sector5id;
@@ -769,13 +771,13 @@ namespace GraphicsTools.Alundra
         public byte program_touch;
         public byte program_deactivate;
         public byte program_interact;
-        public byte xmod;
-        public byte ymod;
-        public byte zmod;
+        public sbyte xmod;
+        public sbyte ymod;
+        public sbyte zmod;
         public byte width;
         public byte depth;
         public byte height;
-        public byte breakanim;
+        public byte breakeffect;
         public byte contents;
     }
 
@@ -1224,6 +1226,10 @@ namespace GraphicsTools.Alundra
                     name = "reverse";//switch direction, used for paceing npcs
                     size = 1;
                     break;
+                case 0x0b:
+                    name = "animwaitdistance";
+                    size = 4;
+                    break;
                 case 0x0c:
                     name = "setdirectionwithmath";
                     size = 1;
@@ -1409,12 +1415,16 @@ namespace GraphicsTools.Alundra
                     size = 1;
                     break;
                 case 0x4c:
-                    name = "setsoemthing?";//*0x107200 = val
+                    name = "setdialogsoemthing";//*0x107200 = val
                     size = 2;
                     break;
                 case 0x4d:
-                    name = "dosoemthingwithsoemthing?";//*0x107204 = *0x107200 & 0x4
+                    name = "checkdialogsomething";//*0x107204 = *0x107200 & 0x4
                     size = 1;
+                    break;
+                case 0x50:
+                    name = "setdialogchoice";
+                    size = 2;
                     break;
                 case 0x51:
                     name = "getdialogchoice";
@@ -1486,6 +1496,42 @@ namespace GraphicsTools.Alundra
                     name = "spawnentity";//pulls entity to ones self and activates it at pixel offset
                     size = 9;
                     break;
+                case 0x90:
+                    name = "createeffect";
+                    size = 2;
+                    break;
+                case 0x91:
+                    name = "disableeffect";
+                    size = 2;
+                    break;
+                case 0x92:
+                    name = "seteffectanim";
+                    size = 3;
+                    break;
+                case 0x93:
+                    name = "seteeffectpos";
+                    size = 8;
+                    break;
+                case 0x94:
+                    name = "seteeffectforces";
+                    size = 8;
+                    break;
+                case 0xa0:
+                    name = "adjusteeffectpos";
+                    size = 8;
+                    break;
+                case 0xa1:
+                    name = "seteeffectposwithentity";
+                    size = 9;
+                    break;
+                case 0xa2:
+                    name = "createeffectwithpos";
+                    size = 8;
+                    break;
+                case 0xa3:
+                    name = "createeffectwithentitypos";
+                    size = 9;
+                    break;
                 case 0xa7:
                     name = "playmusic";
                     size = 3;
@@ -1516,12 +1562,6 @@ namespace GraphicsTools.Alundra
 
 
                 //unknowns, just get the size down
-                case 0xb:
-                    size = 4;
-                    break;
-                case 0x50://dialog?
-                    size = 2;
-                    break;
                 case 0x69:
                     size = 7;
                     break;

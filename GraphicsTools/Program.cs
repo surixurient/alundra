@@ -20,6 +20,7 @@ namespace GraphicsTools
         }
 
         public static System.Drawing.Color[] palette;
-
+        public static frmViewer viewer;
+        public static frmViewer pal;
     }
 }

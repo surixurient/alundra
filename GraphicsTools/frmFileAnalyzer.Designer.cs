@@ -620,6 +620,7 @@
             this.tvFuncs.Name = "tvFuncs";
             this.tvFuncs.Size = new System.Drawing.Size(621, 419);
             this.tvFuncs.TabIndex = 56;
+            this.tvFuncs.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.tvFuncs_AfterSelect);
             this.tvFuncs.DoubleClick += new System.EventHandler(this.tvFuncs_DoubleClick);
             // 
             // lstDebugs
@@ -734,7 +735,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(2057, 862);
+            this.ClientSize = new System.Drawing.Size(1924, 862);
             this.Controls.Add(this.btnFuncContainsAddr);
             this.Controls.Add(this.btnUtility);
             this.Controls.Add(this.label20);

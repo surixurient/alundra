@@ -18,7 +18,7 @@ namespace GraphicsTools.Alundra
 		public int MaxHp;
 		public int UnknownCounter;//1c
 		public int _20;
-
+		public int _24;
 		public SpriteInstance PlatformEntity;
 		public int _2c;
 
@@ -58,11 +58,14 @@ namespace GraphicsTools.Alundra
 		public int AnimFlags;
 		public int ZForce;//rise/fall speed
 		public int TargetXForce, TargetYForce, XForce, YForce;
-		//?cc
-		//?d0
-		public int XForceStep, YForceStep;
-
-		public int AppliedZForce;//this is probably named wrong, has to do with animation
+		public int InteractXForce;//?cc
+		public int InteractYForce;//?d0
+		public int XForceStep, YForceStep;//d4,d8
+		public int AdjustedXForce, AdjustedYForce;//dc,e0
+		public int FinalXForce, FinalYForce, FinalZForce;//e4,e8,ec
+		public int Acceleration;//f0
+		public int Speed;//f4
+		public int AppliedZForce;//this is probably named wrong, has to do with animation  f8
 		public int ScreenClipX, ScreenClipY, ScreenClipZ;
 		public int NegXMod, NegYMod;
 		public int XPos;
@@ -81,8 +84,9 @@ namespace GraphicsTools.Alundra
 		public int _144;//collided with something
 		public MapTile[] MapTiles = new MapTile[4];
 		public int[] MapHeights = new int[4];
+		public bool DoneMoving;
 
-		public int _180, _184, _188;
+		public int _180, _184, SomethingForceIndex;//188
 		public int _18c,_190;//slopesomething?, slopesomethingprev?
 		public SpriteRef SpriteRef;//194 
 		

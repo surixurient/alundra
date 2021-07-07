@@ -275,7 +275,7 @@ namespace GraphicsTools.Alundra
 
                 UpdateAnims();
 
-                //DoPhysics();
+                DoPhysics();
 
                 UpdateActiveEffects();
 
@@ -312,6 +312,297 @@ namespace GraphicsTools.Alundra
                     game.SpriteRefs[game.NumSprites++] = entity.SpriteRef;
                 }
             }
+        }
+
+        void DoPhysics()
+        {
+            for (int dex = 0; dex < game.ToProcessesCount; dex++)
+            {
+                var entity = game.ToProcessList[dex];
+                entity.DoneMoving = false;
+                entity.CollidedWithEntityZ = 0;
+                entity.ForceAdjusted = 0;
+
+                entity.ModdedXPos = entity.XPos + entity.XMod;
+                entity.ModdedYPos = entity.YPos + entity.YMod;
+                entity.ModdedZPos = entity.ZPos + entity.ZMod;
+            }
+
+            SetRidingEntities();
+            UpdateForces();
+
+            for (int dex = 0; dex < game.ToCollideCount; dex++)
+            {
+                var entity = game.ToCollideList[dex];
+                if (entity.RidingEntity != null)
+                {
+                    UpdateRidingEntity(entity, entity.RidingEntity);
+                }
+            }
+
+            for (int dex = 0; dex < game.ToProcessesCount; dex++)
+            {
+                var entity = game.ToProcessList[dex];
+                if (!entity.DoneMoving)
+                {
+                    //MoveEntity(entity);
+                }
+            }
+
+            for (int dex = 0; dex < game.ToProcessesCount; dex++)
+            {
+                var entity = game.ToProcessList[dex];
+                game.UpdateTile(entity);
+            }
+        }
+
+        void UpdateRidingEntity(SpriteInstance entity, SpriteInstance ridingEntity)
+        {
+            if (ridingEntity.RidingEntity != null)
+                UpdateRidingEntity(ridingEntity, ridingEntity.RidingEntity);
+            entity.FinalXForce += ridingEntity.AdjustedXForce;
+            entity.FinalYForce += ridingEntity.AdjustedYForce;
+            if (entity.AppliedZForce == 0)
+            {
+                entity.ZForce = ridingEntity.FinalZForce;
+                entity.FinalYForce = ridingEntity.FinalZForce;
+            }
+        }
+
+        void SetRidingEntities()
+        {
+            for (int dex = 0; dex < game.ToCollideCount; dex++)
+            {
+                var entity = game.ToCollideList[dex];
+                if ((entity.Flags & 0x4100) != 0x0100)
+                    continue;
+                for (int dex2 = 0; dex2 < game.ToCollideCount; dex2++)
+                {
+                    var entity2 = game.ToCollideList[dex2];
+                    if (entity == entity2)
+                        continue;
+                    if ((entity2.ModdedXPos - entity.ModdedXPos >= 0 && entity2.ModdedXPos - entity.ModdedXPos < entity.Width + 1) || (entity2.ModdedXPos - entity.ModdedXPos < 0 && entity.ModdedXPos - entity2.ModdedXPos < entity2.Width + 1))
+                    {
+                        if (entity2.ModdedYPos - entity.ModdedYPos >= 0 && entity2.ModdedYPos - entity.ModdedYPos < entity.Depth + 1)
+
+                                                        {
+                            entity.RidingEntity = entity2;
+                            break;
+                        }
+                        else if (entity2.ModdedYPos - entity.ModdedYPos < 0 && entity.ModdedYPos - entity2.ModdedYPos < entity2.Depth + 1)
+                        {
+                            entity.RidingEntity = entity2;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        void UpdateForces()
+        {
+            var player = game.PlayerEntity;
+            for (int dex = 0; dex < game.ToProcessesCount; dex++)
+            {
+                var entity = game.ToProcessList[dex];
+                if (entity == player)
+                {
+                    if (player.AppliedZForce != 0)
+                    {
+                        if ((player.Flags & 0x100) != 0
+                            && (player._180 & 0x0010) != 0
+                            && game.SomeGravitySetting <= 0)
+                        {
+                            player.ZForce = player.AppliedZForce * 160;
+                        }
+                        else
+                        {
+                            player.ZForce = player.AppliedZForce << 8;
+                        }
+                    }
+                    else
+                    {
+                        if ((player.Flags & 0x0100) != 0)
+                        {
+                            var force = player.ZForce - (game.gameMap.info.gravity << 8);
+                            if (force < 0)
+                                force = -force;//abs
+                            var terminal = game.gameMap.info.terminal_velocity << 8;
+                            if (terminal < force)
+                            {
+                                force = terminal;
+                                if (force < 0)
+                                    force = -force;//abs
+                            }
+                            player.ZForce = force;
+                        }
+                    }
+
+                    SetXYForces(player);
+
+                    int xforcestep, yforcestep;
+                    if ((player._180 & 0x0020) != 0)
+                    {
+                        long resultx = player.XForceStep * 0x1000;
+                        xforcestep = (int)(resultx >> 16);
+
+                        long resulty = player.YForceStep * 0x1000;
+                        yforcestep = (int)(resulty >> 16);
+                    }
+                    else
+                    {
+                        xforcestep = player.XForceStep;
+                        yforcestep = player.YForceStep;
+                    }
+
+                    int targetxforce, targetyforce;
+                    if ((player._180 & 0x0008) != 0
+                        && game.SomeGravitySetting <= 0)
+                    {
+                        long resultx = player.TargetXForce * 0x8000;
+                        targetxforce = (int)(resultx >> 16);
+                        long resulty = player.TargetYForce * 0x8000;
+                        targetyforce = (int)(resulty >> 16);
+                    }
+                    else
+                    {
+                        targetxforce = player.TargetXForce;
+                        targetyforce = player.TargetYForce;
+                    }
+
+                    player.XForce = IncrementForce(player.XForce, targetxforce, xforcestep);
+                    player.YForce = IncrementForce(player.YForce, targetyforce, yforcestep);
+                }
+                else
+                {
+                    if (entity.PlatformEntity != null)
+                    {
+                        entity.ZForce = 0;
+                        entity.YForce = 0;
+                        entity.XForce = 0;
+                        entity.AdjustedYForce = 0;
+                        entity.AdjustedXForce = 0;
+                        entity.FinalZForce = 0;
+                        entity.FinalYForce = 0;
+                        entity.FinalXForce = 0;
+                    }
+
+                    if (entity.AppliedZForce != 0)
+                    {
+                        if ((entity.AppliedZForce & 0xffff) == 0x8000
+                            && (entity.Flags & 0x0100) == 0)
+                        {
+                            entity.ZForce = entity.AppliedZForce << 8;
+                        }
+                    }
+
+                    if ((entity.Flags & 0x0100) != 0)
+                    {
+                        //this applies gravity (limited by terminal velicity) to the z force
+                        var force = entity.ZForce - (game.gameMap.info.gravity << 8);
+                        if (force < 0)
+                            force = -force;//abs
+                        var terminal = game.gameMap.info.terminal_velocity << 8;
+                        if (terminal < force)
+                        {
+                            force = terminal;
+                            if (force < 0)
+                                force = -force;//abs
+                        }
+                        entity.ZForce = force;
+                    }
+
+                    SetXYForces(entity);
+
+                    entity.XForce = IncrementForce(entity.XForce, entity.TargetXForce, entity.XForceStep);
+                    entity.YForce = IncrementForce(entity.YForce, entity.TargetYForce, entity.YForceStep);
+                }
+
+                SetAdjustedXYForces(entity);
+
+                entity.FinalXForce = entity.AdjustedXForce;
+                entity.FinalYForce = entity.AdjustedYForce;
+                entity.FinalZForce = entity.ZForce;
+            }
+        }
+
+        void SetAdjustedXYForces(SpriteInstance entity)
+        {
+            int lastinteractx = entity.InteractXForce;
+            int lastinteracty = entity.InteractYForce;
+            entity.InteractYForce = 0;
+            entity.InteractXForce = 0;
+            int xval = entity.XForce + Helper.XForceTable[entity.SomethingForceIndex & 0xf] >> game.gameMap.info.gravity;
+            int yval = entity.YForce + Helper.YForceTable[entity.SomethingForceIndex & 0xf] >> game.gameMap.info.gravity;
+
+            xval += lastinteractx;
+            yval += lastinteracty;
+
+            if (xval + entity.XPos < entity.NegXMod)
+            {
+                xval = entity.NegXMod - entity.XPos;
+                entity.ForceAdjusted = 1;
+            }
+            else if (xval + entity.XPos < entity.ScreenClipX)
+            {
+                xval = entity.ScreenClipX - entity.XPos;
+                entity.ForceAdjusted = 1;
+            }
+
+            if (yval + entity.YPos < entity.NegYMod)
+            {
+                yval = entity.NegYMod - entity.YPos;
+                entity.ForceAdjusted = 1;
+            }
+            else if (yval + entity.YPos < entity.ScreenClipY)
+            {
+                yval = entity.ScreenClipY - entity.YPos;
+                entity.ForceAdjusted = 1;
+            }
+
+
+            entity.AdjustedXForce = xval;
+            entity.AdjustedYForce = yval;
+        }
+
+        int IncrementForce(int force, int targetforce, int step)
+        {
+            if (force == targetforce)
+                return force;
+            if (force < targetforce)
+                force += step;
+            else
+                force -= step;
+
+            if (force < targetforce)
+                return force;
+            else
+                return targetforce;
+        }
+
+        void SetXYForces(SpriteInstance entity)
+        {
+            if (entity.Speed != entity.AnimSet.speed
+                || entity.TargetDir != entity.CurDir)
+            {
+                entity.Speed = entity.AnimSet.speed;
+
+                entity.TargetXForce = Helper.DirVectorsX[entity.TargetDir] * entity.AnimSet.speed;
+
+                entity.CurDir = entity.TargetDir;
+
+                entity.TargetYForce = Helper.DirVectorsY[entity.TargetDir] * entity.AnimSet.speed;
+            }
+            else if (entity.Acceleration == (entity.AnimSet.acceleration & 0xf))
+            { 
+                    return;
+            }
+
+            entity.Acceleration = entity.AnimSet.acceleration & 0xf;
+
+            entity.XForceStep = Math.Abs(entity.TargetXForce - entity.XForce) >> entity.Acceleration;
+
+            entity.YForceStep = Math.Abs(entity.TargetYForce - entity.YForce) >> entity.Acceleration;
         }
 
         void SetDepthSortVals()

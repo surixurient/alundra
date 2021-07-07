@@ -25,17 +25,27 @@ namespace GraphicsTools
         {
             this.sister = sister;
             InitializeComponent();
+            List<string> otherdefs = new List<string>();
+            foreach(var file in Directory.GetFiles(includdir, "*.H"))
+            {
+                var id = Path.GetFileNameWithoutExtension(file);
+                if (!id.StartsWith("LIB"))
+                {
+
+                    otherdefs.AddRange(File.ReadAllLines(file));
+                }
+            }
 
             foreach(var file in Directory.GetFiles(libdir,"*.LIB"))
             {
                 var id = Path.GetFileNameWithoutExtension(file);
                 var hf = Path.Combine(includdir, id  + ".H");
-                var lib = new LIB.LIB(file, hf);
+                var lib = new LIB.LIB(file, hf, otherdefs);
                 _libs.Add(lib);
             }
 
             this.libFile = libFile;
-            _lib = new LIB.LIB(libFile, hFile);
+            _lib = new LIB.LIB(libFile, hFile, null);
 
 
             hlines = System.IO.File.ReadAllLines(hFile);
@@ -199,6 +209,8 @@ namespace GraphicsTools
         public static string PrintFunction(List<CodeBlock<ISInstruction>> blocks, Link link, Section section)
         {
             string ftext = "";
+            if (blocks.Count == 0)
+                return "";
             uint addradjust = blocks.First().Instructions.First().address;
 
             var fnames = Alundra.DebugSymbols.FunctionNames;

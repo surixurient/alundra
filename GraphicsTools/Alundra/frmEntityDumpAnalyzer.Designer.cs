@@ -211,7 +211,7 @@
             this.label6.Location = new System.Drawing.Point(267, 100);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(253, 21);
+            this.label6.Size = new System.Drawing.Size(202, 17);
             this.label6.TabIndex = 12;
             this.label6.Text = "contentsitemid, ?, entity record";
             // 
@@ -444,9 +444,9 @@
             this.label26.Location = new System.Drawing.Point(268, 262);
             this.label26.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(105, 17);
+            this.label26.Size = new System.Drawing.Size(315, 21);
             this.label26.TabIndex = 36;
-            this.label26.Text = "?, ?, xforcestep";
+            this.label26.Text = "interactxforce,interactyforce,xforcestep";
             // 
             // label27
             // 

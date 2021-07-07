@@ -822,6 +822,22 @@ namespace GraphicsTools.Alundra
                 selectedSector5 = selectedGame.spriteinfo.sprites[int.Parse(lstSector5.SelectedItem.ToString().Replace("record ",""),System.Globalization.NumberStyles.AllowHexSpecifier)];
             lstSector5Animations.Items.Clear();
             lstSector5Animations.SelectedIndex = -1;
+            lbl_moreflags.Text = "?";
+            lbl_canpickup.Text = "?";
+            lbl_flags.Text = "?";
+            lbl_eload.Text = "?";
+            lbl_etick.Text = "?";
+            lbl_etouch.Text = "?";
+            lbl_edeactivate.Text = "?";
+            lbl_einteract.Text = "?";
+            lbl_offsetx.Text = "?";
+            lbl_offsety.Text = "?";
+            lbl_offsetz.Text = "?";
+            lbl_width.Text = "?";
+            lbl_depth.Text = "?";
+            lbl_height.Text = "?";
+            lbl_breakeffect.Text = "?";
+            lbl_contents.Text = "?";
             if (selectedSector5 != null)
             {
                 lblsector5mem.Text = selectedSector5.header.memaddr.ToString("x8");
@@ -830,6 +846,59 @@ namespace GraphicsTools.Alundra
                     lstSector5Animations.Items.Add("anim " + dex);
                 }
                 lblSector5Info.Text = string.Join(",", selectedSector5.header.ubuff.Select(x => x.ToString("x2")));
+
+                byte ecode = selectedSector5.header.program_load;
+                string sicodename = "";
+                var dbs = DebugSymbols.EventHandlerNames["eload"];
+                if (dbs.ContainsKey(ecode))
+                    sicodename = dbs[ecode];
+                string fname = $"{ecode.ToString("x2")}_{sicodename}_handler";
+                lbl_eload.Text = fname;
+
+                ecode = selectedSector5.header.program_tick;
+                sicodename = "";
+                dbs = DebugSymbols.EventHandlerNames["etick"];
+                if (dbs.ContainsKey(ecode))
+                    sicodename = dbs[ecode];
+                fname = $"{ecode.ToString("x2")}_{sicodename}_handler";
+                lbl_etick.Text = fname;
+
+                ecode = selectedSector5.header.program_touch;
+                sicodename = "";
+                dbs = DebugSymbols.EventHandlerNames["etouch"];
+                if (dbs.ContainsKey(ecode))
+                    sicodename = dbs[ecode];
+                fname = $"{ecode.ToString("x2")}_{sicodename}_handler";
+                lbl_etouch.Text = fname;
+
+                ecode = selectedSector5.header.program_deactivate;
+                sicodename = "";
+                dbs = DebugSymbols.EventHandlerNames["edeactivate"];
+                if (dbs.ContainsKey(ecode))
+                    sicodename = dbs[ecode];
+                fname = $"{ecode.ToString("x2")}_{sicodename}_handler";
+                lbl_edeactivate.Text = fname;
+
+                ecode = selectedSector5.header.program_interact;
+                sicodename = "";
+                dbs = DebugSymbols.EventHandlerNames["einteract"];
+                if (dbs.ContainsKey(ecode))
+                    sicodename = dbs[ecode];
+                fname = $"{ecode.ToString("x2")}_{sicodename}_handler";
+                lbl_einteract.Text = fname;
+
+                lbl_moreflags.Text = selectedSector5.header.moreflags.ToString("x");
+                lbl_canpickup.Text = selectedSector5.header.canpickup.ToString("x");
+                lbl_flags.Text = selectedSector5.header.flags_portrait_shadowtype.ToString("x");
+                lbl_offsetx.Text = selectedSector5.header.xmod.ToString();
+                lbl_offsety.Text = selectedSector5.header.ymod.ToString();
+                lbl_offsetz.Text = selectedSector5.header.zmod.ToString();
+                lbl_width.Text = selectedSector5.header.width.ToString();
+                lbl_depth.Text = selectedSector5.header.depth.ToString();
+                lbl_height.Text = selectedSector5.header.height.ToString();
+                lbl_breakeffect.Text = selectedSector5.header.breakeffect.ToString();
+                lbl_contents.Text = selectedSector5.header.contents.ToString("x");
+
             }
             lstSector5Animations.SelectedIndex = 0;
             pctPortrait.Refresh();
@@ -915,7 +984,7 @@ namespace GraphicsTools.Alundra
                 lblAnimProps.Text = "speed:" + selectedAnimSet.speed.ToString("x4") +
                     " sfx:" + selectedAnimSet.sfx.ToString("x2") +
                     " flags:" + selectedAnimSet.flags.ToString("x2") +
-                    selectedAnimSet.u5.ToString("x2") +
+                    selectedAnimSet.acceleration.ToString("x2") +
                     selectedAnimSet.u6.ToString("x2");
             }
         }

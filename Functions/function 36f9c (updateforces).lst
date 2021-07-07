@@ -12,7 +12,7 @@
 00036fc8: 34148000 ori r20,r0,0x8000
 00036fcc: 00131080 sll r2,r19,0x02
 
-0x00036fd0: 3c018014 lui r1,0x8014			foreach(entity in entities)
+0x00036fd0: 3c018014 lui r1,0x8014			foreach(entity in toprocesslist)
 00036fd4: 00220821 addu r1,r1,r2			{
 00036fd8: 8c309df8 lw r16,-0x6208(r1)
 00036fdc: 3c02801b lui r2,0x801b
@@ -80,7 +80,7 @@
 000370c4: 00000000 nop											r3 = r5
 000370c8: 1c600002 bgtz r3,0x000370d4							if (r3 <= 0) //if zforce less than 0
 000370cc: 00a01821 addu r3,r5,r0								{
-000370d0: 00051823 subu r3,r0,r5									r3 = -5
+000370d0: 00051823 subu r3,r0,r5									r3 = -r5
 																}
 															}
 0x000370d4: ae0300b8 sw r3,0x00b8(r16)						player.zforce = r3
@@ -191,7 +191,7 @@
 												{
 0x0003725c: 8e020028 lw r2,0x0028(r16)				
 00037260: 00000000 nop
-00037264: 1040000a beq r2,r0,0x00037290				if (entity[28] != 0)
+00037264: 1040000a beq r2,r0,0x00037290				if (entity.platformentity != 0)
 00037268: 00000000 nop								{
 0003726c: ae0000b8 sw r0,0x00b8(r16)					entity.zforce = 0
 00037270: ae0000c8 sw r0,0x00c8(r16)					entity.yforce = 0
@@ -206,7 +206,7 @@
 0x00037290: 8e0200f8 lw r2,0x00f8(r16)				
 00037294: 00000000 nop								if (entity.appliedzforce != 0)
 00037298: 1040000f beq r2,r0,0x000372d8				{
-0003729c: 3042ffff andi r2,r2,0xffff					if (entity.appliedzforce & 0xffff == r20
+0003729c: 3042ffff andi r2,r2,0xffff					if (entity.appliedzforce & 0xffff == 0x8000
 000372a0: 14540008 bne r2,r20,0x000372c4				
 000372a4: 00000000 nop
 000372a8: 8e02006c lw r2,0x006c(r16)						
@@ -293,7 +293,7 @@
 
 entity vars
 
-28
+28	refentity/platformentity
 6c	gravityflags
 
 b8	zforce

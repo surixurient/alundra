@@ -362,6 +362,34 @@ namespace GraphicsTools.Alundra
             return 1;
         }
 
+        //set animation, and block until entity has moved specified distance
+        public int _0b_AnimWaitDistance_Handler(SpriteInstance entity, SpriteInstance entityself/*?*/, int exp, EventProgramState eventData, byte[] code)
+        {
+            int animid = code[exp + 1];
+            entity.TargetAnim = animid;
+            if (exp != eventData.evttickprog)
+            {
+                eventData.evttickprog = exp;
+                eventData.evtvars[0] = entity.XPos;
+                eventData.evtvars[1] = entity.YPos;
+                return 0;
+            }
+            int difx = eventData.evtvars[0] - entity.XPos;
+            int dify = eventData.evtvars[1] - entity.YPos;
+            if (difx < 0)
+                difx = -difx;
+            if (dify < 0)
+                dify = -dify;
+            int distance = code[exp + 2] + (code[exp + 3] << 8);
+            
+            if (difx>>16 >= distance)
+                return 4;//done
+            if (dify>>16 >= distance)
+                return 4;//done
+
+            return 0;//keep blocking
+        }
+
         public int _0c_SetRandomDir_Handler(SpriteInstance entity, SpriteInstance entityself, int exp, EventProgramState eventData, byte[] code)
         {
             int i = gameState.Seed;
@@ -1276,6 +1304,169 @@ namespace GraphicsTools.Alundra
             return 2;
         }
 
+        public int _90_CreateEffect_Handler(SpriteInstance entity, SpriteInstance entityself/*?*/, int exp, EventProgramState eventData, byte[] code)
+        {
+            byte effectid = code[1];
+            gameState.CreateEffect_MapType(effectid, true);
+            return 2;
+        }
+
+        public int _91_DisableEffect_Handler(SpriteInstance entity, SpriteInstance entityself/*?*/, int exp, EventProgramState eventData, byte[] code)
+        {
+            byte effectid = code[1];
+            foreach (var effect in gameState.SpriteEffects)
+            {
+                if (effect.Status != 0 && effect.MapEffectId == effectid)
+                {
+                    effect.Status = 0;
+                }
+            }
+
+            return 2;
+        }
+
+        public int _92_SetEffectAnim_Handler(SpriteInstance entity, SpriteInstance entityself/*?*/, int exp, EventProgramState eventData, byte[] code)
+        {
+            byte effectid = code[1];
+            byte animid = code[2];
+            foreach (var effect in gameState.SpriteEffects)
+            {
+                if (effect.Status != 0 && effect.MapEffectId == effectid)
+                {
+                    effect.TargetAnim = animid;
+                }
+            }
+
+            return 3;
+        }
+
+        public int _93_SetEffectPos_Handler(SpriteInstance entity, SpriteInstance entityself/*?*/, int exp, EventProgramState eventData, byte[] code)
+        {
+            byte effectid = code[1];
+            int x = (code[2] | code[3] << 8) << 16;
+            int y = (code[4] | code[5] << 8) << 16;
+            int z = (code[6] | code[7] << 8) << 16;
+            foreach (var effect in gameState.SpriteEffects)
+            {
+                if (effect.Status != 0 && effect.MapEffectId == effectid)
+                {
+                    effect.X = x;
+                    effect.Y = y;
+                    effect.Z = z;
+                }
+            }
+
+            return 8;
+        }
+
+        public int _94_SetEffectForces_Handler(SpriteInstance entity, SpriteInstance entityself/*?*/, int exp, EventProgramState eventData, byte[] code)
+        {
+            byte effectid = code[1];
+            int x = (code[2] | code[3] << 8) << 16;
+            int y = (code[4] | code[5] << 8) << 16;
+            int z = (code[6] | code[7] << 8) << 16;
+            foreach (var effect in gameState.SpriteEffects)
+            {
+                if (effect.Status != 0 && effect.MapEffectId == effectid)
+                {
+                    effect.XForce = x;
+                    effect.YForce = y;
+                    effect.ZForce = z;
+                }
+            }
+
+            return 8;
+        }
+
+        public int _a0_AdjustEffectPos_Handler(SpriteInstance entity, SpriteInstance entityself/*?*/, int exp, EventProgramState eventData, byte[] code)
+        {
+            byte effectid = code[1];
+            int x = (code[2] | code[3] << 8) << 16;
+            int y = (code[4] | code[5] << 8) << 16;
+            int z = (code[6] | code[7] << 8) << 16;
+            foreach (var effect in gameState.SpriteEffects)
+            {
+                if (effect.Status != 0 && effect.MapEffectId == effectid)
+                {
+                    effect.X += x;
+                    effect.Y += y;
+                    effect.Z += z;
+                }
+            }
+
+            return 8;
+        }
+
+        public int _a1_AdjustEffectPosWithEntity_Handler(SpriteInstance entity, SpriteInstance entityself/*?*/, int exp, EventProgramState eventData, byte[] code)
+        {
+            byte effectid = code[1];
+            byte entityid = code[2];
+
+            int numentities = gameState.GetEntityFromRefId(entity, entityid);
+            if (numentities == 0)
+                return 9;
+
+            var refentity = gameState.GetEntityList[0];
+
+            int x = (code[3] | code[4] << 8) << 16;
+            int y = (code[5] | code[6] << 8) << 16;
+            int z = (code[7] | code[8] << 8) << 16;
+
+            x += refentity.XPos;
+            y += refentity.YPos;
+            z += refentity.ZPos;
+
+            foreach (var effect in gameState.SpriteEffects)
+            {
+                if (effect.Status != 0 && effect.MapEffectId == effectid)
+                {
+                    effect.X = x;
+                    effect.Y = y;
+                    effect.Z = z;
+                }
+            }
+
+            return 9;
+        }
+
+        public int _a2_CreateEffectWithPos_Handler(SpriteInstance entity, SpriteInstance entityself/*?*/, int exp, EventProgramState eventData, byte[] code)
+        {
+            byte effectid = code[1];
+            var effect = gameState.CreateEffect_MapType(effectid, true);
+            if (effect == null)
+                return 8;
+            int x = (code[2] | code[3] << 8) << 16;
+            int y = (code[4] | code[5] << 8) << 16;
+            int z = (code[6] | code[7] << 8) << 16;
+            
+            effect.X = x;
+            effect.Y = y;
+            effect.Z = z;
+
+            return 8;
+        }
+
+        public int _a3_CreateEffectWithEntityPos_Handler(SpriteInstance entity, SpriteInstance entityself/*?*/, int exp, EventProgramState eventData, byte[] code)
+        {
+            byte effectid = code[1];
+            byte entityid = code[2];
+            int numentities = gameState.GetEntityFromRefId(entity, entityid);
+            if (numentities == 0)
+                return 9;
+            var effect = gameState.CreateEffect_MapType(effectid, true);
+            if (effect == null)
+                return 9;
+            int x = (code[3] | code[4] << 8) << 16;
+            int y = (code[5] | code[6] << 8) << 16;
+            int z = (code[7] | code[8] << 8) << 16;
+
+            effect.X = entity.XPos + x;
+            effect.Y = entity.YPos + y;
+            effect.Z = entity.ZPos + z;
+
+            return 9;
+        }
+
 
     }
 
@@ -1344,6 +1535,60 @@ namespace GraphicsTools.Alundra
 
             return ret & 0x1f;
         }
+
+        public static int[] Anim_24_Table = new int[]{
+0x00000000,//0x00
+0x00000003,//0x01
+0x00000001,//0x02
+0x00000004,//0x03
+0x00000000,//0x04
+};
+
+        public static int[] XForceTable = new int[]{
+0x00000000,//0x00
+0x00000000,//0x01
+0x00000000,//0x02
+0x00000000,//0x03
+unchecked((int)0xffff1000),//0x04
+unchecked((int)0xffff1000),//0x05
+unchecked((int)0xffff1000),//0x06
+unchecked((int)0xfff10000),//0x07
+0x0000f000,//0x08
+0x0000f000,//0x09
+0x0000f000,//0x0a
+0x000f0000,//0x0b
+0x00000000,//0x0c
+0x00000000,//0x0d
+0x00000000,//0x0e
+0x00000000,//0x0f
+};
+
+        public static int[] YForceTable = new int[]{
+0x00000000,//0x00
+unchecked((int)0xffff6000),//0x01
+0x0000a000,//0x02
+0x00000000,//0x03
+0x00000000,//0x04
+unchecked((int)0xffff6000),//0x05
+0x0000a000,//0x06
+0x00000000,//0x07
+0x00000000,//0x08
+unchecked((int)0xffff6000),//0x09
+0x0000a000,//0x0a
+0x00000000,//0x0b
+0x00000000,//0x0c
+unchecked((int)0xffff6000),//0x0d
+0x0000a000,//0x0e
+0x00000000,//0x0f
+};
+
+        public static short[] DirVectorsX = new short[]{
+0x0,unchecked((short)0xff6a),unchecked((short)0xfeda),unchecked((short)0xfe5a),unchecked((short)0xfde1),unchecked((short)0xfd81),unchecked((short)0xfd3a),unchecked((short)0xfd0f),unchecked((short)0xfd00),unchecked((short)0xfd0f),unchecked((short)0xfd3a),unchecked((short)0xfd81),unchecked((short)0xfde1),unchecked((short)0xfe5a),unchecked((short)0xfeda),unchecked((short)0xff6a),
+0x0,0x96,0x126,0x1a6,0x21f,0x27f,0x2c6,0x2f1,0x300,0x2f1,0x2c6,0x27f,0x21f,0x1a6,0x126,0x96};
+
+        public static short[] DirVectorsY = new short[]{
+0x200,0x1f6,0x1d9,0x1aa,0x16a,0x11c,0xc4,0x64,0x0,unchecked((short)0xff9c),unchecked((short)0xff3c),unchecked((short)0xfee4),unchecked((short)0xfe96),unchecked((short)0xfe56),unchecked((short)0xfe27),unchecked((short)0xfe0a),
+unchecked((short)0xfe00),unchecked((short)0xfe0a),unchecked((short)0xfe27),unchecked((short)0xfe56),unchecked((short)0xfe96),unchecked((short)0xfee4),unchecked((short)0xff3c),unchecked((short)0xff9c),0x0,0x64,0xc4,0x11c,0x16a,0x1aa,0x1d9,0x1f6};
 
         public static short[] CardinalDirTable = new short[] { 0, 0x10, 0x08, 0x18 };
 

@@ -50,7 +50,7 @@ namespace GraphicsTools
             this.palbpp = palbpp;
             this.viewer = viewer;
             isPalette = true;
-            scale = 2;
+            scale = 8;
             this.imagedata = imagedata;
             this.width = width;
             this.height = height;
@@ -210,7 +210,7 @@ namespace GraphicsTools
                 using (Graphics gr = Graphics.FromImage(picOut.Image))
                 {
                     gr.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-                    gr.DrawImage(img, new Rectangle(xoff, yoff, (int)(img.Width * scale), (int)(img.Height * scale)), new Rectangle(0,0,img.Width,img.Height),GraphicsUnit.Pixel);
+                    gr.DrawImage(img, new Rectangle(xoff+(int)(scale/2), yoff+ (int)(scale / 2), (int)(img.Width * scale), (int)(img.Height * scale)), new Rectangle(0,0,img.Width,img.Height),GraphicsUnit.Pixel);
                 }
                 picOut.Refresh();
             }
@@ -340,7 +340,7 @@ namespace GraphicsTools
             if (isPalette)
             {
 
-                e.Graphics.FillRectangle(Brushes.Red, palettex * scale - hScroll.Value, palettey * scale - vScroll.Value - 1, (int)Math.Pow(2,bpp)*scale,scale);
+                e.Graphics.FillRectangle(Brushes.Red, palettex * scale - hScroll.Value, (palettey * scale) - (vScroll.Value - 1), (int)Math.Pow(2,bpp)*scale,scale);
             }
         }
     }

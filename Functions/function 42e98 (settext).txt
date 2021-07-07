@@ -1,11 +1,11 @@
-										(textid, param)
+										(textid, playercontrolflag)
 00042e98: 27bdffe0 addiu r29,r29,0xffe0 
 00042e9c: afb10014 sw r17,0x0014(r29)   
 00042ea0: 00808821 addu r17,r4,r0       
 00042ea4: afb20018 sw r18,0x0018(r29)   
 00042ea8: 00a09021 addu r18,r5,r0       
 00042eac: afbf001c sw r31,0x001c(r29)   
-00042eb0: 0c0117ac jal 0x00045eb0       ret = 45eb0(textid, param)//
+00042eb0: 0c0117ac jal 0x00045eb0       ret = isdialogactiveinner()//
 00042eb4: afb00010 sw r16,0x0010(r29)   
 00042eb8: 14400015 bne r2,r0,0x00042f10 
 00042ebc: 00001021 addu r2,r0,r0        
@@ -32,7 +32,7 @@
 00042ef8: 0c020fa6 jal 0x00083e98       83e98(textid, text)//doesnt do anything
 00042efc: 02002821 addu r5,r16,r0       
 00042f00: 02002021 addu r4,r16,r0       
-00042f04: 0c0117ec jal 0x00045fb0       45fb0(text ,param1)//
+00042f04: 0c0117ec jal 0x00045fb0       setupdialogdrawcmds(text ,playercontrolflag)//
 00042f08: 02402821 addu r5,r18,r0       
 00042f0c: 24020001 addiu r2,r0,0x0001   return true
 

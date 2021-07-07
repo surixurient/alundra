@@ -55,6 +55,7 @@
     <Compile Include="Alundra\BalanceBin.cs" />
     <Compile Include="Alundra\DatasBin.cs" />
     <Compile Include="Alundra\DebugSymbols.cs" />
+    <Compile Include="Alundra\EtcStrings.cs" />
     <Compile Include="Alundra\frmAlundra.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -90,9 +91,12 @@
     <Compile Include="Alundra\GameEngine\GameState.cs" />
     <Compile Include="Alundra\GameEngine\SpriteEventHandlers.cs" />
     <Compile Include="Alundra\MapEvent.cs" />
-    <Compile Include="Alundra\SoundBin.cs" />
+    <Compile Include="Alundra\Sound\SoundBin.cs" />
     <Compile Include="Alundra\SpriteEffect.cs" />
     <Compile Include="Alundra\SpriteInstance.cs" />
+    <Compile Include="Alundra\UI\UIHandler.cs" />
+    <Compile Include="Alundra\UI\UIHelper.cs" />
+    <Compile Include="Alundra\UI\UIRecord.cs" />
     <Compile Include="bmp.cs" />
     <Compile Include="carpet\DataDir.cs" />
     <Compile Include="carpet\frmMagicCarpet.cs">

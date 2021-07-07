@@ -199,6 +199,34 @@
             this.lblFrameAddr = new System.Windows.Forms.Label();
             this.lblImgAddr = new System.Windows.Forms.Label();
             this.pctPortrait = new System.Windows.Forms.PictureBox();
+            this.label41 = new System.Windows.Forms.Label();
+            this.lbl_eload = new System.Windows.Forms.Label();
+            this.lbl_etick = new System.Windows.Forms.Label();
+            this.label49 = new System.Windows.Forms.Label();
+            this.lbl_edeactivate = new System.Windows.Forms.Label();
+            this.label53 = new System.Windows.Forms.Label();
+            this.lbl_etouch = new System.Windows.Forms.Label();
+            this.label57 = new System.Windows.Forms.Label();
+            this.lbl_einteract = new System.Windows.Forms.Label();
+            this.label61 = new System.Windows.Forms.Label();
+            this.lbl_offsetx = new System.Windows.Forms.Label();
+            this.label47 = new System.Windows.Forms.Label();
+            this.lbl_offsety = new System.Windows.Forms.Label();
+            this.lbl_offsetz = new System.Windows.Forms.Label();
+            this.lbl_height = new System.Windows.Forms.Label();
+            this.lbl_depth = new System.Windows.Forms.Label();
+            this.lbl_width = new System.Windows.Forms.Label();
+            this.label64 = new System.Windows.Forms.Label();
+            this.lbl_contents = new System.Windows.Forms.Label();
+            this.label66 = new System.Windows.Forms.Label();
+            this.lbl_breakeffect = new System.Windows.Forms.Label();
+            this.label68 = new System.Windows.Forms.Label();
+            this.lbl_flags = new System.Windows.Forms.Label();
+            this.label70 = new System.Windows.Forms.Label();
+            this.lbl_canpickup = new System.Windows.Forms.Label();
+            this.label72 = new System.Windows.Forms.Label();
+            this.lbl_moreflags = new System.Windows.Forms.Label();
+            this.label74 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pctMapPalettes)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctTilesheet)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pctSpritesheet)).BeginInit();
@@ -1888,11 +1916,291 @@
             this.pctPortrait.TabStop = false;
             this.pctPortrait.Paint += new System.Windows.Forms.PaintEventHandler(this.pctPortrait_Paint);
             // 
+            // label41
+            // 
+            this.label41.AutoSize = true;
+            this.label41.Location = new System.Drawing.Point(1198, 810);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(43, 17);
+            this.label41.TabIndex = 156;
+            this.label41.Text = "eload";
+            // 
+            // lbl_eload
+            // 
+            this.lbl_eload.AutoSize = true;
+            this.lbl_eload.Location = new System.Drawing.Point(1281, 810);
+            this.lbl_eload.Name = "lbl_eload";
+            this.lbl_eload.Size = new System.Drawing.Size(16, 17);
+            this.lbl_eload.TabIndex = 157;
+            this.lbl_eload.Text = "?";
+            // 
+            // lbl_etick
+            // 
+            this.lbl_etick.AutoSize = true;
+            this.lbl_etick.Location = new System.Drawing.Point(1281, 827);
+            this.lbl_etick.Name = "lbl_etick";
+            this.lbl_etick.Size = new System.Drawing.Size(16, 17);
+            this.lbl_etick.TabIndex = 159;
+            this.lbl_etick.Text = "?";
+            // 
+            // label49
+            // 
+            this.label49.AutoSize = true;
+            this.label49.Location = new System.Drawing.Point(1198, 827);
+            this.label49.Name = "label49";
+            this.label49.Size = new System.Drawing.Size(37, 17);
+            this.label49.TabIndex = 158;
+            this.label49.Text = "etick";
+            // 
+            // lbl_edeactivate
+            // 
+            this.lbl_edeactivate.AutoSize = true;
+            this.lbl_edeactivate.Location = new System.Drawing.Point(1281, 861);
+            this.lbl_edeactivate.Name = "lbl_edeactivate";
+            this.lbl_edeactivate.Size = new System.Drawing.Size(16, 17);
+            this.lbl_edeactivate.TabIndex = 163;
+            this.lbl_edeactivate.Text = "?";
+            // 
+            // label53
+            // 
+            this.label53.AutoSize = true;
+            this.label53.Location = new System.Drawing.Point(1198, 861);
+            this.label53.Name = "label53";
+            this.label53.Size = new System.Drawing.Size(74, 17);
+            this.label53.TabIndex = 162;
+            this.label53.Text = "edeativate";
+            // 
+            // lbl_etouch
+            // 
+            this.lbl_etouch.AutoSize = true;
+            this.lbl_etouch.Location = new System.Drawing.Point(1281, 844);
+            this.lbl_etouch.Name = "lbl_etouch";
+            this.lbl_etouch.Size = new System.Drawing.Size(16, 17);
+            this.lbl_etouch.TabIndex = 161;
+            this.lbl_etouch.Text = "?";
+            // 
+            // label57
+            // 
+            this.label57.AutoSize = true;
+            this.label57.Location = new System.Drawing.Point(1198, 844);
+            this.label57.Name = "label57";
+            this.label57.Size = new System.Drawing.Size(51, 17);
+            this.label57.TabIndex = 160;
+            this.label57.Text = "etouch";
+            // 
+            // lbl_einteract
+            // 
+            this.lbl_einteract.AutoSize = true;
+            this.lbl_einteract.Location = new System.Drawing.Point(1281, 878);
+            this.lbl_einteract.Name = "lbl_einteract";
+            this.lbl_einteract.Size = new System.Drawing.Size(16, 17);
+            this.lbl_einteract.TabIndex = 165;
+            this.lbl_einteract.Text = "?";
+            // 
+            // label61
+            // 
+            this.label61.AutoSize = true;
+            this.label61.Location = new System.Drawing.Point(1198, 878);
+            this.label61.Name = "label61";
+            this.label61.Size = new System.Drawing.Size(63, 17);
+            this.label61.TabIndex = 164;
+            this.label61.Text = "einteract";
+            // 
+            // lbl_offsetx
+            // 
+            this.lbl_offsetx.AutoSize = true;
+            this.lbl_offsetx.Location = new System.Drawing.Point(1281, 895);
+            this.lbl_offsetx.Name = "lbl_offsetx";
+            this.lbl_offsetx.Size = new System.Drawing.Size(16, 17);
+            this.lbl_offsetx.TabIndex = 167;
+            this.lbl_offsetx.Text = "?";
+            // 
+            // label47
+            // 
+            this.label47.AutoSize = true;
+            this.label47.Location = new System.Drawing.Point(1198, 895);
+            this.label47.Name = "label47";
+            this.label47.Size = new System.Drawing.Size(43, 17);
+            this.label47.TabIndex = 166;
+            this.label47.Text = "offset";
+            // 
+            // lbl_offsety
+            // 
+            this.lbl_offsety.AutoSize = true;
+            this.lbl_offsety.Location = new System.Drawing.Point(1312, 895);
+            this.lbl_offsety.Name = "lbl_offsety";
+            this.lbl_offsety.Size = new System.Drawing.Size(16, 17);
+            this.lbl_offsety.TabIndex = 168;
+            this.lbl_offsety.Text = "?";
+            // 
+            // lbl_offsetz
+            // 
+            this.lbl_offsetz.AutoSize = true;
+            this.lbl_offsetz.Location = new System.Drawing.Point(1343, 895);
+            this.lbl_offsetz.Name = "lbl_offsetz";
+            this.lbl_offsetz.Size = new System.Drawing.Size(16, 17);
+            this.lbl_offsetz.TabIndex = 169;
+            this.lbl_offsetz.Text = "?";
+            // 
+            // lbl_height
+            // 
+            this.lbl_height.AutoSize = true;
+            this.lbl_height.Location = new System.Drawing.Point(1343, 912);
+            this.lbl_height.Name = "lbl_height";
+            this.lbl_height.Size = new System.Drawing.Size(16, 17);
+            this.lbl_height.TabIndex = 173;
+            this.lbl_height.Text = "?";
+            // 
+            // lbl_depth
+            // 
+            this.lbl_depth.AutoSize = true;
+            this.lbl_depth.Location = new System.Drawing.Point(1312, 912);
+            this.lbl_depth.Name = "lbl_depth";
+            this.lbl_depth.Size = new System.Drawing.Size(16, 17);
+            this.lbl_depth.TabIndex = 172;
+            this.lbl_depth.Text = "?";
+            // 
+            // lbl_width
+            // 
+            this.lbl_width.AutoSize = true;
+            this.lbl_width.Location = new System.Drawing.Point(1281, 912);
+            this.lbl_width.Name = "lbl_width";
+            this.lbl_width.Size = new System.Drawing.Size(16, 17);
+            this.lbl_width.TabIndex = 171;
+            this.lbl_width.Text = "?";
+            // 
+            // label64
+            // 
+            this.label64.AutoSize = true;
+            this.label64.Location = new System.Drawing.Point(1198, 912);
+            this.label64.Name = "label64";
+            this.label64.Size = new System.Drawing.Size(79, 17);
+            this.label64.TabIndex = 170;
+            this.label64.Text = "dimensions";
+            // 
+            // lbl_contents
+            // 
+            this.lbl_contents.AutoSize = true;
+            this.lbl_contents.Location = new System.Drawing.Point(1281, 945);
+            this.lbl_contents.Name = "lbl_contents";
+            this.lbl_contents.Size = new System.Drawing.Size(16, 17);
+            this.lbl_contents.TabIndex = 177;
+            this.lbl_contents.Text = "?";
+            // 
+            // label66
+            // 
+            this.label66.AutoSize = true;
+            this.label66.Location = new System.Drawing.Point(1198, 945);
+            this.label66.Name = "label66";
+            this.label66.Size = new System.Drawing.Size(62, 17);
+            this.label66.TabIndex = 176;
+            this.label66.Text = "contents";
+            // 
+            // lbl_breakeffect
+            // 
+            this.lbl_breakeffect.AutoSize = true;
+            this.lbl_breakeffect.Location = new System.Drawing.Point(1281, 928);
+            this.lbl_breakeffect.Name = "lbl_breakeffect";
+            this.lbl_breakeffect.Size = new System.Drawing.Size(16, 17);
+            this.lbl_breakeffect.TabIndex = 175;
+            this.lbl_breakeffect.Text = "?";
+            // 
+            // label68
+            // 
+            this.label68.AutoSize = true;
+            this.label68.Location = new System.Drawing.Point(1198, 928);
+            this.label68.Name = "label68";
+            this.label68.Size = new System.Drawing.Size(79, 17);
+            this.label68.TabIndex = 174;
+            this.label68.Text = "breakeffect";
+            // 
+            // lbl_flags
+            // 
+            this.lbl_flags.AutoSize = true;
+            this.lbl_flags.Location = new System.Drawing.Point(1282, 793);
+            this.lbl_flags.Name = "lbl_flags";
+            this.lbl_flags.Size = new System.Drawing.Size(16, 17);
+            this.lbl_flags.TabIndex = 183;
+            this.lbl_flags.Text = "?";
+            // 
+            // label70
+            // 
+            this.label70.AutoSize = true;
+            this.label70.Location = new System.Drawing.Point(1199, 793);
+            this.label70.Name = "label70";
+            this.label70.Size = new System.Drawing.Size(38, 17);
+            this.label70.TabIndex = 182;
+            this.label70.Text = "flags";
+            // 
+            // lbl_canpickup
+            // 
+            this.lbl_canpickup.AutoSize = true;
+            this.lbl_canpickup.Location = new System.Drawing.Point(1282, 776);
+            this.lbl_canpickup.Name = "lbl_canpickup";
+            this.lbl_canpickup.Size = new System.Drawing.Size(16, 17);
+            this.lbl_canpickup.TabIndex = 181;
+            this.lbl_canpickup.Text = "?";
+            // 
+            // label72
+            // 
+            this.label72.AutoSize = true;
+            this.label72.Location = new System.Drawing.Point(1199, 776);
+            this.label72.Name = "label72";
+            this.label72.Size = new System.Drawing.Size(72, 17);
+            this.label72.TabIndex = 180;
+            this.label72.Text = "canpickup";
+            // 
+            // lbl_moreflags
+            // 
+            this.lbl_moreflags.AutoSize = true;
+            this.lbl_moreflags.Location = new System.Drawing.Point(1282, 759);
+            this.lbl_moreflags.Name = "lbl_moreflags";
+            this.lbl_moreflags.Size = new System.Drawing.Size(16, 17);
+            this.lbl_moreflags.TabIndex = 179;
+            this.lbl_moreflags.Text = "?";
+            // 
+            // label74
+            // 
+            this.label74.AutoSize = true;
+            this.label74.Location = new System.Drawing.Point(1199, 759);
+            this.label74.Name = "label74";
+            this.label74.Size = new System.Drawing.Size(70, 17);
+            this.label74.TabIndex = 178;
+            this.label74.Text = "moreflags";
+            // 
             // frmAlundra
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1924, 996);
+            this.Controls.Add(this.lbl_flags);
+            this.Controls.Add(this.label70);
+            this.Controls.Add(this.lbl_canpickup);
+            this.Controls.Add(this.label72);
+            this.Controls.Add(this.lbl_moreflags);
+            this.Controls.Add(this.label74);
+            this.Controls.Add(this.lbl_contents);
+            this.Controls.Add(this.label66);
+            this.Controls.Add(this.lbl_breakeffect);
+            this.Controls.Add(this.label68);
+            this.Controls.Add(this.lbl_height);
+            this.Controls.Add(this.lbl_depth);
+            this.Controls.Add(this.lbl_width);
+            this.Controls.Add(this.label64);
+            this.Controls.Add(this.lbl_offsetz);
+            this.Controls.Add(this.lbl_offsety);
+            this.Controls.Add(this.lbl_offsetx);
+            this.Controls.Add(this.label47);
+            this.Controls.Add(this.lbl_einteract);
+            this.Controls.Add(this.label61);
+            this.Controls.Add(this.lbl_edeactivate);
+            this.Controls.Add(this.label53);
+            this.Controls.Add(this.lbl_etouch);
+            this.Controls.Add(this.label57);
+            this.Controls.Add(this.lbl_etick);
+            this.Controls.Add(this.label49);
+            this.Controls.Add(this.lbl_eload);
+            this.Controls.Add(this.label41);
             this.Controls.Add(this.pctPortrait);
             this.Controls.Add(this.lblImgAddr);
             this.Controls.Add(this.lblFrameAddr);
@@ -2232,5 +2540,33 @@
         private System.Windows.Forms.Label lblFrameAddr;
         private System.Windows.Forms.Label lblImgAddr;
         private System.Windows.Forms.PictureBox pctPortrait;
+        private System.Windows.Forms.Label label41;
+        private System.Windows.Forms.Label lbl_eload;
+        private System.Windows.Forms.Label lbl_etick;
+        private System.Windows.Forms.Label label49;
+        private System.Windows.Forms.Label lbl_edeactivate;
+        private System.Windows.Forms.Label label53;
+        private System.Windows.Forms.Label lbl_etouch;
+        private System.Windows.Forms.Label label57;
+        private System.Windows.Forms.Label lbl_einteract;
+        private System.Windows.Forms.Label label61;
+        private System.Windows.Forms.Label lbl_offsetx;
+        private System.Windows.Forms.Label label47;
+        private System.Windows.Forms.Label lbl_offsety;
+        private System.Windows.Forms.Label lbl_offsetz;
+        private System.Windows.Forms.Label lbl_height;
+        private System.Windows.Forms.Label lbl_depth;
+        private System.Windows.Forms.Label lbl_width;
+        private System.Windows.Forms.Label label64;
+        private System.Windows.Forms.Label lbl_contents;
+        private System.Windows.Forms.Label label66;
+        private System.Windows.Forms.Label lbl_breakeffect;
+        private System.Windows.Forms.Label label68;
+        private System.Windows.Forms.Label lbl_flags;
+        private System.Windows.Forms.Label label70;
+        private System.Windows.Forms.Label lbl_canpickup;
+        private System.Windows.Forms.Label label72;
+        private System.Windows.Forms.Label lbl_moreflags;
+        private System.Windows.Forms.Label label74;
     }
 }
