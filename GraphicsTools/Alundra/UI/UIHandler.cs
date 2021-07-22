@@ -12,6 +12,7 @@ namespace GraphicsTools.Alundra
     {
         GameState game;
         EtcStrings etcstrings;
+        DatasBin datasbin;
         public short SavedBoxDrawerX, SavedBoxDrawerY;
         public int DialogChoiceUnknown1;//0x1072ec
         public int DialogChoiceUnknown2;//0x1072cc
@@ -22,7 +23,7 @@ namespace GraphicsTools.Alundra
         List<Color[]> uipalettes = new List<Color[]>();
         BitmapDrawCommand dialognametextcmd;
 
-        public UIHandler(GameState gameState, EtcStrings etcstrings, string fontfile, string palettesfile, string uifile)
+        public UIHandler(GameState gameState, DatasBin datasbin, EtcStrings etcstrings, string fontfile, string palettesfile, string uifile)
         {
             this.game = gameState;
             this.etcstrings = etcstrings;
@@ -75,7 +76,7 @@ namespace GraphicsTools.Alundra
             y = 0xa8,
             width = 0x24,
             height = 0x7,
-            boxcommands = new UIDrawCmd[][] { new UIDrawCmd[] { } }
+            boxcommands = new UIDrawCmd[][] { UIHelper.DialogBoxDrawCommands }
         };
         UIBoxAnimated BoxDrawer2 = new UIBoxAnimated
         {
@@ -133,6 +134,16 @@ namespace GraphicsTools.Alundra
         //0x491a4
         bool InitUI_1(UIRecord ui)
         {
+            for (int y = 0; y < ui.boxAnimated.height; y++)
+            {
+                for (int x = 0; x < ui.boxAnimated.width; x++)
+                {
+                    var cmd = ui.boxAnimated.boxcommands[0][y * ui.boxAnimated.width + x];
+                    //SetShadeTex(cmd)
+
+                    //cmd[e] = *uipalettes
+                }
+            }
             return true;
         }
 
@@ -230,7 +241,7 @@ namespace GraphicsTools.Alundra
                 }
                 else
                 {
-                    //46ed8()
+                    RenderDialogText();
                 }
             }
 
@@ -393,6 +404,279 @@ namespace GraphicsTools.Alundra
             return bdc;
         }
 
+        int DialogSomething;
+        int _1dd7ea;
+        int _1072fc, _1072dc, _107214, _1072e0, _1072e4, _107228,_1072d4,_1072d8;
+        int _107210;
+        byte[] RenderTextBuff = new byte[0x800];
+        int DialogRenderCharCounter;
+        int DialogTextLineStartX;
+        int[] _107220 = new int[8];
+        int DialogLetterWait, DialogLetterWaitRemaining;
+        int DialogSomethingBit3On;
+        char[] DialogTextBuffer = new char[0x960];
+        string DialogTextBufferStr;//string version of dialogtextbuffer
+        int DialogTextBufferPos;
+        int DialogChoice;
+        int _1072f0, _1072f4;
+        int DialogTextSfx;
+        public void RenderDialogText()
+        {
+            if ((DialogSomething & 8) != 0)
+            {
+                if ((_1dd7ea & 0x80) == 0)
+                    return;
+
+                _1072fc = 0;
+                DialogSomething &= 0xfff7;
+
+                _1072dc |= 8;
+
+                {//near_end
+                    DialogRenderCharCounter = 0;
+                    DialogTextLineStartX = 0;
+                    RenderTextBuff = new byte[0x800];
+
+                    if (_107214 == 2)
+                    {
+
+                        DialogChoiceUnknown1 = 1;
+                        _1072d4 = _1072d8;
+
+                        if ((_1072dc & 1) != 0)
+                        {
+                            _1072e0 = _1072e4;
+                            _107228 = 0;
+                        }
+                    }
+                    else
+                    {
+                        _107214++;
+                        //if (_107214 == 3)
+                        //    _107214--;
+                        _107220[_107214] = 0;
+                    }
+                }
+                return;
+            }
+            bool DoProcess = false;
+
+            if ((DialogSomething & 2) != 0)
+            {
+                DialogLetterWaitRemaining--;
+
+                if (DialogLetterWaitRemaining == 0)
+                {
+                    DoProcess = true;
+                    DialogLetterWaitRemaining = DialogLetterWait;
+                }
+            }
+
+            if ((DialogSomething & 1) != 0 && (game.PlayerInput[0] & 0x80) != 0)
+                DoProcess = true;
+
+            if ((DialogSomething & 4) != 0 && DialogSomethingBit3On == 1)
+            {
+                DoProcess = true;
+                DialogSomethingBit3On = 0;
+            }
+
+            if (!DoProcess)
+                return;
+
+            while(true)
+            {
+                char c;
+                while(true)
+                {
+                    c = DialogTextBuffer[DialogTextBufferPos];
+                    if (c == 0)
+                    {
+                        DialogChoiceUnknown1 = 1;
+                        if ((DialogChoice & 1) != 0)
+                        {
+                            _1072f0 = _1072f4;
+                        }
+                        return;
+                    }
+
+                    if (c != 0xa)
+                        break;
+
+                    DialogTextBufferPos++;
+                }
+
+                if (c != '\\')
+                    break;
+
+                DialogTextBufferPos++;
+                c = DialogTextBuffer[DialogTextBufferPos];
+
+
+                switch(c)
+                {
+                    case 'W'://render special character
+                        DialogTextBufferPos++;
+                        
+                        char val = (char)(DialogTextBuffer[DialogTextBufferPos] - 0x20);
+                        if (DialogTextBuffer[DialogTextBufferPos] >= 0x41)
+                            val = (char)(byte)(DialogTextBuffer[DialogTextBufferPos] + 0xd9);
+                        int wierdv = ((_107210 + _107214) - (((_107210 + _107214) * 0x55555556) >> 32) * 3) * 8 + 0x120;
+                        RenderTextInner(val.ToString(), RenderTextBuff, 0x3c0, wierdv, DialogTextLineStartX, 0, 0x100, 0x10);
+
+                        var inf = UIHelper.FontCharInfos[(int)val];
+                        DialogTextLineStartX += inf.width;
+                        return;
+                    case 'Y':
+                        DialogTextBufferPos++;
+                        return;
+                    case 'V':
+                        //TODO
+                        continue;
+                    case 'X':
+                        DialogTextBufferPos++;
+                        char c2 = DialogTextBuffer[DialogTextBufferPos];
+                        switch (c2)
+                        {
+                            case '0':
+                                //TODO
+                                continue;
+                            case '1':
+                                //TODO
+                                continue;
+                            case '2':
+                            case '4':
+                                //TODO
+                                continue;
+                            case '3':
+                                //TODO
+                                continue;
+                            case '5':
+                                //TODO
+                                continue;
+                        }
+                        continue;
+                    case 'T':
+                        DialogTextBufferPos++;
+                        DialogLetterWaitRemaining = DialogLetterWait * 2;
+                        return;
+                    case 'H':
+                        DialogTextBufferPos++;
+                        _107220[_107214] = GetRenderedTextWidth(DialogTextBufferStr.Substring(DialogTextBufferPos));
+                        continue;
+                    case 'N':
+                        DialogTextBufferPos++;
+                        {//near_end
+                            DialogRenderCharCounter = 0;
+                            DialogTextLineStartX = 0;
+                            RenderTextBuff = new byte[0x800];
+
+                            if (_107214 == 2)
+                            {
+
+                                DialogChoiceUnknown1 = 1;
+                                _1072d4 = _1072d8;
+
+                                if ((_1072dc & 1) != 0)
+                                {
+                                    _1072e0 = _1072e4;
+                                    _107228 = 0;
+                                }
+                            }
+                            else
+                            {
+                                _107214++;
+                                //if (_107214 == 3)
+                                //    _107214--;
+                                _107220[_107214] = 0;
+                            }
+                        }
+                        return;
+                    case 'A':
+                        _1072fc = 1;
+                        DialogSomething |= 8;
+                        DialogTextBufferPos++;
+                        return;
+                    case 'B':
+                        DialogTextSfx = -1;
+                        DialogTextBufferPos++;
+                        continue;
+                    case 'C':
+                        DialogTextSfx = 0;
+                        DialogTextBufferPos++;
+                        continue;
+                    case 'D':
+                        DialogTextSfx = 1;
+                        DialogTextBufferPos++;
+                        continue;
+                    case 'E':
+                        DialogTextSfx = 2;
+                        DialogTextBufferPos++;
+                        continue;
+                    case 'F':
+                        DialogTextSfx = 3;
+                        DialogTextBufferPos++;
+                        continue;
+                    case 'G':
+                        DialogTextSfx = 4;
+                        DialogTextBufferPos++;
+                        continue;
+                    case 'M':
+                        DialogTextBufferPos++;
+                        if (DialogTextBuffer[DialogTextBufferPos] == 'C')
+                        {
+                            DialogTextBufferPos++;
+                            if (DialogTextBuffer[DialogTextBufferPos] == 'E')
+                            {
+                                DialogTextBufferPos++;
+                                DialogSomething = 4;
+                            }
+                        }
+                        continue;
+                    case '0':
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                    case '7':
+                    case '8':
+                    case '9':
+                        //TODO
+                        continue;
+                }
+
+                //if it gets through here, break out
+                break;
+
+            }//main loop
+
+            //CHECK KANJI HERE
+
+            string txt = DialogTextBuffer[DialogTextBufferPos++].ToString();
+
+            int wierdval = ((_107210 + _107214) - (((_107210 + _107214) * 0x55555556) >> 32) * 3) * 8 + 0x120;
+            RenderTextInner(txt, RenderTextBuff, 0x3c0, wierdval, DialogTextLineStartX, 0, 0x100, 0x10);
+
+            var info = UIHelper.FontCharInfos[(int)txt[0]];
+            DialogTextLineStartX += info.width;
+            if ((DialogRenderCharCounter & 1) == 0)//every other
+            {
+                if (DialogTextSfx != 4 && DialogTextSfx >= 0)
+                {
+                    if (game.soundbin != null)
+                    {
+                        game.soundbin.PlaySoundEffect(0x4f + DialogTextSfx);
+                    }
+                }
+            }
+
+            DialogRenderCharCounter++;
+
+
+        }
+
         public void RenderTextInner(string linetext, byte[]outputbitmap,int vramx, int vramy, int startx, int starty, int outputbitmapwidth, int outputbitmapheight)
         {
             int x = startx;
@@ -524,6 +808,196 @@ namespace GraphicsTools.Alundra
             }
 
             return width;
+        }
+
+
+        UIRecord uirecord;
+        public bool SetUIRecordCallSetup(int uiid)
+        {
+            if (uiid >= 0xd)
+                return false;
+            uirecord = records[uiid];
+            //do i need to copy all the properties over from the source records?
+            uirecord.Status = 1;
+
+
+            if (uirecord.SetupFunc != null)
+                uirecord.SetupFunc(uirecord);
+            return true;
+        }
+
+        void SetName(int nameid)
+        {
+            if ((game.DialogNameState & 4) == 0
+                && nameid-0x100 < 0x100
+                && !string.IsNullOrEmpty(etcstrings.GetEtcString(nameid)))
+            {
+                game.DialogName = nameid;
+                SetUIRecordCallSetup(0xc);
+            }
+        }
+
+        bool IsDialogActiveInner()
+        {
+            return (game.DialogState & 4) != 0;
+        }
+
+        int dialogstatus,dialogxpos,dialogypos,dialogzpos,dialogcamxpos,dialogcamypos;
+        UIDrawCmd dialogportraitcmd = new UIDrawCmd();
+        int dialogvalx, dialogvaly, dialogvalxsaved, dialogvalysaved, dialogvalxsaved2, dialogvalysaved2, dialogvalxmodded, dialogvalymodded;
+        int dialogvalunknown1, dialogvalunknown2, dialogvalunknown3;
+        void SetDialogPortrait(int xpos, int ypos, int zpos, int camxpos, int camypos, int sx, int sy, int width, int height, int palette, int spritesheet)
+        {
+            if (dialogstatus != 0)
+                return;
+
+            dialogxpos = xpos;
+            dialogypos = ypos;
+            dialogzpos = zpos;
+            dialogcamxpos = camxpos;
+            dialogcamypos = camypos;
+            dialogstatus = 5;
+
+            dialogportraitcmd.u = (byte)sx;
+            dialogportraitcmd.v = (byte)sy;
+            dialogportraitcmd.w = (short)width;
+            dialogportraitcmd.h = (short)height;
+            dialogportraitcmd.x = 64;
+            dialogportraitcmd.y = 64;
+
+            dialogportraitcmd.uipaletteindex = (short)palette;
+            dialogportraitcmd.spritesheet = (short)spritesheet;
+
+
+            dialogvalxsaved = dialogxpos >> 16 - dialogcamxpos;
+            dialogvalunknown2 = 0x30;
+            dialogvalunknown3 = 0x38;
+            dialogvalxsaved2 = dialogvalx;
+            dialogvalxmodded = dialogvalxsaved - dialogvalx;
+            dialogvalunknown1 = 0xf;
+
+            dialogvalysaved = dialogypos >> 16 - dialogcamypos - dialogzpos >> 16 - 0x20;
+            dialogvalysaved2 = dialogvaly;
+            dialogvalymodded = dialogvalysaved - dialogvaly;
+        }
+
+        bool SetText(int textid, int playercontrolflag)
+        {
+            if (!IsDialogActiveInner())
+                return false;
+            string text;
+            if ((textid & 0x80) != 0)
+            {
+                
+                text = datasbin.alundragamemap.strings[textid & 0x7f];
+            }
+            else
+            {
+                text = game.gameMap.strings[textid & 0x7f];
+            }
+
+            SetupDialogDrawCmds(text, playercontrolflag);
+
+            return true;
+        }
+
+        int DialogChoiceSaved, _1072d0, _107300;
+        bool SetupDialogDrawCmds(string text, int playercontrolflag)
+        {
+            if (!SetUIRecordCallSetup(0))
+                return false;
+
+            if (text.Length < 0x960)
+            {
+                for(int dex =0;dex<text.Length;dex++)
+                {
+                    DialogTextBuffer[dex] = text[dex];
+                }
+                DialogTextBuffer[text.Length] = (char)0;
+            }
+            //else impliment the other code
+
+            DialogBoxLerper.tickstolinger = 2;
+            DialogBoxLerper.currenttick = 0;
+            DialogBoxLerper.numticks = 0xf;
+            if (BoxDrawer1.x < 0)
+            {
+                DialogBoxLerper.x1 = (short)(BoxDrawer1.x - BoxDrawer1.width * 8);
+            }
+            else
+            {
+                DialogBoxLerper.x1 = BoxDrawer1.x;
+            }
+            DialogBoxLerper.y1 = 0xf0;
+            if (BoxDrawer1.x < 0)
+            {
+                DialogBoxLerper.x2 = (short)(BoxDrawer1.x - BoxDrawer1.width * 8);
+            }
+            else
+            {
+                DialogBoxLerper.x2 = BoxDrawer1.x;
+            }
+
+            if (BoxDrawer1.y < 0)
+            {
+                DialogBoxLerper.y2 = (short)(BoxDrawer1.y - BoxDrawer1.height * 8);
+            }
+            else
+            {
+                DialogBoxLerper.y2 = BoxDrawer1.y;
+            }
+
+            game.DialogState = 5;
+
+            DialogBoxLerper.AfterX = BoxDrawer1.x;
+            DialogBoxLerper.AfterY = BoxDrawer1.y;
+
+            if (playercontrolflag==1)
+            {
+                game.PlayerControlSetting |= 0x10;
+            }
+            else
+            {
+                game.PlayerControlSetting |= 8;
+            }
+
+            DialogChoiceUnknown1 = 0;
+            DialogChoiceSaved = 0;
+            DialogChoiceUnknown2 = 0;
+            _1072d0 = 0;
+            DialogSomethingBit3On = 0;
+            DialogTextSfx = -1;
+            _107210 = 0;
+            _107214 = 0;
+            DialogTextBufferPos = 0;
+            DialogRenderCharCounter = 0;
+            for (int linedex = 0;linedex<3;linedex++)
+            {
+                _107220[linedex] = 0;
+                //init the draw commands for these lines
+            }
+
+            //init the animated more arrow commands
+            //for()
+            //{
+
+            //}
+
+
+            _1072fc = 0;
+            _107300 = 0;
+            //clearimage
+
+            DialogLetterWait = 4;
+            DialogSomething = 3;
+            DialogLetterWaitRemaining = 1;
+            _1072dc = 3;
+            DialogChoice = 3;
+            RenderTextBuff = new byte[0x800];//zero out memory
+            DialogTextLineStartX = 0;
+            game.soundbin.PlaySoundEffect(6);
+
+            return true;
         }
 
         

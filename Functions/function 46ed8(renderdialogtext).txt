@@ -3,7 +3,7 @@
 00046ee0: 8c847200 lw r4,0x7200(r4)     r4 = *dialogsomething
 00046ee4: 00002821 addu r5,r0,r0        doprocess = 0
 00046ee8: afb51c9c sw r21,0x1c9c(r29)   
-00046eec: 0000a821 addu r21,r0,r0       
+00046eec: 0000a821 addu r21,r0,r0       nearendflag = 0
 00046ef0: afb61ca0 sw r22,0x1ca0(r29)   
 00046ef4: 0000b021 addu r22,r0,r0       
 00046ef8: afbf1ca4 sw r31,0x1ca4(r29)   
@@ -14,7 +14,7 @@
 00046f0c: 30820008 andi r2,r4,0x0008    
 00046f10: 10400013 beq r2,r0,0x00046f60 
 00046f14: afb01c88 sw r16,0x1c88(r29)   
-                                        if(*dialogsomething & 8 != 0)
+                                        if(*dialogsomething & 8 != 0){
 00046f18: 3c02801e lui r2, 0x801e       
 00046f1c: 9442d7ea lhu r2,0xd7ea(r2)    	
 00046f20: 00000000 nop                  
@@ -33,9 +33,9 @@
 00046f4c: 34630008 ori r3,r3,0x0008     
 00046f50: 3c018010 lui r1, 0x8010       
 00046f54: ac2372dc sw r3,0x72dc(r1)     	*0x1072dc |= 8
-00046f58: 08011f3d j 0x00047cf4         
+00046f58: 08011f3d j 0x00047cf4         	nearendflag = 1
 00046f5c: 24150001 addiu r21,r0,0x0001  	goto near_end
-                                        
+                                        }
 
 0x00046f60: 30820002 andi r2,r4,0x0002  
 00046f64: 1040000e beq r2,r0,0x00046fa0 
@@ -137,51 +137,55 @@
 
 0x0004708c: 146202b1 bne r3,r2,0x00047b54
 00047090: 24820001 addiu r2,r4,0x0001   
-                                        if(r3 == r2)
+                                        if(c != '\\')
+											goto destination_a
 00047094: 3c018010 lui r1, 0x8010       
-00047098: ac227218 sw r2,0x7218(r1)     *dialogtextbufferpos = r2
+00047098: ac227218 sw r2,0x7218(r1)     *dialogtextbufferpos++
 0004709c: 00451021 addu r2,r2,r5        
-000470a0: 90420000 lbu r2,0x0000(r2)    r2 = r2[0]
+000470a0: 90420000 lbu r2,0x0000(r2)    c = dialogtextbuffer[dialogtextbufferpos]
 000470a4: 00000000 nop                  
 000470a8: 2443ffd0 addiu r3,r2,0xffd0   
 000470ac: 2c62002a sltiu r2,r3,0x002a   
 000470b0: 104002a8 beq r2,r0,0x00047b54 
 000470b4: 00031080 sll r2,r3,2          
-                                        if(r2 != 0)
+                                        if(r2 >= 0x5a)
+											goto destination_a
 000470b8: 3c018002 lui r1, 0x8002       
 000470bc: 00220821 addu r1,r1,r2        
 000470c0: 8c223fa8 lw r2,0x3fa8(r1)     r2 = *0x23fa8[r2]
 000470c4: 00000000 nop                  
-000470c8: 00400008 jr r2                
-000470cc: 00000000 nop                  
+000470c8: 00400008 jr r2                switch(c)
+000470cc: 00000000 nop                  default:
+											goto destination_a
+										case 'W'://////////////////////////////////////////////////////////////////////////////////////////////
 000470d0: 3c028010 lui r2, 0x8010       
-000470d4: 8c427218 lw r2,0x7218(r2)     r2 = *dialogtextbufferpos
+000470d4: 8c427218 lw r2,0x7218(r2)     
 000470d8: 00000000 nop                  
 000470dc: 24420001 addiu r2,r2,0x0001   
 000470e0: 3c018010 lui r1, 0x8010       
-000470e4: ac227218 sw r2,0x7218(r1)     *dialogtextbufferpos = r2
+000470e4: ac227218 sw r2,0x7218(r1)     *dialogtextbufferpos++
 000470e8: 3c018010 lui r1, 0x8010       
 000470ec: 00220821 addu r1,r1,r2        
-000470f0: 902368a0 lbu r3,0x68a0(r1)    r3 = *dialogtextbuffer[r2]
+000470f0: 902368a0 lbu r3,0x68a0(r1)    c = *dialogtextbuffer[*dialogtextbufferpos]
 000470f4: 00000000 nop                  
 000470f8: 2c620041 sltiu r2,r3,0x0041   
 000470fc: 14400002 bne r2,r0,0x00047108 
-00047100: 2462ffe0 addiu r2,r3,0xffe0   
-                                        if(r2 == 0)
-00047104: 246200d9 addiu r2,r3,0x00d9   
+00047100: 2462ffe0 addiu r2,r3,0xffe0   val = c - 0x20;
+                                        if(c >= 0x41)
+00047104: 246200d9 addiu r2,r3,0x00d9   	val =c+d9
 
-0x00047108: a3a20020 sb r2,0x0020(r29)  
+0x00047108: a3a20020 sb r2,0x0020(r29)  txt[0] = c
 0004710c: 3c035555 lui r3, 0x5555       
 00047110: 34635556 ori r3,r3,0x5556     //0x555556
-00047114: 27a40020 addiu r4,r29,0x0020  
+00047114: 27a40020 addiu r4,r29,0x0020  //char * txt
 00047118: 3c05801d lui r5, 0x801d       
 0004711c: 24a50598 addiu r5,r5,0x0598   //rendertextbuff
 00047120: 3c078010 lui r7, 0x8010       
-00047124: 8ce77210 lw r7,0x7210(r7)     r7 = *0x107210
+00047124: 8ce77210 lw r7,0x7210(r7)     r7 = *0x107210//these two vars might be line num and scroll amount?
 00047128: 3c028010 lui r2, 0x8010       
-0004712c: 8c427214 lw r2,0x7214(r2)     r2 = *0x107214
+0004712c: 8c427214 lw r2,0x7214(r2)     r2 = *0x107214//
 00047130: 240603c0 addiu r6,r0,0x03c0   
-00047134: a3a00021 sb r0,0x0021(r29)    
+00047134: a3a00021 sb r0,0x0021(r29)    txt[1] = 0
 00047138: 00e23821 addu r7,r7,r2        
 0004713c: 00e30018 mult r7, r3          
 00047140: afa00014 sw r0,0x0014(r29)    
@@ -190,14 +194,14 @@
 0004714c: 24020010 addiu r2,r0,0x0010   
 00047150: afa2001c sw r2,0x001c(r29)    
 00047154: 3c028010 lui r2, 0x8010       
-00047158: 8c427218 lw r2,0x7218(r2)     r2 = *dialogtextbufferpos
+00047158: 8c427218 lw r2,0x7218(r2)     //r2 = *dialogtextbufferpos
 0004715c: 3c038015 lui r3, 0x8015       
-00047160: 846330d4 lh r3,0x30d4(r3)     r3 = *0x1530d4
+00047160: 846330d4 lh r3,0x30d4(r3)     r3 = *dialogtextlinestartx
 00047164: 24420001 addiu r2,r2,0x0001   
 00047168: afa30010 sw r3,0x0010(r29)    
 0004716c: 00071fc3 sra r3,r7,31         
 00047170: 3c018010 lui r1, 0x8010       
-00047174: ac227218 sw r2,0x7218(r1)     *dialogtextbufferpos = r2
+00047174: ac227218 sw r2,0x7218(r1)     *dialogtextbufferpos++
 00047178: 00004010 mfhi r8              
 0004717c: 01031823 subu r3,r8,r3        
 00047180: 00031040 sll r2,r3,1          
@@ -206,50 +210,52 @@
 0004718c: 00073900 sll r7,r7,4          
 00047190: 24e70120 addiu r7,r7,0x0120   
 00047194: 00073c00 sll r7,r7,16         
-00047198: 0c0121a9 jal 0x000486a4       rendertextinner()//(linetext, outputbitmap, vramx, vramy, startx, starty, outputbitmapwidth, outputbitmapheight )
+00047198: 0c0121a9 jal 0x000486a4       rendertextinner(txt, rendertextbuff, 0x03c0,((*0x107210 + *0x107214) - (((*0x107210 + *0x107214) * 0x55555556)>>32) * 3) * 8 + 0x120, dialogtextlinestartx,0,0x100,0x10)//(linetext, outputbitmap, vramx, vramy, startx, starty, outputbitmapwidth, outputbitmapheight )
 0004719c: 00073c03 sra r7,r7,16         
-000471a0: 93a30020 lbu r3,0x0020(r29)   
+000471a0: 93a30020 lbu r3,0x0020(r29)   //txt[0]
 000471a4: 00000000 nop                  
 000471a8: 00031080 sll r2,r3,2          
 000471ac: 00431021 addu r2,r2,r3        
 000471b0: 00021080 sll r2,r2,2          
 000471b4: 3c038015 lui r3, 0x8015       
-000471b8: 8c6330d4 lw r3,0x30d4(r3)     r3 = *0x1530d4
+000471b8: 8c6330d4 lw r3,0x30d4(r3)     //r3 = *dialogtextlinestartx
 000471bc: 3c01800a lui r1, 0x800a       
 000471c0: 00220821 addu r1,r1,r2        
-000471c4: 8c22b9cc lw r2,0xb9cc(r1)     r2 = *fontcharinfos.kerning[r2]
+000471c4: 8c22b9cc lw r2,0xb9cc(r1)     //r2 = *fontcharinfos.kerning[r2]
 000471c8: 24630001 addiu r3,r3,0x0001   
 000471cc: 00621821 addu r3,r3,r2        
 000471d0: 3c018015 lui r1, 0x8015       
-000471d4: ac2330d4 sw r3,0x30d4(r1)     *0x1530d4 = r3
+000471d4: ac2330d4 sw r3,0x30d4(r1)     *dialogtextlinestartx += *fontcharinfos.kerning[txt[0]] + 1
 000471d8: 08011f6e j 0x00047db8         
 000471dc: 00000000 nop                  
                                         return
+										case 'Y'://///////////////////////////////////////////////////////////////////////////////////////////////
 000471e0: 3c028010 lui r2, 0x8010       
-000471e4: 8c427218 lw r2,0x7218(r2)     r2 = *dialogtextbufferpos
+000471e4: 8c427218 lw r2,0x7218(r2)     
 000471e8: 00000000 nop                  
 000471ec: 24420001 addiu r2,r2,0x0001   
 000471f0: 3c018010 lui r1, 0x8010       
-000471f4: ac227218 sw r2,0x7218(r1)     *dialogtextbufferpos = r2
+000471f4: ac227218 sw r2,0x7218(r1)     *dialogtextbufferpos++
 000471f8: 08011f6e j 0x00047db8         
 000471fc: 00000000 nop                  
                                         return
+										case 'V':///////////////////////////////////////////////////////////////////////////////////////////////////
 00047200: 27b10038 addiu r17,r29,0x0038 
 00047204: 02202021 addu r4,r17,r0       
 00047208: 3c068010 lui r6, 0x8010       
-0004720c: 8cc67218 lw r6,0x7218(r6)     r6 = *dialogtextbufferpos
+0004720c: 8cc67218 lw r6,0x7218(r6)     //r6 = *dialogtextbufferpos
 00047210: 3c058010 lui r5, 0x8010       
 00047214: 24a568a0 addiu r5,r5,0x68a0   //dialogtextbuffer
 00047218: 24c20001 addiu r2,r6,0x0001   
 0004721c: 3c018010 lui r1, 0x8010       
-00047220: ac227218 sw r2,0x7218(r1)     *dialogtextbufferpos = r2
+00047220: ac227218 sw r2,0x7218(r1)     *dialogtextbufferpos++
 00047224: 3c018010 lui r1, 0x8010       
 00047228: 00220821 addu r1,r1,r2        
-0004722c: 903068a0 lbu r16,0x68a0(r1)   r16 = *dialogtextbuffer[r2]
+0004722c: 903068a0 lbu r16,0x68a0(r1)   r16 = *dialogtextbuffer[dialogtextbufferpos]
 00047230: 24c60002 addiu r6,r6,0x0002   
 00047234: 3c018010 lui r1, 0x8010       
-00047238: ac267218 sw r6,0x7218(r1)     *dialogtextbufferpos = r6
-0004723c: 0c021183 jal 0x0008460c       8460c()//
+00047238: ac267218 sw r6,0x7218(r1)     *dialogtextbufferpos++
+0004723c: 0c021183 jal 0x0008460c       strcpyn()//(dest,src, count)
 00047240: 2610ffd0 addiu r16,r16,0xffd0 
 00047244: 3c028010 lui r2, 0x8010       
 00047248: 8c427218 lw r2,0x7218(r2)     r2 = *dialogtextbufferpos
@@ -294,7 +300,7 @@
 000472d0: 0c021166 jal 0x00084598         copystring()//dest, src
 000472d4: 02202021 addu r4,r17,r0         
 000472d8: 02202021 addu r4,r17,r0         
-000472dc: 0c021123 jal 0x0008448c         8448c()//
+000472dc: 0c021123 jal 0x0008448c         strcat()//(dest,src)
 000472e0: 02402821 addu r5,r18,r0         
 000472e4: 02402021 addu r4,r18,r0         
 000472e8: 0c021166 jal 0x00084598         copystring()//dest, src
@@ -306,7 +312,7 @@
 000472fc: 27b00038 addiu r16,r29,0x0038 
 
 0x00047300: 02002021 addu r4,r16,r0     
-00047304: 0c021123 jal 0x0008448c       8448c()//
+00047304: 0c021123 jal 0x0008448c       strcat()//(dest,src)
 00047308: 27a512f8 addiu r5,r29,0x12f8  
 0004730c: 02002021 addu r4,r16,r0       
 00047310: 3c058010 lui r5, 0x8010       
@@ -316,27 +322,29 @@
 00047320: 08011dc7 j 0x0004771c         
 00047324: 00b12821 addu r5,r5,r17       
                                         else
+										case 'X':////////////////////////////////////////////////////////////////////////////////////////////
 00047328: 3c028010 lui r2, 0x8010       
-0004732c: 8c427218 lw r2,0x7218(r2)     r2 = *dialogtextbufferpos
+0004732c: 8c427218 lw r2,0x7218(r2)     
 00047330: 00000000 nop                  
 00047334: 24420001 addiu r2,r2,0x0001   
 00047338: 3c018010 lui r1, 0x8010       
-0004733c: ac227218 sw r2,0x7218(r1)     *dialogtextbufferpos = r2
+0004733c: ac227218 sw r2,0x7218(r1)     *dialogtextbufferpos++
 00047340: 3c018010 lui r1, 0x8010       
 00047344: 00220821 addu r1,r1,r2        
-00047348: 902268a0 lbu r2,0x68a0(r1)    r2 = *dialogtextbuffer[r2]
+00047348: 902268a0 lbu r2,0x68a0(r1)    //r2 = *dialogtextbuffer[r2]
 0004734c: 00000000 nop                  
 00047350: 2443ffd0 addiu r3,r2,0xffd0   
 00047354: 2c620006 sltiu r2,r3,0x0006   
 00047358: 1040ff2e beq r2,r0,0x00047014 
-0004735c: 00031080 sll r2,r3,2          
-                                        }
+0004735c: 00031080 sll r2,r3,2          if > 6
+                                        continue
 00047360: 3c018002 lui r1, 0x8002       
 00047364: 00220821 addu r1,r1,r2        
 00047368: 8c224050 lw r2,0x4050(r1)     r2 = *0x24050[r2]
 0004736c: 00000000 nop                  
-00047370: 00400008 jr r2                
+00047370: 00400008 jr r2                switch(dialogtextbuffer[*dialogtextbufferpos])
 00047374: 00000000 nop                  
+										case '0':<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 00047378: 27b10038 addiu r17,r29,0x0038 
 0004737c: 02202021 addu r4,r17,r0       
 00047380: 3c128010 lui r18, 0x8010      
@@ -348,13 +356,13 @@
 00047398: 24c60001 addiu r6,r6,0x0001   
 0004739c: 3c018010 lui r1, 0x8010       
 000473a0: ac267218 sw r6,0x7218(r1)     *dialogtextbufferpos = r6
-000473a4: 0c021183 jal 0x0008460c       8460c()//
+000473a4: 0c021183 jal 0x0008460c       strcpyn()//(dest,src, count)
 000473a8: 3c106666 lui r16, 0x6666      
 000473ac: 3c028010 lui r2, 0x8010       
 000473b0: 8c427218 lw r2,0x7218(r2)     r2 = *dialogtextbufferpos
 000473b4: 36106667 ori r16,r16,0x6667   
 000473b8: 02221021 addu r2,r17,r2       
-000473bc: 0c013f66 jal 0x0004fd98       4fd98()//
+000473bc: 0c013f66 jal 0x0004fd98       getsomething0e()//
 000473c0: a0400000 sb r0,0x0000(r2)     r2[0] = r0
 000473c4: 00500018 mult r2, r16         
 000473c8: 000217c3 sra r2,r2,31         
@@ -364,7 +372,7 @@
 000473d8: 1060000e beq r3,r0,0x00047414 
 000473dc: 00000000 nop                  
                                         if(r3 != 0)
-000473e0: 0c013f66 jal 0x0004fd98       4fd98()//
+000473e0: 0c013f66 jal 0x0004fd98       getsomething0e()//
 000473e4: 00000000 nop                  
 000473e8: 00500018 mult r2, r16         
 000473ec: 000217c3 sra r2,r2,31         
@@ -375,10 +383,10 @@
 00047400: 3c01800a lui r1, 0x800a       
 00047404: 00230821 addu r1,r1,r3        
 00047408: 8c25c3f4 lw r5,0xc3f4(r1)     r5 = *0x9c3f4[r3]
-0004740c: 0c021123 jal 0x0008448c       8448c()//
+0004740c: 0c021123 jal 0x0008448c       strcat()//(dest,src)
 00047410: 02202021 addu r4,r17,r0       
 
-0x00047414: 0c013f66 jal 0x0004fd98     4fd98()//
+0x00047414: 0c013f66 jal 0x0004fd98     getsomething0e()//
 00047418: 00000000 nop                  
 0004741c: 00500018 mult r2, r16         
 00047420: 00021fc3 sra r3,r2,31         
@@ -393,17 +401,18 @@
 00047444: 3c01800a lui r1, 0x800a       
 00047448: 00220821 addu r1,r1,r2        
 0004744c: 8c25c3f4 lw r5,0xc3f4(r1)     r5 = *0x9c3f4[r2]
-00047450: 0c021123 jal 0x0008448c       8448c()//
+00047450: 0c021123 jal 0x0008448c       strcat()//(dest,src)
 00047454: 02202021 addu r4,r17,r0       
 00047458: 3c058010 lui r5, 0x8010       
 0004745c: 8ca57218 lw r5,0x7218(r5)     r5 = *dialogtextbufferpos
 00047460: 02202021 addu r4,r17,r0       
-00047464: 0c021123 jal 0x0008448c       8448c()//
+00047464: 0c021123 jal 0x0008448c       strcat()//(dest,src)
 00047468: 00b22821 addu r5,r5,r18       
 0004746c: 02402021 addu r4,r18,r0       
 00047470: 08011d7d j 0x000475f4         
 00047474: 02202821 addu r5,r17,r0       
                                         else
+										case '1':<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 00047478: 27b00038 addiu r16,r29,0x0038 
 0004747c: 02002021 addu r4,r16,r0       
 00047480: 3c128010 lui r18, 0x8010      
@@ -415,17 +424,17 @@
 00047498: 24c60001 addiu r6,r6,0x0001   
 0004749c: 3c018010 lui r1, 0x8010       
 000474a0: ac267218 sw r6,0x7218(r1)     *dialogtextbufferpos = r6
-000474a4: 0c021183 jal 0x0008460c       8460c()//
+000474a4: 0c021183 jal 0x0008460c       strcpyn()//(dest,src, count)
 000474a8: 3c116666 lui r17, 0x6666      
 000474ac: 3c028010 lui r2, 0x8010       
 000474b0: 8c427218 lw r2,0x7218(r2)     r2 = *dialogtextbufferpos
 000474b4: 36316667 ori r17,r17,0x6667   
 000474b8: 02021021 addu r2,r16,r2       
-000474bc: 0c013f4a jal 0x0004fd28       4fd28()//
+000474bc: 0c013f4a jal 0x0004fd28       processsomething()//
 000474c0: a0400000 sb r0,0x0000(r2)     r2[0] = r0
-000474c4: 0c0120dd jal 0x00048374       48374()//
+000474c4: 0c0120dd jal 0x00048374       processsunknownvals()//
 000474c8: 00000000 nop                  
-000474cc: 0c013f60 jal 0x0004fd80       4fd80()//
+000474cc: 0c013f60 jal 0x0004fd80       getsomething10()//
 000474d0: 00000000 nop                  
 000474d4: 00510018 mult r2, r17         
 000474d8: 000217c3 sra r2,r2,31         
@@ -435,7 +444,7 @@
 000474e8: 1060000e beq r3,r0,0x00047524 
 000474ec: 00000000 nop                  
                                         if(r3 != 0)
-000474f0: 0c013f60 jal 0x0004fd80       4fd80()//
+000474f0: 0c013f60 jal 0x0004fd80       getsomething10()//
 000474f4: 00000000 nop                  
 000474f8: 00510018 mult r2, r17         
 000474fc: 000217c3 sra r2,r2,31         
@@ -446,10 +455,10 @@
 00047510: 3c01800a lui r1, 0x800a       
 00047514: 00230821 addu r1,r1,r3        
 00047518: 8c25c3f4 lw r5,0xc3f4(r1)     r5 = *0x9c3f4[r3]
-0004751c: 0c021123 jal 0x0008448c       8448c()//
+0004751c: 0c021123 jal 0x0008448c       strcat()//(dest,src)
 00047520: 02002021 addu r4,r16,r0       
 
-0x00047524: 0c013f60 jal 0x0004fd80     4fd80()//
+0x00047524: 0c013f60 jal 0x0004fd80     getsomething10()//
 00047528: 00000000 nop                  
 0004752c: 00510018 mult r2, r17         
 00047530: 00021fc3 sra r3,r2,31         
@@ -467,6 +476,8 @@
 00047560: 08011dc1 j 0x00047704         
 00047564: 00000000 nop                  
                                         else
+										case '2':<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+										case '4':<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 00047568: 27b00038 addiu r16,r29,0x0038 
 0004756c: 02002021 addu r4,r16,r0       
 00047570: 3c118010 lui r17, 0x8010      
@@ -477,7 +488,7 @@
 00047584: 24c60001 addiu r6,r6,0x0001   
 00047588: 3c018010 lui r1, 0x8010       
 0004758c: ac267218 sw r6,0x7218(r1)     *dialogtextbufferpos = r6
-00047590: 0c021183 jal 0x0008460c       8460c()//
+00047590: 0c021183 jal 0x0008460c       strcpyn()//(dest,src, count)
 00047594: 02202821 addu r5,r17,r0       
 00047598: 3c028010 lui r2, 0x8010       
 0004759c: 8c427218 lw r2,0x7218(r2)     r2 = *dialogtextbufferpos
@@ -493,25 +504,26 @@
 000475c4: 8c22c41c lw r2,0xc41c(r1)     r2 = *0x9c41c[r2]
 000475c8: 00000000 nop                  
 000475cc: 8c450000 lw r5,0x0000(r2)     r5 = r2[0]
-000475d0: 0c021123 jal 0x0008448c       8448c()//
+000475d0: 0c021123 jal 0x0008448c       strcat()//(dest,src)
 000475d4: 02002021 addu r4,r16,r0       
 000475d8: 3c058010 lui r5, 0x8010       
 000475dc: 8ca57218 lw r5,0x7218(r5)     r5 = *dialogtextbufferpos
 000475e0: 02002021 addu r4,r16,r0       
-000475e4: 0c021123 jal 0x0008448c       8448c()//
+000475e4: 0c021123 jal 0x0008448c       strcat()//(dest,src)
 000475e8: 00b12821 addu r5,r5,r17       
 000475ec: 02202021 addu r4,r17,r0       
 000475f0: 02002821 addu r5,r16,r0       
 
 0x000475f4: 0c021166 jal 0x00084598     copystring()//dest, src
 000475f8: 00000000 nop                  
-000475fc: 0c013f4a jal 0x0004fd28       4fd28()//
+000475fc: 0c013f4a jal 0x0004fd28       processsomething()//
 00047600: 00000000 nop                  
-00047604: 0c0120dd jal 0x00048374       48374()//
+00047604: 0c0120dd jal 0x00048374       processsunknownvals()//
 00047608: 00000000 nop                  
 0004760c: 08011c05 j 0x00047014         
 00047610: 00000000 nop                  
-                                        }
+                                        continue
+										case '3':<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 00047614: 27b00038 addiu r16,r29,0x0038 
 00047618: 02002021 addu r4,r16,r0       
 0004761c: 3c128010 lui r18, 0x8010      
@@ -522,15 +534,15 @@
 00047630: 24c60001 addiu r6,r6,0x0001   
 00047634: 3c018010 lui r1, 0x8010       
 00047638: ac267218 sw r6,0x7218(r1)     *dialogtextbufferpos = r6
-0004763c: 0c021183 jal 0x0008460c       8460c()//
+0004763c: 0c021183 jal 0x0008460c       strcpyn()//(dest,src, count)
 00047640: 02402821 addu r5,r18,r0       
 00047644: 3c028010 lui r2, 0x8010       
 00047648: 8c427218 lw r2,0x7218(r2)     r2 = *dialogtextbufferpos
 0004764c: 00000000 nop                  
 00047650: 02021021 addu r2,r16,r2       
-00047654: 0c013f4a jal 0x0004fd28       4fd28()//
+00047654: 0c013f4a jal 0x0004fd28       processsomething()//
 00047658: a0400000 sb r0,0x0000(r2)     r2[0] = r0
-0004765c: 0c0120dd jal 0x00048374       48374()//
+0004765c: 0c0120dd jal 0x00048374       processsunknownvals()//
 00047660: 3c116666 lui r17, 0x6666      
 00047664: 3c028010 lui r2, 0x8010       
 00047668: 8c427304 lw r2,0x7304(r2)     r2 = *0x107304
@@ -549,7 +561,7 @@
 0004769c: 3c01800a lui r1, 0x800a       
 000476a0: 00220821 addu r1,r1,r2        
 000476a4: 8c25c3f4 lw r5,0xc3f4(r1)     r5 = *0x9c3f4[r2]
-000476a8: 0c021123 jal 0x0008448c       8448c()//
+000476a8: 0c021123 jal 0x0008448c       strcat()//(dest,src)
 000476ac: 02002021 addu r4,r16,r0       
 000476b0: 3c028010 lui r2, 0x8010       
 000476b4: 8c427304 lw r2,0x7304(r2)     r2 = *0x107304
@@ -573,14 +585,14 @@
 000476fc: 00240821 addu r1,r1,r4        
 00047700: 8c25c3f4 lw r5,0xc3f4(r1)     r5 = *0x9c3f4[r4]
 
-0x00047704: 0c021123 jal 0x0008448c     8448c()//
+0x00047704: 0c021123 jal 0x0008448c     strcat()//(dest,src)
 00047708: 02002021 addu r4,r16,r0       
 0004770c: 3c058010 lui r5, 0x8010       
 00047710: 8ca57218 lw r5,0x7218(r5)     r5 = *dialogtextbufferpos
 00047714: 02002021 addu r4,r16,r0       
 00047718: 00b22821 addu r5,r5,r18       
 
-0x0004771c: 0c021123 jal 0x0008448c     8448c()//
+0x0004771c: 0c021123 jal 0x0008448c     strcat()//(dest,src)
 00047720: 00000000 nop                  
 00047724: 3c048010 lui r4, 0x8010       
 00047728: 248468a0 addiu r4,r4,0x68a0   //dialogtextbuffer
@@ -588,7 +600,8 @@
 00047730: 02002821 addu r5,r16,r0       
 00047734: 08011c05 j 0x00047014         
 00047738: 00000000 nop                  
-                                        }
+                                        continue
+										case '5':<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 0004773c: 27b10038 addiu r17,r29,0x0038 
 00047740: 02202021 addu r4,r17,r0       
 00047744: 3c128010 lui r18, 0x8010      
@@ -599,17 +612,17 @@
 00047758: 24c60001 addiu r6,r6,0x0001   
 0004775c: 3c018010 lui r1, 0x8010       
 00047760: ac267218 sw r6,0x7218(r1)     *dialogtextbufferpos = r6
-00047764: 0c021183 jal 0x0008460c       8460c()//
+00047764: 0c021183 jal 0x0008460c       strcpyn()//(dest,src, count)
 00047768: 02402821 addu r5,r18,r0       
 0004776c: 3c028010 lui r2, 0x8010       
 00047770: 8c427218 lw r2,0x7218(r2)     r2 = *dialogtextbufferpos
 00047774: 00000000 nop                  
 00047778: 02221021 addu r2,r17,r2       
-0004777c: 0c013f4a jal 0x0004fd28       4fd28()//
+0004777c: 0c013f4a jal 0x0004fd28       processsomething()//
 00047780: a0400000 sb r0,0x0000(r2)     r2[0] = r0
-00047784: 0c0120dd jal 0x00048374       48374()//
+00047784: 0c0120dd jal 0x00048374       processsunknownvals()//
 00047788: 00000000 nop                  
-0004778c: 0c013f60 jal 0x0004fd80       4fd80()//
+0004778c: 0c013f60 jal 0x0004fd80       getsomething10()//
 00047790: 00000000 nop                  
 00047794: 3c038010 lui r3, 0x8010       
 00047798: 8c637304 lw r3,0x7304(r3)     r3 = *0x107304
@@ -634,7 +647,7 @@
 000477e0: 3c01800a lui r1, 0x800a       
 000477e4: 00220821 addu r1,r1,r2        
 000477e8: 8c25c3f4 lw r5,0xc3f4(r1)     r5 = *0x9c3f4[r2]
-000477ec: 0c021123 jal 0x0008448c       8448c()//
+000477ec: 0c021123 jal 0x0008448c       strcat()//(dest,src)
 000477f0: 02202021 addu r4,r17,r0       
 000477f4: 3c026666 lui r2, 0x6666       
 
@@ -652,40 +665,42 @@
 00047824: 3c01800a lui r1, 0x800a       
 00047828: 00220821 addu r1,r1,r2        
 0004782c: 8c25c3f4 lw r5,0xc3f4(r1)     r5 = *0x9c3f4[r2]
-00047830: 0c021123 jal 0x0008448c       8448c()//
+00047830: 0c021123 jal 0x0008448c       strcat()//(dest,src)
 00047834: 02202021 addu r4,r17,r0       
 00047838: 3c058010 lui r5, 0x8010       
 0004783c: 8ca57218 lw r5,0x7218(r5)     r5 = *dialogtextbufferpos
 00047840: 02202021 addu r4,r17,r0       
-00047844: 0c021123 jal 0x0008448c       8448c()//
+00047844: 0c021123 jal 0x0008448c       strcat()//(dest,src)
 00047848: 00b22821 addu r5,r5,r18       
 0004784c: 02402021 addu r4,r18,r0       
 00047850: 0c021166 jal 0x00084598       copystring()//dest, src
 00047854: 02202821 addu r5,r17,r0       
 00047858: 08011c05 j 0x00047014         
 0004785c: 00000000 nop                  
-                                        }
+                                        continue
+										case 'T':///////////////////////////////////////////////////////////////////////////
 00047860: 3c028010 lui r2, 0x8010       
-00047864: 8c427218 lw r2,0x7218(r2)     r2 = *dialogtextbufferpos
+00047864: 8c427218 lw r2,0x7218(r2)     
 00047868: 3c038010 lui r3, 0x8010       
-0004786c: 8c637208 lw r3,0x7208(r3)     r3 = *dialogletterwait
+0004786c: 8c637208 lw r3,0x7208(r3)     
 00047870: 24420001 addiu r2,r2,0x0001   
 00047874: 00031840 sll r3,r3,1          
 00047878: 3c018010 lui r1, 0x8010       
-0004787c: ac227218 sw r2,0x7218(r1)     *dialogtextbufferpos = r2
+0004787c: ac227218 sw r2,0x7218(r1)     *dialogtextbufferpos++
 00047880: 3c018010 lui r1, 0x8010       
-00047884: ac23720c sw r3,0x720c(r1)     *dialogletterwaitremaining = r3
+00047884: ac23720c sw r3,0x720c(r1)     *dialogletterwaitremaining = dialogletterwait * 2
 00047888: 08011f6e j 0x00047db8         
 0004788c: 00000000 nop                  
                                         return
+										case 'H':///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 00047890: 3c028010 lui r2, 0x8010       
-00047894: 8c427218 lw r2,0x7218(r2)     r2 = *dialogtextbufferpos
+00047894: 8c427218 lw r2,0x7218(r2)     
 00047898: 3c048010 lui r4, 0x8010       
 0004789c: 248468a0 addiu r4,r4,0x68a0   //dialogtextbuffer
 000478a0: 24420001 addiu r2,r2,0x0001   
 000478a4: 3c018010 lui r1, 0x8010       
-000478a8: ac227218 sw r2,0x7218(r1)     *dialogtextbufferpos = r2
-000478ac: 0c01215c jal 0x00048570       getrenderedtextwidth()//(text)
+000478a8: ac227218 sw r2,0x7218(r1)     *dialogtextbufferpos++
+000478ac: 0c01215c jal 0x00048570       width = getrenderedtextwidth(dialogtextbuffer[dialogtextbufferpos])//(text)
 000478b0: 00442021 addu r4,r2,r4        
 000478b4: 3c038010 lui r3, 0x8010       
 000478b8: 8c637214 lw r3,0x7214(r3)     r3 = *0x107214
@@ -693,79 +708,88 @@
 000478c0: 00031880 sll r3,r3,2          
 000478c4: 3c018010 lui r1, 0x8010       
 000478c8: 00230821 addu r1,r1,r3        
-000478cc: ac227220 sw r2,0x7220(r1)     *0x107220[r3] = r2
+000478cc: ac227220 sw r2,0x7220(r1)     *0x107220[r3] = width
 000478d0: 08011c05 j 0x00047014         
 000478d4: 00000000 nop                  
-                                        }
+                                        continue
+										case 'N':///////////////////////////////////////////////////////////////////////////////////////////////////
 000478d8: 3c028010 lui r2, 0x8010       
-000478dc: 8c427218 lw r2,0x7218(r2)     r2 = *dialogtextbufferpos
+000478dc: 8c427218 lw r2,0x7218(r2)     
 000478e0: 00000000 nop                  
 000478e4: 24420001 addiu r2,r2,0x0001   
 000478e8: 3c018010 lui r1, 0x8010       
-000478ec: ac227218 sw r2,0x7218(r1)     *dialogtextbufferpos = r2
+000478ec: ac227218 sw r2,0x7218(r1)     *dialogtextbufferpos++
 000478f0: 16c00100 bne r22,r0,0x00047cf4
 000478f4: 00000000 nop                  
                                         if(r22 != 0)
 											goto near_end
 000478f8: 08011f3d j 0x00047cf4         
-000478fc: 24150001 addiu r21,r0,0x0001  
+000478fc: 24150001 addiu r21,r0,0x0001  nearendflag = 1
                                         goto near_end
+										case 'A':///////////////////////////////////////////////////////////////////////////////////////////////////////
 00047900: 24020001 addiu r2,r0,0x0001   
 00047904: 3c018010 lui r1, 0x8010       
-00047908: ac2272fc sw r2,0x72fc(r1)     *0x1072fc = r2
+00047908: ac2272fc sw r2,0x72fc(r1)     *0x1072fc = 1
 0004790c: 3c028010 lui r2, 0x8010       
-00047910: 8c427200 lw r2,0x7200(r2)     r2 = *dialogsomething
+00047910: 8c427200 lw r2,0x7200(r2)     
 00047914: 3c038010 lui r3, 0x8010       
-00047918: 8c637218 lw r3,0x7218(r3)     r3 = *dialogtextbufferpos
+00047918: 8c637218 lw r3,0x7218(r3)     
 0004791c: 34420008 ori r2,r2,0x0008     
 00047920: 24630001 addiu r3,r3,0x0001   
 00047924: 3c018010 lui r1, 0x8010       
-00047928: ac227200 sw r2,0x7200(r1)     *dialogsomething = r2
+00047928: ac227200 sw r2,0x7200(r1)     *dialogsomething |= 8;//turn on this bit
 0004792c: 3c018010 lui r1, 0x8010       
-00047930: ac237218 sw r3,0x7218(r1)     *dialogtextbufferpos = r3
+00047930: ac237218 sw r3,0x7218(r1)     *dialogtextbufferpos++
 00047934: 08011f6e j 0x00047db8         
 00047938: 00000000 nop                  
                                         return
-0004793c: 3c028010 lui r2, 0x8010       
+										case 'B':///////////////////////////////////////////////////////////////////////////////////////////////////////
+0004793c: 3c028010 lui r2, 0x8010       //no sfx
 00047940: 8c427218 lw r2,0x7218(r2)     r2 = *dialogtextbufferpos
 00047944: 08011e68 j 0x000479a0         
 00047948: 2403ffff addiu r3,r0,0xffff   
                                         else
-0004794c: 3c028010 lui r2, 0x8010       
+										case 'C'://///////////////////////////////////////////////////////////////////////////////////////////
+0004794c: 3c028010 lui r2, 0x8010       //sfx 0
 00047950: 8c427218 lw r2,0x7218(r2)     r2 = *dialogtextbufferpos
 00047954: 3c018010 lui r1, 0x8010       
-00047958: ac207308 sw r0,0x7308(r1)     *0x107308 = r0
+00047958: ac207308 sw r0,0x7308(r1)     *dialogtextsfx = r0
 0004795c: 08011e6b j 0x000479ac         
 00047960: 24420001 addiu r2,r2,0x0001   
                                         continue
-00047964: 3c028010 lui r2, 0x8010       
+										case 'D':///////////////////////////////////////////////////////////////////////////////////////
+00047964: 3c028010 lui r2, 0x8010       //sfx 1
 00047968: 8c427218 lw r2,0x7218(r2)     r2 = *dialogtextbufferpos
 0004796c: 08011e68 j 0x000479a0         
 00047970: 24030001 addiu r3,r0,0x0001   
                                         else
-00047974: 3c028010 lui r2, 0x8010       
+										case 'E':////////////////////////////////////////////////////////////////////////////////////////
+00047974: 3c028010 lui r2, 0x8010       //sfx 2
 00047978: 8c427218 lw r2,0x7218(r2)     r2 = *dialogtextbufferpos
 0004797c: 08011e68 j 0x000479a0         
 00047980: 24030002 addiu r3,r0,0x0002   
                                         else
-00047984: 3c028010 lui r2, 0x8010       
+										case 'F'://///////////////////////////////////////////////////////////////////////////////////////////////
+00047984: 3c028010 lui r2, 0x8010       //sfx 3
 00047988: 8c427218 lw r2,0x7218(r2)     r2 = *dialogtextbufferpos
 0004798c: 08011e68 j 0x000479a0         
 00047990: 24030003 addiu r3,r0,0x0003   
                                         else
-00047994: 3c028010 lui r2, 0x8010       
+										case 'G'://///////////////////////////////////////////////////////////////////////////////////////////////////
+00047994: 3c028010 lui r2, 0x8010       //sfx 4
 00047998: 8c427218 lw r2,0x7218(r2)     r2 = *dialogtextbufferpos
 0004799c: 24030004 addiu r3,r0,0x0004   
 
 0x000479a0: 3c018010 lui r1, 0x8010     
-000479a4: ac237308 sw r3,0x7308(r1)     *0x107308 = r3
+000479a4: ac237308 sw r3,0x7308(r1)     *dialogtextsfx = r3
 000479a8: 24420001 addiu r2,r2,0x0001   
 
 0x000479ac: 3c018010 lui r1, 0x8010     
 000479b0: ac227218 sw r2,0x7218(r1)     *dialogtextbufferpos = r2
 000479b4: 08011c05 j 0x00047014         
 000479b8: 00000000 nop                  
-                                        }
+                                        continue
+										case 'M':////////////////////////////////////////////////////////////////////////////////////////////////////////////
 000479bc: 3c048010 lui r4, 0x8010       
 000479c0: 8c847218 lw r4,0x7218(r4)     r4 = *dialogtextbufferpos
 000479c4: 3c058010 lui r5, 0x8010       
@@ -779,7 +803,7 @@
 000479e4: 24020043 addiu r2,r0,0x0043   
 000479e8: 1462fd8a bne r3,r2,0x00047014 
 000479ec: 24820002 addiu r2,r4,0x0002   
-                                        }
+                                        continue
 000479f0: 3c018010 lui r1, 0x8010       
 000479f4: ac227218 sw r2,0x7218(r1)     *dialogtextbufferpos = r2
 000479f8: 00451021 addu r2,r2,r5        
@@ -787,15 +811,16 @@
 00047a00: 24020045 addiu r2,r0,0x0045   
 00047a04: 1462fd83 bne r3,r2,0x00047014 
 00047a08: 24820003 addiu r2,r4,0x0003   
-                                        }
+                                        continue
 00047a0c: 3c018010 lui r1, 0x8010       
 00047a10: ac227218 sw r2,0x7218(r1)     *dialogtextbufferpos = r2
 00047a14: 24020004 addiu r2,r0,0x0004   
 00047a18: 3c018010 lui r1, 0x8010       
-00047a1c: ac227200 sw r2,0x7200(r1)     *dialogsomething = r2
+00047a1c: ac227200 sw r2,0x7200(r1)     *dialogsomething = 4
 00047a20: 08011c05 j 0x00047014         
 00047a24: 00000000 nop                  
-                                        }
+                                        continue
+										case '0'-'9'://///////////////////////////////////////////////////////////////////////////////////////////
 00047a28: 3c038010 lui r3, 0x8010       
 00047a2c: 8c637218 lw r3,0x7218(r3)     r3 = *dialogtextbufferpos
 00047a30: a3a00028 sb r0,0x0028(r29)    
@@ -888,52 +913,52 @@
 00047b48: 00832025 or r4,r4,r3          
 00047b4c: 08011c05 j 0x00047014         
 00047b50: acc40000 sw r4,0x0000(r6)     r6[0] = r4
-                                        }
-
+                                        }//main loop
+destination_a:							//default
 0x00047b54: 3c048010 lui r4, 0x8010     
 00047b58: 8c847218 lw r4,0x7218(r4)     r4 = *dialogtextbufferpos
 00047b5c: 3c108010 lui r16, 0x8010      
 00047b60: 261068a0 addiu r16,r16,0x68a0 //dialogtextbuffer
-00047b64: 0c01422a jal 0x000508a8       508a8()//
+00047b64: 0c01422a jal 0x000508a8       iskanji = validatekanji(dialogtextbuffer+dialogtextbufferpos)// (text) //makes system call
 00047b68: 00902021 addu r4,r4,r16       
 00047b6c: 10400017 beq r2,r0,0x00047bcc 
 00047b70: 00000000 nop                  
-                                        if(r2 != 0)
+                                        if(iskanji){
 00047b74: 3c048002 lui r4, 0x8002       
-00047b78: 24843f94 addiu r4,r4,0x3f94   //0x23f94
-00047b7c: 0c020f82 jal 0x00083e08       printdebug()//
+00047b78: 24843f94 addiu r4,r4,0x3f94   	//0x23f94
+00047b7c: 0c020f82 jal 0x00083e08       	printdebug()//
 00047b80: 00000000 nop                  
 00047b84: 3c048010 lui r4, 0x8010       
-00047b88: 8c847218 lw r4,0x7218(r4)     r4 = *dialogtextbufferpos
-00047b8c: 0c020f82 jal 0x00083e08       printdebug()//
+00047b88: 8c847218 lw r4,0x7218(r4)     	r4 = *dialogtextbufferpos
+00047b8c: 0c020f82 jal 0x00083e08       	printdebug()//
 00047b90: 00902021 addu r4,r4,r16       
 00047b94: 3c048002 lui r4, 0x8002       
-00047b98: 24843fa4 addiu r4,r4,0x3fa4   //0x23fa4
-00047b9c: 0c020f82 jal 0x00083e08       printdebug()//
+00047b98: 24843fa4 addiu r4,r4,0x3fa4   	//0x23fa4
+00047b9c: 0c020f82 jal 0x00083e08       	printdebug()//
 00047ba0: 00000000 nop                  
 00047ba4: 3c038010 lui r3, 0x8010       
-00047ba8: 8c637218 lw r3,0x7218(r3)     r3 = *dialogtextbufferpos
+00047ba8: 8c637218 lw r3,0x7218(r3)     	r3 = *dialogtextbufferpos
 00047bac: 2402003f addiu r2,r0,0x003f   
 00047bb0: a3a20020 sb r2,0x0020(r29)    
 00047bb4: a3a00021 sb r0,0x0021(r29)    
 00047bb8: 24630002 addiu r3,r3,0x0002   
 00047bbc: 3c018010 lui r1, 0x8010       
-00047bc0: ac237218 sw r3,0x7218(r1)     *dialogtextbufferpos = r3
+00047bc0: ac237218 sw r3,0x7218(r1)     	*dialogtextbufferpos = r3
 00047bc4: 08011efe j 0x00047bf8         
-00047bc8: 3c035555 lui r3, 0x5555       
-                                        else
+00047bc8: 3c035555 lui r3, 0x5555       }
+                                        else{
 
 0x00047bcc: 3c028010 lui r2, 0x8010     
-00047bd0: 8c427218 lw r2,0x7218(r2)     r2 = *dialogtextbufferpos
+00047bd0: 8c427218 lw r2,0x7218(r2)     	
 00047bd4: 00000000 nop                  
 00047bd8: 00501821 addu r3,r2,r16       
-00047bdc: 90630000 lbu r3,0x0000(r3)    r3 = r3[0]
+00047bdc: 90630000 lbu r3,0x0000(r3)    	
 00047be0: 24420001 addiu r2,r2,0x0001   
 00047be4: 3c018010 lui r1, 0x8010       
-00047be8: ac227218 sw r2,0x7218(r1)     *dialogtextbufferpos = r2
-00047bec: a3a00021 sb r0,0x0021(r29)    
-00047bf0: a3a30020 sb r3,0x0020(r29)    
-00047bf4: 3c035555 lui r3, 0x5555       
+00047be8: ac227218 sw r2,0x7218(r1)     	
+00047bec: a3a00021 sb r0,0x0021(r29)    	txt[1]=0
+00047bf0: a3a30020 sb r3,0x0020(r29)    	txt[0]=dialogtextbuffer[dialogtextbufferpos++]
+00047bf4: 3c035555 lui r3, 0x5555       }
 
 0x00047bf8: 3c078010 lui r7, 0x8010     
 00047bfc: 8ce77210 lw r7,0x7210(r7)     r7 = *0x107210
@@ -948,7 +973,7 @@
 00047c20: 240603c0 addiu r6,r0,0x03c0   
 00047c24: afa00014 sw r0,0x0014(r29)    
 00047c28: 3c038015 lui r3, 0x8015       
-00047c2c: 846330d4 lh r3,0x30d4(r3)     r3 = *0x1530d4
+00047c2c: 846330d4 lh r3,0x30d4(r3)     //r3 = *dialogtextlinestartx
 00047c30: 24020100 addiu r2,r0,0x0100   
 00047c34: afa20018 sw r2,0x0018(r29)    
 00047c38: 24020010 addiu r2,r0,0x0010   
@@ -963,10 +988,10 @@
 00047c5c: 00073900 sll r7,r7,4          
 00047c60: 24e70120 addiu r7,r7,0x0120   
 00047c64: 00073c00 sll r7,r7,16         
-00047c68: 0c0121a9 jal 0x000486a4       rendertextinner()//(linetext, outputbitmap, vramx, vramy, startx, starty, outputbitmapwidth, outputbitmapheight )
+00047c68: 0c0121a9 jal 0x000486a4       rendertextinner(txt, rendertextbuff, 0x03c0, ((*0x107210 + *0x107214) - (((*0x107210 + *0x107214) * 0x55555556)>>32) * 3) * 8 + 0x120, dialogtextlinestartx, 0, 0x100, 0x10)//(linetext, outputbitmap, vramx, vramy, startx, starty, outputbitmapwidth, outputbitmapheight )
 00047c6c: 00073c03 sra r7,r7,16         
 00047c70: 3c038015 lui r3, 0x8015       
-00047c74: 8c6330d4 lw r3,0x30d4(r3)     r3 = *0x1530d4
+00047c74: 8c6330d4 lw r3,0x30d4(r3)     
 00047c78: 93a40020 lbu r4,0x0020(r29)   
 00047c7c: 24630001 addiu r3,r3,0x0001   
 00047c80: 00041080 sll r2,r4,2          
@@ -974,93 +999,94 @@
 00047c88: 00021080 sll r2,r2,2          
 00047c8c: 3c01800a lui r1, 0x800a       
 00047c90: 00220821 addu r1,r1,r2        
-00047c94: 8c24b9cc lw r4,0xb9cc(r1)     r4 = *fontcharinfos.kerning[r2]
+00047c94: 8c24b9cc lw r4,0xb9cc(r1)     
 00047c98: 3c028010 lui r2, 0x8010       
-00047c9c: 8c42721c lw r2,0x721c(r2)     r2 = *0x10721c
+00047c9c: 8c42721c lw r2,0x721c(r2)     
 00047ca0: 00641821 addu r3,r3,r4        
 00047ca4: 30420001 andi r2,r2,0x0001    
 00047ca8: 3c018015 lui r1, 0x8015       
-00047cac: ac2330d4 sw r3,0x30d4(r1)     *0x1530d4 = r3
+00047cac: ac2330d4 sw r3,0x30d4(r1)     *dialogtextlinestartx += fontcharinfos.kerning[txt[0]] + 1
 00047cb0: 1440000a bne r2,r0,0x00047cdc 
 00047cb4: 24020004 addiu r2,r0,0x0004   
-                                        if(r2 == 0)
+                                        if(*dialogrendercharcounter & 1 == 0){//every other
 00047cb8: 3c048010 lui r4, 0x8010       
-00047cbc: 8c847308 lw r4,0x7308(r4)     r4 = *0x107308
+00047cbc: 8c847308 lw r4,0x7308(r4)     //r4 = *dialogtextsfx
 00047cc0: 00000000 nop                  
 00047cc4: 10820005 beq r4,r2,0x00047cdc 
 00047cc8: 00000000 nop                  
-                                        if(r4 != r2)
+											if(dialogtextsfx != 4
 00047ccc: 04800003 bltz r4, 0x00047cdc  
 00047cd0: 00000000 nop                  
-                                        if(r4 >= 0)
-00047cd4: 0c012813 jal 0x0004a04c       playsoundeffect()//
-00047cd8: 2484004f addiu r4,r4,0x004f   
-
+											&& dialogtextsfx >= 0){
+00047cd4: 0c012813 jal 0x0004a04c       		playsoundeffect(0x4f + dialogtextsfx)//
+00047cd8: 2484004f addiu r4,r4,0x004f   	}
+										}
 0x00047cdc: 3c028010 lui r2, 0x8010     
-00047ce0: 8c42721c lw r2,0x721c(r2)     r2 = *0x10721c
+00047ce0: 8c42721c lw r2,0x721c(r2)     
 00047ce4: 00000000 nop                  
 00047ce8: 24420001 addiu r2,r2,0x0001   
 00047cec: 3c018010 lui r1, 0x8010       
-00047cf0: ac22721c sw r2,0x721c(r1)     *0x10721c = r2
+00047cf0: ac22721c sw r2,0x721c(r1)     *dialogrendercharcounter++
 near_end:
 0x00047cf4: 12a00030 beq r21,r0,0x00047db8
 00047cf8: 00000000 nop                  
-                                        if(r21 != 0)
+                                        if(nearendflag != 0){
 00047cfc: 3c04801d lui r4, 0x801d       
-00047d00: 24840598 addiu r4,r4,0x0598   //rendertextbuff
+00047d00: 24840598 addiu r4,r4,0x0598   	//rendertextbuff
 00047d04: 3c018010 lui r1, 0x8010       
-00047d08: ac20721c sw r0,0x721c(r1)     *0x10721c = r0
+00047d08: ac20721c sw r0,0x721c(r1)     	*dialogrendercharcounter = 0
 00047d0c: 3c018015 lui r1, 0x8015       
-00047d10: ac2030d4 sw r0,0x30d4(r1)     *0x1530d4 = r0
-00047d14: 0c0210e3 jal 0x0008438c       zerooutmemory()//ptr, length
+00047d10: ac2030d4 sw r0,0x30d4(r1)     	*dialogtextlinestartx = 0
+00047d14: 0c0210e3 jal 0x0008438c       	zerooutmemory()//ptr, length
 00047d18: 24050800 addiu r5,r0,0x0800   
 00047d1c: 3c048010 lui r4, 0x8010       
-00047d20: 8c847214 lw r4,0x7214(r4)     r4 = *0x107214
+00047d20: 8c847214 lw r4,0x7214(r4)     	r4 = *0x107214
 00047d24: 24020002 addiu r2,r0,0x0002   
 00047d28: 14820015 bne r4,r2,0x00047d80 
 00047d2c: 24830001 addiu r3,r4,0x0001   
-                                        if(r4 == r2)
+											if(r4 == r2){
 00047d30: 3c048010 lui r4, 0x8010       
-00047d34: 8c8472d8 lw r4,0x72d8(r4)     r4 = *0x1072d8
+00047d34: 8c8472d8 lw r4,0x72d8(r4)     		//r4 = *0x1072d8
 00047d38: 3c038010 lui r3, 0x8010       
-00047d3c: 8c6372dc lw r3,0x72dc(r3)     r3 = *0x1072dc
+00047d3c: 8c6372dc lw r3,0x72dc(r3)     		//r3 = *0x1072dc
 00047d40: 24020001 addiu r2,r0,0x0001   
 00047d44: 3c018010 lui r1, 0x8010       
-00047d48: ac2272cc sw r2,0x72cc(r1)     *dialogchoiceunknown1 = r2
+00047d48: ac2272cc sw r2,0x72cc(r1)     		*dialogchoiceunknown1 = r2
 00047d4c: 30630001 andi r3,r3,0x0001    
 00047d50: 3c018010 lui r1, 0x8010       
-00047d54: ac2472d4 sw r4,0x72d4(r1)     *0x1072d4 = r4
+00047d54: ac2472d4 sw r4,0x72d4(r1)     		*0x1072d4 = r4
 00047d58: 10600005 beq r3,r0,0x00047d70 
 00047d5c: 00000000 nop                  
-                                        if(r3 != 0)
+												if(*0x1072dc & 1 != 0){
 00047d60: 3c028010 lui r2, 0x8010       
-00047d64: 8c4272e4 lw r2,0x72e4(r2)     r2 = *0x1072e4
+00047d64: 8c4272e4 lw r2,0x72e4(r2)     			r2 = *0x1072e4
 00047d68: 3c018010 lui r1, 0x8010       
-00047d6c: ac2272e0 sw r2,0x72e0(r1)     *0x1072e0 = r2
+00047d6c: ac2272e0 sw r2,0x72e0(r1)     			*0x1072e0 = r2
 
 0x00047d70: 3c018010 lui r1, 0x8010     
-00047d74: ac207228 sw r0,0x7228(r1)     *0x107228 = r0
-00047d78: 08011f6e j 0x00047db8         
-00047d7c: 00000000 nop                  
-                                        return
+00047d74: ac207228 sw r0,0x7228(r1)     			*0x107228 = r0
+00047d78: 08011f6e j 0x00047db8         		}
+00047d7c: 00000000 nop                  	}
+											else{
 
 0x00047d80: 3c018010 lui r1, 0x8010     
-00047d84: ac237214 sw r3,0x7214(r1)     *0x107214 = r3
+00047d84: ac237214 sw r3,0x7214(r1)     		*0x107214 = r3
 00047d88: 24020003 addiu r2,r0,0x0003   
 00047d8c: 14620003 bne r3,r2,0x00047d9c 
 00047d90: 00000000 nop                  
-                                        if(r3 == r2)
+												if(r3 == r2){
 00047d94: 3c018010 lui r1, 0x8010       
-00047d98: ac247214 sw r4,0x7214(r1)     *0x107214 = r4
-
+00047d98: ac247214 sw r4,0x7214(r1)     			*0x107214 = r4
+												}
 0x00047d9c: 3c028010 lui r2, 0x8010     
-00047da0: 8c427214 lw r2,0x7214(r2)     r2 = *0x107214
+00047da0: 8c427214 lw r2,0x7214(r2)     		r2 = *0x107214
 00047da4: 00000000 nop                  
 00047da8: 00021080 sll r2,r2,2          
 00047dac: 3c018010 lui r1, 0x8010       
 00047db0: 00220821 addu r1,r1,r2        
-00047db4: ac207220 sw r0,0x7220(r1)     *0x107220[r2] = r0
-
+00047db4: ac207220 sw r0,0x7220(r1)     		*0x107220[r2] = r0
+											}
+										}
 0x00047db8: 8fbf1ca4 lw r31,0x1ca4(r29) 
 00047dbc: 8fb61ca0 lw r22,0x1ca0(r29)   
 00047dc0: 8fb51c9c lw r21,0x1c9c(r29)   

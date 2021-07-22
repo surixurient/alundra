@@ -36,11 +36,12 @@ namespace GraphicsTools.Alundra
         public short x, y;
         public byte u, v;
         public short uipaletteindex;//(clut address - 0x7812)/ 64
+        public short spritesheet;
         public short w, h;
 
         public long signature { get
             {
-                return 0 | uipaletteindex << 8 | u << 16 | v << 24 | w << 32 | h << 38;
+                return spritesheet | uipaletteindex << 8 | u << 16 | v << 24 | w << 32 | h << 38;
             }
         }
     }

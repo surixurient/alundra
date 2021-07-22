@@ -12,7 +12,8 @@ namespace GraphicsTools.Alundra
         public GameMap gameMap;
         public GameMap global;
         public BalanceBin balancebin;
-        public GameState(GameMap global, BalanceBin balancebin)
+        public SoundBin soundbin;
+        public GameState(GameMap global, BalanceBin balancebin, SoundBin soundbin)
         {
             this.global = global;
         }

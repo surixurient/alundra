@@ -145,11 +145,37 @@ namespace GraphicsTools.Alundra
             AddFunction(0x869bc, "SetPolyFT4", "setcmdto4pointtexturedpoly");
             AddFunction(0x86a20, "SetSprt", "setcmdtosomething1");
             AddFunction(0x86930, "SetShadeTex", "setsomethingtocmd3");
-            AddFunction(0x84598, "copystring", "dest, src");
+            AddFunction(0x84598, "strcpy", "(dest, src)");
+            AddFunction(0x8460c, "strcpyn", "(dest, src, length)");
+            AddFunction(0x8448c, "strcat", "(dest, src)");
             AddFunction(0x87508, "clearimage", "");
             AddFunction(0x8759c, "loadimage", "");
             AddFunction(0x87600, "storeimage", "");
             AddFunction(0x87374, "drawsync", "");
+
+            AddFunction(0x4f2b4, "getsomething00", "");
+            AddFunction(0x4f1e8, "getsomething02", "");
+            AddFunction(0x4f44c, "getsomething04", "");
+            AddFunction(0x4f4c0, "getsomething04special", "(val)");
+            AddFunction(0x4f4ec, "getsomething04specialsub", "(val)//subtracts provided val instead of adds");
+            AddFunction(0x4f464, "getsomething04specialinner", "(val)");
+            AddFunction(0x4f380, "getsomething06", "");
+            AddFunction(0x4f3f4, "getsomething06special", "(val)");
+            AddFunction(0x4f398, "getsomething06specialinner", "(val)");
+            AddFunction(0x4f518, "getsomething08", "");
+            AddFunction(0x4f58c, "getsomething08special", "(val)");
+            AddFunction(0x4f5b8, "getsomething08specialsub", "(val)//subtracts provided val instead of adds");
+            AddFunction(0x4f530, "getsomething08specialinner", "(val)");
+            AddFunction(0x4fd98, "getsomething0e", "");
+            AddFunction(0x4fd80, "getsomething10", "");
+            AddFunction(0x4fd28, "processsomething", "");
+            AddFunction(0x48374, "processsunknownvals", "");
+            AddFunction(0x508a8, "validatekanji", "(text) //makes system call");
+
+            AddGlobalVariable(0x1530d4, "dialogtextlinestartx", "");
+            AddGlobalVariable(0x107308, "dialogtextsfx", "");
+            AddGlobalVariable(0x119888, "something", "");
+            AddGlobalVariable(0x10721c, "dialogrendercharcounter", "");
 
             AddFunction(0x4c378, "playmusic", "");
 
@@ -179,10 +205,19 @@ namespace GraphicsTools.Alundra
             AddGlobalVariable(0x1072f8, "dialogchoicesaved", "");
             AddGlobalVariable(0x107200, "dialogsomething", "");
             AddGlobalVariable(0x107204, "dialogsomethingbit3on", "");
-            AddGlobalVariable(0x1ef1ac, "dialogval1", "");
-            AddGlobalVariable(0x1ef1b0, "dialogval2", "");
-            AddGlobalVariable(0x1ef188, "dialogval1saved", "");
-            AddGlobalVariable(0x1ef18c, "dialogval2saved", "");
+            AddGlobalVariable(0x1ef1ac, "dialogvalx", "");
+            AddGlobalVariable(0x1ef1b0, "dialogvaly", "");
+            AddGlobalVariable(0x1ef188, "dialogvalxsaved", "");
+            AddGlobalVariable(0x1ef18c, "dialogvalysaved", "");
+            AddGlobalVariable(0x1ef190, "dialogvalxsaved2", "");
+            AddGlobalVariable(0x1ef194, "dialogvalysaved2", "");
+            AddGlobalVariable(0x1ef198, "dialogvalxmodded", "");
+            AddGlobalVariable(0x1ef19c, "dialogvalymodded", "");
+
+            AddGlobalVariable(0x1ef1a0, "dialogvalunknown1", "");
+            AddGlobalVariable(0x1ef1a4, "dialogvalunknown2", "");
+            AddGlobalVariable(0x1ef1a8, "dialogvalunknown3", "");
+
             AddGlobalVariable(0x1ef174, "dialogxpos", "");
             AddGlobalVariable(0x1ef178, "dialogypos", "");
             AddGlobalVariable(0x1ef17c, "dialogzpos", "");
@@ -281,7 +316,7 @@ namespace GraphicsTools.Alundra
 
             AddGlobalVariable(0xa6bf4, "boxdrawer2", "");
             AddGlobalVariable(0x1072ec, "dialogchoiceunknown1", "");
-            AddGlobalVariable(0x1072cc, "dialogchoiceunknown1", "");
+            AddGlobalVariable(0x1072cc, "dialogchoiceunknown2", "");
 
             AddFunction(0x3a3e4, "getinitdata", "");//20 byte long records
 
@@ -316,7 +351,6 @@ namespace GraphicsTools.Alundra
             AddFunction(0x3a784, "spawnentity", "(ownerentity,ismapsprite,tableindex,xpos,ypos,zpos,dir) //called by a ton of stuff");
             AddFunction(0x32fa8, "getcontentsitemid", "(contentsid) uses randomized tables to return itemid");
             AddFunction(0x3303c, "checkitemid", "(itemid) not fully implimented");
-            AddFunction(0x4f380, "getsomething", "() called by a ton of stuff, no idea what its getting");
 
 
 

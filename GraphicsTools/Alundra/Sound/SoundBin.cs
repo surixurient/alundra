@@ -80,6 +80,14 @@ namespace GraphicsTools.Alundra
         public const int samples_per_block = 28;
         const int samples_from_last_block = 3;
 
+        public void PlaySoundEffect(int sfxid)
+        {
+            int start, end;
+            bool repeat;
+            PlaySoundEffect(sfxid, -1, 1, true, out start, out end, out repeat);
+
+        }
+
         public byte[] PlaySoundEffect(int sfxid, int note, int velocity, bool is8bit, out int loop_start, out int loop_end, out bool repeat)
         {
             loop_start = loop_end = -1;

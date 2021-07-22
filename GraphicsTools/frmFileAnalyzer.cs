@@ -1567,10 +1567,10 @@ namespace GraphicsTools
             }
             s += "};";
             Clipboard.SetText(s);*/
-
+            
             s = "cmds = new {\r\n";
             dex = 0;
-            for (int i = 0;i<255;i++)
+            for (int i = 0;i<255*2;i++)
             {
                 
                 var cmd = new Alundra.UIDrawCmd();
@@ -1584,7 +1584,7 @@ namespace GraphicsTools
             }
             s += "}";
             Clipboard.SetText(s);
-
+/*
             s = "infos = new {\r\n";
             dex = 0;
             for (int i = 0; i < 128; i++)
@@ -1625,6 +1625,7 @@ namespace GraphicsTools
             }
             s += "}";
             Clipboard.SetText(s);
+            */
         }
 
         private void btnFuncContainsAddr_Click(object sender, EventArgs e)

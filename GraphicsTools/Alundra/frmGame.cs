@@ -14,11 +14,11 @@ namespace GraphicsTools.Alundra
     {
         GameEngine engine;
         Timer tmr;
-        public frmGame(DatasBin datasBin)
+        public frmGame(DatasBin datasBin, SoundBin soundBin)
         {
             InitializeComponent();
 
-            engine = new GameEngine(datasBin);
+            engine = new GameEngine(datasBin, soundBin);
             var map = datasBin.gamemaps[165];
             engine.LoadMap(map);
             tmr = new Timer();

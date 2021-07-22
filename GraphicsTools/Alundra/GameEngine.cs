@@ -15,7 +15,7 @@ namespace GraphicsTools.Alundra
         Dictionary<int, List<Bitmap>> CachedSprites;
         GameState game;
         EventHandlers eventHandlers;
-        public GameEngine(DatasBin datasBin)
+        public GameEngine(DatasBin datasBin, SoundBin soundBin)
         {
             this.datasBin = datasBin;
             var reader = datasBin.OpenBin();
@@ -23,7 +23,7 @@ namespace GraphicsTools.Alundra
                 datasBin.alundragamemap.Load(reader, false);
             reader.Close();
 
-            game = new GameState (datasBin.alundragamemap, datasBin.balancebin) { CamXPos = 100 << 16, CamYPos = 100 << 16 };
+            game = new GameState (datasBin.alundragamemap, datasBin.balancebin, soundBin) { CamXPos = 100 << 16, CamYPos = 100 << 16 };
 
             eventHandlers = new EventHandlers(game);
         }

@@ -392,7 +392,7 @@ namespace GraphicsTools
             ofd.ShowDialog();
             if (!string.IsNullOrWhiteSpace(ofd.FileName))
             {
-                var frmGame = new Alundra.frmGame(new Alundra.DatasBin(ofd.FileName));
+                var frmGame = new Alundra.frmGame(new Alundra.DatasBin(ofd.FileName), new Alundra.SoundBin("C:\\git\\alundra\\GraphicsTools\\SOUND.BIN"));
                 frmGame.Show();
             }
         }

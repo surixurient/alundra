@@ -60,44 +60,44 @@
 00059b44: a2030006 sb r3,0x0006(r16)      r16[6] = 0xff
 00059b48: 8fab0018 lw r11,0x0018(r29)     
 00059b4c: 26940001 addiu r20,r20,0x0001   
-00059b50: a20b000c sb r11,0x000c(r16)     r16[c] = sx
+00059b50: a20b000c sb r11,0x000c(r16)     r16[c] = sx//u0
 00059b54: 8faa0014 lw r10,0x0014(r29)     
 00059b58: 2a820002 slti r2,r20,0x0002     
-00059b5c: a21e0014 sb r30,0x0014(r16)     r16[14] = sx+width
-00059b60: a20b001c sb r11,0x001c(r16)     r16[1c] = sx
-00059b64: a217001d sb r23,0x001d(r16)     r16[1d] = sy+height
-00059b68: a21e0024 sb r30,0x0024(r16)     r16[24] = sx+width
-00059b6c: a2170025 sb r23,0x0025(r16)     r16[25] = sy+height
-00059b70: a6130008 sh r19,0x0008(r16)     r16[8] = 64
-00059b74: a613000a sh r19,0x000a(r16)     r16[a] = 64
-00059b78: a6160010 sh r22,0x0010(r16)     r16[10] = width+64
-00059b7c: a6130012 sh r19,0x0012(r16)     r16[12] = 64
-00059b80: a6130018 sh r19,0x0018(r16)     r16[18] = 64
-00059b84: a615001a sh r21,0x001a(r16)     r16[1a] = height+64
-00059b88: a6160020 sh r22,0x0020(r16)     r16[20] = width+64
-00059b8c: a6150022 sh r21,0x0022(r16)     r16[22] = height+64
-00059b90: a20a000d sb r10,0x000d(r16)     r16[d] = sy
-00059b94: a20a0015 sb r10,0x0015(r16)     r16[15] = sy
+00059b5c: a21e0014 sb r30,0x0014(r16)     r16[14] = sx+width//u1
+00059b60: a20b001c sb r11,0x001c(r16)     r16[1c] = sx//u2
+00059b64: a217001d sb r23,0x001d(r16)     r16[1d] = sy+height//v2
+00059b68: a21e0024 sb r30,0x0024(r16)     r16[24] = sx+width//u3
+00059b6c: a2170025 sb r23,0x0025(r16)     r16[25] = sy+height//v3
+00059b70: a6130008 sh r19,0x0008(r16)     r16[8] = 64//x0
+00059b74: a613000a sh r19,0x000a(r16)     r16[a] = 64//y0
+00059b78: a6160010 sh r22,0x0010(r16)     r16[10] = width+64//x1
+00059b7c: a6130012 sh r19,0x0012(r16)     r16[12] = 64//y1
+00059b80: a6130018 sh r19,0x0018(r16)     r16[18] = 64//x2
+00059b84: a615001a sh r21,0x001a(r16)     r16[1a] = height+64//y2
+00059b88: a6160020 sh r22,0x0020(r16)     r16[20] = width+64//x3
+00059b8c: a6150022 sh r21,0x0022(r16)     r16[22] = height+64//y3
+00059b90: a20a000d sb r10,0x000d(r16)     r16[d] = sy//v0
+00059b94: a20a0015 sb r10,0x0015(r16)     r16[15] = sy//v1
 00059b98: 97ae006c lhu r14,0x006c(r29)    //palette
 00059b9c: 3c01801f lui r1, 0x801f         
 00059ba0: 00310821 addu r1,r1,r17         
-00059ba4: a42ef132 sh r14,0xf132(r1)      *0xief132 = palette
+00059ba4: a42ef132 sh r14,0xf132(r1)      *dialogpalette[r17] = palette //part of the cmd
 00059ba8: 97ae0070 lhu r14,0x0070(r29)    //spritesheet
 00059bac: 3c01801f lui r1, 0x801f         
 00059bb0: 00310821 addu r1,r1,r17         
-00059bb4: a42ef13a sh r14,0xf13a(r1)      *0xief13a = spritesheet
+00059bb4: a42ef13a sh r14,0xf13a(r1)      *dialogsheet[r17] = spritesheet//part of the cmd
 00059bb8: 1440ffd6 bne r2,r0,0x00059b14   
 00059bbc: 26310028 addiu r17,r17,0x0028   cmd+=0x28
                                         }
 00059bc0: 3c02801f lui r2, 0x801f       //sets some other stuff after those two draw commands, look into it more
-00059bc4: 8c42f174 lw r2,0xf174(r2)     
+00059bc4: 8c42f174 lw r2,0xf174(r2)     //r2 = *dialogxpos
 00059bc8: 3c03801f lui r3, 0x801f       
-00059bcc: 8c63f180 lw r3,0xf180(r3)     
-00059bd0: 84440002 lh r4,0x0002(r2)     r4 = (*0x1ef174)[2]
-00059bd4: 8c620000 lw r2,0x0000(r3)     r2 = (*0x1ef180)[0]
-00059bd8: 8e470088 lw r7,0x0088(r18)    r7 = cmd[88]
+00059bcc: 8c63f180 lw r3,0xf180(r3)     //r3 = *dialogcamxpos
+00059bd0: 84440002 lh r4,0x0002(r2)     //r4 = (*dialogxpos)[2]
+00059bd4: 8c620000 lw r2,0x0000(r3)     r2 = (*dialogcamxpos)[0]
+00059bd8: 8e470088 lw r7,0x0088(r18)    r7 = dialogvalx//f1ac
 00059bdc: 00822023 subu r4,r4,r2        
-00059be0: ae440064 sw r4,0x0064(r18)    cmd[64] = r4
+00059be0: ae440064 sw r4,0x0064(r18)    dialogvalxsaved = (*dialogxpos)[2]-(*dialogcamxpos)[0]//f188
 00059be4: 00872023 subu r4,r4,r7        
 00059be8: 3c02801f lui r2, 0x801f       
 00059bec: 8c42f178 lw r2,0xf178(r2)     
@@ -105,25 +105,25 @@
 00059bf4: 8ca5f184 lw r5,0xf184(r5)     
 00059bf8: 3c06801f lui r6, 0x801f       
 00059bfc: 8cc6f17c lw r6,0xf17c(r6)     
-00059c00: 84430002 lh r3,0x0002(r2)     r3 = (*0x1ef178)[2]
-00059c04: 8ca80000 lw r8,0x0000(r5)     r8 = (*0x1ef184)[0]
-00059c08: 84c60002 lh r6,0x0002(r6)     r6 = (*0x1ef17c)[2]
-00059c0c: 8e45008c lw r5,0x008c(r18)    r5 = cmd[8c]
+00059c00: 84430002 lh r3,0x0002(r2)     r3 = (*dialogypos)[2]
+00059c04: 8ca80000 lw r8,0x0000(r5)     r8 = (*dialogcamypos)[0]
+00059c08: 84c60002 lh r6,0x0002(r6)     r6 = (*dialogzpos)[2]
+00059c0c: 8e45008c lw r5,0x008c(r18)    r5 = dialogvaly;//f1b0
 00059c10: 24020030 addiu r2,r0,0x0030   
-00059c14: ae420080 sw r2,0x0080(r18)    cmd[80] = 30
+00059c14: ae420080 sw r2,0x0080(r18)    _1ef1a4 = 30//f1a4
 00059c18: 24020038 addiu r2,r0,0x0038   
-00059c1c: ae420084 sw r2,0x0084(r18)    cmd[84] = 38
+00059c1c: ae420084 sw r2,0x0084(r18)    _1ef1a8 = 38//f1a8
 00059c20: 2402000f addiu r2,r0,0x000f   
-00059c24: ae47006c sw r7,0x006c(r18)    cmd[6c] = r7
-00059c28: ae440074 sw r4,0x0074(r18)    cmd[74] = r4
-00059c2c: ae42007c sw r2,0x007c(r18)    cmd[7c] = 0xf
+00059c24: ae47006c sw r7,0x006c(r18)    _1ef190 = dialogvalx//f190
+00059c28: ae440074 sw r4,0x0074(r18)    _1ef198 = dialogvalxsaved-dialogvalx//f198
+00059c2c: ae42007c sw r2,0x007c(r18)    _1ef1a0 = 0xf//f1a0
 00059c30: 00681823 subu r3,r3,r8        
 00059c34: 00661823 subu r3,r3,r6        
 00059c38: 2463ffe0 addiu r3,r3,0xffe0   
-00059c3c: ae430068 sw r3,0x0068(r18)    cmd[68] = r3
+00059c3c: ae430068 sw r3,0x0068(r18)    dialogval2saved = (*dialogypos)[2]-(*dialogcamypos)[0]-(*dialogzpos)[2]-0x20
 00059c40: 00651823 subu r3,r3,r5        
-00059c44: ae450070 sw r5,0x0070(r18)    cmd[70] = r5
-00059c48: ae430078 sw r3,0x0078(r18)    cmd[78] = r3
+00059c44: ae450070 sw r5,0x0070(r18)    _1ef194 = dialogvaly//f194
+00059c48: ae430078 sw r3,0x0078(r18)    _1ef19c = dialogvalysaved-dialogvaly//f19c
 
 0x00059c4c: 8fbf0044 lw r31,0x0044(r29) 
 00059c50: 8fbe0040 lw r30,0x0040(r29)   
