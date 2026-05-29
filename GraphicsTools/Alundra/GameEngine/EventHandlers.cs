@@ -13,9 +13,13 @@ namespace GraphicsTools.Alundra
         GameState gameState;
         Dictionary<int, ScriptEventHandler> Handlers = new Dictionary<int, ScriptEventHandler>();
         public SpriteEventHandlers SpriteHandlers;
-        public EventHandlers(GameState gameState)
+        UIHandler ui;
+        EtcStrings etcstrings;
+        public EventHandlers(GameState gameState, UIHandler ui, EtcStrings etcstrings)
         {
             this.gameState = gameState;
+            this.ui = ui;
+            this.etcstrings = etcstrings;
 
             SpriteHandlers = new SpriteEventHandlers(gameState);
             //add handlers
@@ -65,6 +69,7 @@ namespace GraphicsTools.Alundra
             Handlers.Add(0x35, _35_UntilFlagOff_Handler);
             Handlers.Add(0x36, _36_UntilFlagOn_Handler);
             Handlers.Add(0x37, _37_Wait_Handler);
+            Handlers.Add(0x39, _39_WaitForDialog_Handler);
             Handlers.Add(0x3b, _3b_CheckPlayerInArea_Handler);
             Handlers.Add(0x40, _40_SetProgramIndex_Handler);
             Handlers.Add(0x41, _41_SetSpriteProgramIndex_Handler);
@@ -407,18 +412,20 @@ namespace GraphicsTools.Alundra
             if ((entity.Flags & 0x800000) != 0)//has portrait
             {
                 //TODO get it from memory, not disk
+                SIImageSet portrait = ui.GetPortrait(entity);
+                var img = portrait.images[0];
+                ui.WrapSetDialogPortrait(entity.XPos, entity.YPos, entity.ZPos, gameState.CamXPos, gameState.CamYPos, img.sx, img.sy, img.swidth, img.sheight, img.palette, img.spritesheet);
+                
                 //SIImageSet portrait = entity.Sprite.GetPortraitImageset(datasReader);
                 //var img = portrait.images[0];
                 //var bmps = gameState.GetSpriteImages(portrait);
                 //var bmp = bmps[0];
                 //WrapsDialogSetupPortrait(entity.XPos, entity.YPos, entity.ZPos, gameState.CamXPos, gameState.CamYPos, img.sx, img.sy, img.swidth, img.sheight, bmp);
             }
-            //SetName(entity.NameId);
+            ui.SetName(entity.SpriteTableIndex);
 
-            //var ret = SetText(code[exp + 1], code[exp + 2]);
-
-            //if (ret > 0)
-            //    return 3;
+            if (ui.SetText(code[exp + 1], code[exp + 2]))
+                return 3;
             return 0;
         }
 
@@ -1039,6 +1046,13 @@ namespace GraphicsTools.Alundra
                 return 0;
         }
 
+        public int _39_WaitForDialog_Handler(SpriteInstance entity, SpriteInstance entityself/*?*/, int exp, EventProgramState eventData, byte[] code)
+        {
+            if (ui.IsDialogActiveInner())
+                return 0;
+            return 1;
+        }
+
         public int _3b_CheckPlayerInArea_Handler(SpriteInstance entity, SpriteInstance entityself/*?*/, int exp, EventProgramState eventData, byte[] code)
         {
             int x1 = code[exp + 1];
@@ -1086,6 +1100,37 @@ namespace GraphicsTools.Alundra
             entity.Sprite_Program_Indexes[programid] = indexval;
 
             return 3;
+        }
+
+        int[] dialogchoiceval = new int[1];
+        public int _44_WaitDialogChoice_Handler(SpriteInstance entity, SpriteInstance entityself/*?*/, int exp, EventProgramState eventData, byte[] code)
+        {
+            int outval = 0;
+            if (exp != eventData.evttickprog)
+            {
+                var strTrue = etcstrings.GetEtcString(0x43);
+                var strFalse = etcstrings.GetEtcString(0x44);
+
+                dialogchoiceval[0] = 0;
+
+                if (!ui.SetupDialogChoice(strTrue, strFalse, dialogchoiceval))
+                    return 0;
+
+                eventData.evttickprog = exp;
+                return 0;
+            }
+
+            if (dialogchoiceval[0] == 0)
+            {
+                return 0;
+            }
+            else if (dialogchoiceval[0] == 1)
+            {
+                eventData.logicResult = 1;
+                return 1;
+            }
+            eventData.logicResult = 0;
+            return 1;
         }
 
         public int _45_Flag4Off_Handler(SpriteInstance entity, SpriteInstance entityself/*?*/, int exp, EventProgramState eventData, byte[] code)

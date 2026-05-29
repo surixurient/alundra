@@ -1051,7 +1051,7 @@ near_end:
 00047d3c: 8c6372dc lw r3,0x72dc(r3)     		//r3 = *0x1072dc
 00047d40: 24020001 addiu r2,r0,0x0001   
 00047d44: 3c018010 lui r1, 0x8010       
-00047d48: ac2272cc sw r2,0x72cc(r1)     		*dialogchoiceunknown1 = r2
+00047d48: ac2272cc sw r2,0x72cc(r1)     		*dialogchoiceunknown2 = r2
 00047d4c: 30630001 andi r3,r3,0x0001    
 00047d50: 3c018010 lui r1, 0x8010       
 00047d54: ac2472d4 sw r4,0x72d4(r1)     		*0x1072d4 = r4

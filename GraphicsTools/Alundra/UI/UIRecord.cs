@@ -23,11 +23,11 @@ namespace GraphicsTools.Alundra
 
     public class UIBoxAnimated
     {
-        public short x;
-        public short y;
-        public short width;//in 8s
-        public short height;// in 8s
-        public UIDrawCmd[][] boxcommands = new UIDrawCmd[0xa][];//drawareaid is an index into this
+        public short x;//0
+        public short y;//2
+        public short width;//in 8s //4
+        public short height;// in 8s //6
+        public UIDrawCmd[][] boxcommands = new UIDrawCmd[0xa][];//drawareaid is an index into this //8
     }
 
     //20 byte records

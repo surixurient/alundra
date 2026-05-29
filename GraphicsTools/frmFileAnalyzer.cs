@@ -1647,7 +1647,7 @@ namespace GraphicsTools
             if (tvFuncs.SelectedNode != null)
             {
                 var func = analyzedfunctions.FirstOrDefault(x => x.ToString() == tvFuncs.SelectedNode.Text);
-                if (func.name.Contains("_handler"))
+                if (func.name?.Contains("_handler")??false)
                 {
                     if (func.name.Contains("eload_"))
                     {

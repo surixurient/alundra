@@ -14,8 +14,8 @@ namespace GraphicsTools.Alundra
         EtcStrings etcstrings;
         DatasBin datasbin;
         public short SavedBoxDrawerX, SavedBoxDrawerY;
-        public int DialogChoiceUnknown1;//0x1072ec
-        public int DialogChoiceUnknown2;//0x1072cc
+        public bool DialogBoxTextCompleted;//0x1072ec
+        public bool DialogBoxTextNeedsScroll;//0x1072cc
 
         byte[] uiimagedata;
         byte[] fontimagedata;
@@ -23,12 +23,12 @@ namespace GraphicsTools.Alundra
         List<Color[]> uipalettes = new List<Color[]>();
         BitmapDrawCommand dialognametextcmd;
 
-        public UIHandler(GameState gameState, DatasBin datasbin, EtcStrings etcstrings, string fontfile, string palettesfile, string uifile)
+        public UIHandler(GameState gameState, DatasBin datasbin, EtcStrings etcstrings, string fontfile, string palettesfile, string uibmpfile)
         {
             this.game = gameState;
             this.etcstrings = etcstrings;
             //load palettes
-            byte[] buff = File.ReadAllBytes(fontfile);
+            byte[] buff = File.ReadAllBytes(palettesfile);
             for (int pdex = 0; pdex + 32 < buff.Length; pdex += 32)
             {
                 Color[] pal = new Color[16];
@@ -41,11 +41,18 @@ namespace GraphicsTools.Alundra
             }
 
             //load uitex
-            uiimagedata = File.ReadAllBytes(uifile);
+            uiimagedata = File.ReadAllBytes(uibmpfile);
 
             //load font image
             fontimagedata = File.ReadAllBytes(fontfile);
             fontimageoffset = 64;//is the first one an rgba palette?
+        }
+        public SIImageSet GetPortrait(SpriteInstance entity)
+        {
+            using (var datasReader = datasbin.OpenBin())
+            {
+                return entity.Sprite.GetPortraitImageset(datasReader);
+            }
         }
         Dictionary<long, Bitmap> spriteCache = new Dictionary<long, Bitmap>();
         Bitmap GetUIBitmap(UIDrawCmd cmd)
@@ -70,7 +77,7 @@ namespace GraphicsTools.Alundra
 
         //TODO how should these be setup
         //
-        UIBoxAnimated BoxDrawer1 = new UIBoxAnimated
+        UIBoxAnimated BoxDrawer1 = new UIBoxAnimated//9ebc4
         {
             x = 0x10,
             y = 0xa8,
@@ -78,16 +85,16 @@ namespace GraphicsTools.Alundra
             height = 0x7,
             boxcommands = new UIDrawCmd[][] { UIHelper.DialogBoxDrawCommands }
         };
-        UIBoxAnimated BoxDrawer2 = new UIBoxAnimated
+        UIBoxAnimated BoxDrawer2 = new UIBoxAnimated//a6bf4
         {
-            x = 0x10,
-            y = 0xa8,
-            width = 0x24,
-            height = 0x7,
-            boxcommands = new UIDrawCmd[][] { new UIDrawCmd[480 / 8 + 240 / 8], new UIDrawCmd[] { } }
+            x = 0xb0,
+            y = 0x90,
+            width = 0x10,
+            height = 0x4,
+            boxcommands = new UIDrawCmd[][] { UIHelper.DialogYesNoDrawCommands }
         };
         //this one is the dialoboxname
-        UIBoxAnimated BoxDrawer3 = new UIBoxAnimated
+        UIBoxAnimated BoxDrawer3 = new UIBoxAnimated//a74c4
         {
             x = 0x40,
             y = 0x8c,
@@ -110,7 +117,7 @@ namespace GraphicsTools.Alundra
             //2
             RegisterUIRecord(BoxDrawer1, 8, 0xc, 0x20, 4, InitUI_1, Render2, 0);
             //3
-            RegisterUIRecord(BoxDrawer2, 0x10, 8, 0x20, 4, null, Render3, 5);
+            RegisterUIRecord(BoxDrawer2, 0x10, 8, 0x20, 4, null, RenderYesNoBox, 5);
             //4
             RegisterUIRecord(null, 0x10, 8, 0x20, 4, InitUI_3, Render4, -1);
             //5
@@ -230,11 +237,11 @@ namespace GraphicsTools.Alundra
             }
             else
             {
-                if (DialogChoiceUnknown1 != 0)
+                if (DialogBoxTextCompleted)
                 {
                     //46d18()
                 }
-                else if (DialogChoiceUnknown2 != 0)
+                else if (DialogBoxTextNeedsScroll)
                 {
                     //46890(ui);
                     return true;
@@ -259,7 +266,7 @@ namespace GraphicsTools.Alundra
         {
             return true;
         }
-        bool Render3(UIRecord ui)
+        bool RenderYesNoBox(UIRecord ui)
         {
             return true;
         }
@@ -411,7 +418,7 @@ namespace GraphicsTools.Alundra
         byte[] RenderTextBuff = new byte[0x800];
         int DialogRenderCharCounter;
         int DialogTextLineStartX;
-        int[] _107220 = new int[8];
+        int[] DialogTextLineWidths = new int[8];
         int DialogLetterWait, DialogLetterWaitRemaining;
         int DialogSomethingBit3On;
         char[] DialogTextBuffer = new char[0x960];
@@ -440,7 +447,7 @@ namespace GraphicsTools.Alundra
                     if (_107214 == 2)
                     {
 
-                        DialogChoiceUnknown1 = 1;
+                        DialogBoxTextNeedsScroll = true;
                         _1072d4 = _1072d8;
 
                         if ((_1072dc & 1) != 0)
@@ -454,7 +461,7 @@ namespace GraphicsTools.Alundra
                         _107214++;
                         //if (_107214 == 3)
                         //    _107214--;
-                        _107220[_107214] = 0;
+                        DialogTextLineWidths[_107214] = 0;
                     }
                 }
                 return;
@@ -492,7 +499,7 @@ namespace GraphicsTools.Alundra
                     c = DialogTextBuffer[DialogTextBufferPos];
                     if (c == 0)
                     {
-                        DialogChoiceUnknown1 = 1;
+                        DialogBoxTextCompleted = true;
                         if ((DialogChoice & 1) != 0)
                         {
                             _1072f0 = _1072f4;
@@ -562,7 +569,7 @@ namespace GraphicsTools.Alundra
                         return;
                     case 'H':
                         DialogTextBufferPos++;
-                        _107220[_107214] = GetRenderedTextWidth(DialogTextBufferStr.Substring(DialogTextBufferPos));
+                        DialogTextLineWidths[_107214] = GetRenderedTextWidth(DialogTextBufferStr.Substring(DialogTextBufferPos));
                         continue;
                     case 'N':
                         DialogTextBufferPos++;
@@ -574,7 +581,7 @@ namespace GraphicsTools.Alundra
                             if (_107214 == 2)
                             {
 
-                                DialogChoiceUnknown1 = 1;
+                                DialogBoxTextNeedsScroll = true;
                                 _1072d4 = _1072d8;
 
                                 if ((_1072dc & 1) != 0)
@@ -588,7 +595,7 @@ namespace GraphicsTools.Alundra
                                 _107214++;
                                 //if (_107214 == 3)
                                 //    _107214--;
-                                _107220[_107214] = 0;
+                                DialogTextLineWidths[_107214] = 0;
                             }
                         }
                         return;
@@ -826,7 +833,7 @@ namespace GraphicsTools.Alundra
             return true;
         }
 
-        void SetName(int nameid)
+        public void SetName(int nameid)
         {
             if ((game.DialogNameState & 4) == 0
                 && nameid-0x100 < 0x100
@@ -837,9 +844,16 @@ namespace GraphicsTools.Alundra
             }
         }
 
-        bool IsDialogActiveInner()
+        public bool IsDialogActiveInner()
         {
             return (game.DialogState & 4) != 0;
+        }
+
+        public void WrapSetDialogPortrait(int xpos, int ypos, int zpos, int camxpos, int camypos, int sx, int sy, int width, int height, int palette, int spritesheet)
+        {
+            dialogvalx = 8;
+            dialogvaly = 0x74;
+            SetDialogPortrait(xpos, ypos, zpos, camxpos, camypos, sx, sy, width, height, palette, spritesheet);
         }
 
         int dialogstatus,dialogxpos,dialogypos,dialogzpos,dialogcamxpos,dialogcamypos;
@@ -881,7 +895,7 @@ namespace GraphicsTools.Alundra
             dialogvalymodded = dialogvalysaved - dialogvaly;
         }
 
-        bool SetText(int textid, int playercontrolflag)
+        public bool SetText(int textid, int playercontrolflag)
         {
             if (!IsDialogActiveInner())
                 return false;
@@ -961,9 +975,9 @@ namespace GraphicsTools.Alundra
                 game.PlayerControlSetting |= 8;
             }
 
-            DialogChoiceUnknown1 = 0;
+            DialogBoxTextCompleted = false;
             DialogChoiceSaved = 0;
-            DialogChoiceUnknown2 = 0;
+            DialogBoxTextNeedsScroll = false;
             _1072d0 = 0;
             DialogSomethingBit3On = 0;
             DialogTextSfx = -1;
@@ -973,7 +987,7 @@ namespace GraphicsTools.Alundra
             DialogRenderCharCounter = 0;
             for (int linedex = 0;linedex<3;linedex++)
             {
-                _107220[linedex] = 0;
+                DialogTextLineWidths[linedex] = 0;
                 //init the draw commands for these lines
             }
 
@@ -1000,6 +1014,44 @@ namespace GraphicsTools.Alundra
             return true;
         }
 
+        class DialogChoiceInfo
+        {
+            public int unknown2;
+            public int unknown1;
+            public string[] strchoices = new string[2];
+
+        }
+        void SetupDialogChoiceInner2(DialogChoiceInfo choiceinfo)
+        {
+
+        }
+
+        int _13d598;
+        void SetupDialogChoiceInner(int unknown1, int unknown2, string[] dialogchoices)
+        {
+            var info = new DialogChoiceInfo();
+            info.unknown1 = unknown1;
+            info.unknown2 = unknown2;
+            info.strchoices[0] = dialogchoices[0];
+            info.strchoices[1] = dialogchoices[1];
+            SetupDialogChoiceInner2(info);
+            game.soundbin.PlaySoundEffect(4);
+            SetUIRecordCallSetup(3);
+        }
+
+        string[] dialogchoices = new string[2];// 0x12191c, 0x121920
+        int[] dialogchoiceselection;
+        int _52224;
+        int _13d360;
+        public bool SetupDialogChoice(string strTrue, string strFalse, int[] outval)
+        {
+            dialogchoices[0] = strTrue;
+            dialogchoices[1] = strFalse;
+            SetupDialogChoiceInner(_52224, 1, dialogchoices);
+            dialogchoiceselection = outval;
+            _13d360 = 0;
+            return true;
+        }
         
     }
 }

@@ -258,7 +258,7 @@ namespace GraphicsTools.Alundra
             AddFunction(0x47de4, "renderdialogboxfunc", "");
             AddFunction(0x4d218, "rendermainuifunc", "");
             AddFunction(0x50bcc, "render2func", "");
-            AddFunction(0x518c4, "render3func", "");
+            AddFunction(0x518c4, "renderyesnofunc", "");
             AddFunction(0x54bcc, "render4func", "");
             AddFunction(0x4ba10, "render5func", "");
             AddFunction(0x5695c, "renderitemmenufunc", "");
@@ -296,6 +296,14 @@ namespace GraphicsTools.Alundra
 
             AddGlobalVariableRange(0x1efbc8, 0x1efbdc, "dialognamecmdlist", "20 byte records (2 of them?)(other half of linked list of sorts?)");
 
+            AddGlobalVariable(0x121918, "dialogchoiceselection", "");
+            AddGlobalVariable(0x12191c, "dialogchoicetrue", "");
+            AddGlobalVariable(0x121920, "dialogchoicefalse", "");
+
+            AddFunction(0x51d88, "setupdialogchoiceinner2", "//(choiceinfo)");
+            AddFunction(0x51c88, "setupdialogchoiceinner", "//(unknown1, unknown2, dialogchoices)");
+            AddFunction(0x52234, "setupdialogchoice", "//(strtrue, strfalse, int* outval)");
+
             AddGlobalVariable(0x1f3748, "drawareas", "");
             AddGlobalVariable(0x1e5cd8, "drawareaid", "");
             AddGlobalVariable(0x1045e0, "dialogboxlerper.curtick", "");
@@ -315,8 +323,9 @@ namespace GraphicsTools.Alundra
             AddGlobalVariable(0x9ebca, "boxdrawer1.height", "");
 
             AddGlobalVariable(0xa6bf4, "boxdrawer2", "");
-            AddGlobalVariable(0x1072ec, "dialogchoiceunknown1", "");
-            AddGlobalVariable(0x1072cc, "dialogchoiceunknown2", "");
+            AddGlobalVariable(0x1072ec, "dialogboxtextcompleted", "");
+            AddGlobalVariable(0x1072cc, "dialogboxtextneedsscroll", "");
+            AddGlobalVariable(0x107220, "dialogtextlinewidths", "int[]");
 
             AddFunction(0x3a3e4, "getinitdata", "");//20 byte long records
 
